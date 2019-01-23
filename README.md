@@ -1,5 +1,3 @@
-# GudjaWebCrawler
+# Graphical Web Crawler
 
-CS 467 Capstone - Graphical Web Crawler
-
-Gudja Group
+CS 467 Capstone Project - Gudja Group
