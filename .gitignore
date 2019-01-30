@@ -1,0 +1,4 @@
+front_end/e2e
+front_end/node_modules
+node_modules/
+.DS_Store
