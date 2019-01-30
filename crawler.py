@@ -1,8 +1,19 @@
+#####################################################################
+# Class: Crawler 
+# Author: Brent Freeman, Long Le
+# Class: CS 467 Capstone
+# Group: Gudja
+# Project: Graphical Web Crawler
+# Description: 
+#
+#####################################################################
+
 import sys
 import requests
 from datetime  import datetime
 #sys.path.insert(0, 'lib') #use this on GCP
 from bs4 import BeautifulSoup
+from urlparse import urljoin # used to convert relative links to absolute
 
 class crawler():
 
@@ -26,8 +37,22 @@ class crawler():
             #print(link.get('href'))
         print(self.dictionary)
 
+    #####################################################################
+    # Description: Long - Using to test  
+    # Testing Relative Links Conversion
+    # Testing Dictionary Title:URL pair
+    # https://stackoverflow.com/questions/44001007/scrape-the-absolute-url-instead-of-a-relative-path-in-python 
+    #####################################################################
+    def get_all_links(self):
+        r = requests.get(self.url)
+        soup = BeautifulSoup(r.text, 'lxml')
+        depthCount = 0 # for use with user entered limit
+        web_url = "https://en.wikipedia.org/"
+        for link in soup.find_all('a'):
+            self.web_links.append(urljoin(web_url,link.get('href'))) # used to convert relative links to absolute
 
-
+        for i in self.web_links:
+            print(i)
 
     def get_rel_links(self):
         r = requests.get(self.url)

@@ -1,5 +1,4 @@
 #####################################################################
-#
 # Class: BFS Algorithm
 # Author: Long Le
 # Class: CS 467 Capstone
@@ -7,20 +6,18 @@
 # Project: Graphical Web Crawler
 # Description: 
 #
-#
 #####################################################################
 
 import requests
 from crawler import crawler
 
 class BFS:
-    # Python list used as a Queue to hold the next layer of URLs
-    URL_queue = []
-    currentURL = "" 
-
     def __init__(self, URL):
-        pass
+        self.bot = crawler(URL)
+
+    def start(self):
+        self.bot.get_all_links()
 
 # Test
-bfs = BFS_Crawler("https://en.wikipedia.org/wiki/Cat")
-bfs.get_all_links()
+bfs = BFS("https://en.wikipedia.org/wiki/Poop")
+bfs.start()
