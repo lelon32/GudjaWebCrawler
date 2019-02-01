@@ -38,7 +38,7 @@ class crawler():
         print(self.dictionary)
 
     #####################################################################
-    # Description: Long - Using to test  
+    # Description: Long - Using to test BFS search 
     # Testing Relative Links Conversion
     # Testing Dictionary Title:URL pair
     # https://stackoverflow.com/questions/44001007/scrape-the-absolute-url-instead-of-a-relative-path-in-python 
@@ -74,12 +74,9 @@ class crawler():
     def build_tree(self):
         pass
 
-
     # method to return data to server
     def send_tree(self):
         pass
-
-
 
     # I created this so we can hava static document to test on
     def write_to_file(self):

@@ -19,5 +19,5 @@ class BFS:
         self.bot.get_all_links()
 
 # Test
-bfs = BFS("https://en.wikipedia.org/wiki/Poop")
+bfs = BFS("https://en.wikipedia.org/wiki/SMALL")
 bfs.start()
