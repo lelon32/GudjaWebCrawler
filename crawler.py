@@ -1,3 +1,13 @@
+#####################################################################
+# Class: Crawler
+# Author: Brent Freeman, Long Le
+# Class: CS 467 Capstone
+# Group: Gudja
+# Project: Graphical Web Crawler
+# Description:
+#
+#####################################################################
+
 import sys
 import requests
 from datetime  import datetime
@@ -42,6 +52,23 @@ class crawler():
     def get_title(self):
         self.title = self.soup.title
 
+
+    #####################################################################
+    # Description: Long - Using to test BFS search
+    # Testing Relative Links Conversion
+    # Testing Dictionary Title:URL pair
+    # https://stackoverflow.com/questions/44001007/scrape-the-absolute-url-instead-of-a-relative-path-in-python
+    #####################################################################
+    def get_all_links(self):
+        r = requests.get(self.url)
+        soup = BeautifulSoup(r.text, 'lxml')
+        depthCount = 0 # for use with user entered limit
+        web_url = "https://en.wikipedia.org/"
+        for link in soup.find_all('a'):
+            self.web_links.append(urljoin(web_url,link.get('href'))) # used to convert relative links to absolute
+
+        for i in self.web_links:
+            print(i)
 
 
 
