@@ -20,7 +20,6 @@ class BFS:
         self.domainName = []
         self.title = []
         self.favicon = []
-        self.currentLink = ""
 
     def start(self):
         count = 0
@@ -32,11 +31,12 @@ class BFS:
 
             # Start BFS 
             self.bot.get_all_links()
-            self.currentLink = self.bot.web_links_queue.pop(0)
+            self.url.append(self.bot.web_links_queue.pop(0))
+
             count += 1
 
             # debugging
-            print("\nCurrent Link: " + self.currentLink)
+            print("\nCurrent Link: " + self.url[-1])
             
             if count >= self.depthNumber or len(self.bot.web_links_queue) <= 0:
                 break
