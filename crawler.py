@@ -47,7 +47,7 @@ class crawler():
         r = requests.get(self.url)
         soup = BeautifulSoup(r.text, 'lxml')
         depthCount = 0 # for use with user entered limit
-        web_url = "https://en.wikipedia.org/"
+        web_url = "https://en.wikipedia.org/wiki/SMALL"
         for link in soup.find_all('a'):
             self.web_links.append(urljoin(web_url,link.get('href'))) # used to convert relative links to absolute
 
