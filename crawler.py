@@ -13,7 +13,7 @@ import requests
 from datetime  import datetime
 #sys.path.insert(0, 'lib') #use this on GCP
 from bs4 import BeautifulSoup
-from urllib.parse import urlparse
+#from urllib.parse import urlparse
 
 
 class crawler():
@@ -52,6 +52,13 @@ class crawler():
     def get_title(self):
         self.title = self.soup.title
 
+    # https://www.geeksforgeeks.org/python-remove-duplicates-list/   
+    def remove(self, duplicate): 
+        final_list = [] 
+        for num in duplicate: 
+            if num not in final_list: 
+                final_list.append(num) 
+        return final_list  
 
     #####################################################################
     # Description: Long - Using to test BFS search
@@ -65,11 +72,21 @@ class crawler():
         depthCount = 0 # for use with user entered limit
         web_url = "https://en.wikipedia.org/wiki/SMALL"
         for link in soup.find_all('a'):
-            self.web_links.append(urljoin(web_url,link.get('href'))) # used to convert relative links to absolute
+            tmpString = str(link.get('href'))
+            # Include external links (links only starting with "http")
+            if tmpString.startswith("http"):
+                self.web_links.append(tmpString);
+            else:
+                # option to include internal links as absolute links
+                # self.web_links.append(urljoin(web_url,link.get('href'))) # used to convert relative links to absolute
+                pass
 
+        # remove duplicates
+        self.web_links = self.remove(self.web_links)
+        
+        # for debugging
         for i in self.web_links:
             print(i)
-
 
 
     def get_all_links_and_put_them_in_a_dictionary(self):
