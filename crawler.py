@@ -21,6 +21,7 @@ class crawler():
     def __init__(self, url):
         self.url = url
         self.web_links = []
+        self.web_links_queue = []
         self.favicon = ''
         self.page_data = ''
         self.dictionary = {}
@@ -52,6 +53,7 @@ class crawler():
     def get_title(self):
         self.title = self.soup.title
 
+    # Maybe need to use this later
     # https://www.geeksforgeeks.org/python-remove-duplicates-list/   
     def remove(self, duplicate): 
         final_list = [] 
@@ -69,25 +71,27 @@ class crawler():
     def get_all_links(self):
         r = requests.get(self.url)
         soup = BeautifulSoup(r.text, 'lxml')
-        depthCount = 0 # for use with user entered limit
-        web_url = "https://en.wikipedia.org/wiki/SMALL"
+        # web_url = "https://en.wikipedia.org/wiki/SMALL"
         for link in soup.find_all('a'):
             tmpString = str(link.get('href'))
             # Include external links (links only starting with "http")
-            if tmpString.startswith("http"):
-                self.web_links.append(tmpString);
+            # Additionally, check for duplicate links
+            if tmpString.startswith("http") and tmpString not in self.web_links_queue:
+                # check if the URL has already been added
+                if tmpString not in self.web_links:
+                    self.web_links_queue.append(tmpString)
+                    self.web_links.append(tmpString)
             else:
                 # option to include internal links as absolute links
-                # self.web_links.append(urljoin(web_url,link.get('href'))) # used to convert relative links to absolute
+                # self.web_links_queue.append(urljoin(web_url,link.get('href'))) # used to convert relative links to absolute
                 pass
 
-        # remove duplicates
-        self.web_links = self.remove(self.web_links)
-        
         # for debugging
-        for i in self.web_links:
+        for i in self.web_links_queue:
             print(i)
 
+    def get_title(self, URL):
+        pass
 
     def get_all_links_and_put_them_in_a_dictionary(self):
         r = requests.get(self.url)
@@ -108,9 +112,6 @@ class crawler():
             if link is not None:
                 self.web_links.append(link.get('href'))
 
-
-
-
     def get_rel_links(self):
         r = requests.get(self.url)
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -130,7 +131,6 @@ class crawler():
     # method to add links to data structure
     def build_tree(self):
         pass
-
 
     # method to return data to server
     def send_tree(self):
