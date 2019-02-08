@@ -13,8 +13,7 @@ import requests
 from datetime  import datetime
 #sys.path.insert(0, 'lib') #use this on GCP
 from bs4 import BeautifulSoup
-#from urllib.parse import urlparse
-
+from urllib.parse import urlparse
 
 class crawler():
 
@@ -68,8 +67,18 @@ class crawler():
     # Testing Dictionary Title:URL pair
     # https://stackoverflow.com/questions/44001007/scrape-the-absolute-url-instead-of-a-relative-path-in-python
     #####################################################################
-    def get_all_links(self):
-        r = requests.get(self.url)
+    def get_all_links(self, URL=None):
+
+        # check if URL parameter is passed; use root url otherwise
+        currLink = ""
+        if URL is None:
+            currLink = self.url
+            self.web_links_queue.append(currLink)
+            self.web_links.append(currLink)
+        else:
+            currLink = URL
+
+        r = requests.get(currLink)
         soup = BeautifulSoup(r.text, 'lxml')
         # web_url = "https://en.wikipedia.org/wiki/SMALL"
         for link in soup.find_all('a'):
@@ -86,9 +95,34 @@ class crawler():
                 # self.web_links_queue.append(urljoin(web_url,link.get('href'))) # used to convert relative links to absolute
                 pass
 
-        # for debugging
+        # scrape some other info
+        self.title = soup.title 
+        self.favicon = self.convert_to_base_url(currLink) + "/favicon.ico"
+
+    # for debugging
+    def print_queue(self):
+        print("Queue: \n")
         for i in self.web_links_queue:
             print(i)
+
+    #####################################################################
+    # Description: Long - used to strip a URL to its domain name 
+    # https://www.quora.com/How-do-I-extract-only-the-domain-name-from-an-URL
+    #####################################################################
+    def strip_out_domain(self, URL):
+        domain = URL.split("//")[-1].split("/")[0]
+        # print(domain)
+        domain = domain.split(".")[-2]
+        # print(domain)
+        return domain
+
+    #####################################################################
+    # Description: Long - used to strip a URL to its base URL 
+    # https://www.quora.com/How-do-I-extract-only-the-domain-name-from-an-URL
+    #####################################################################
+    def convert_to_base_url(self, URL):
+        baseURL = urlparse(URL)
+        return baseURL.scheme + "://" + baseURL.netloc
 
     def get_title(self, URL):
         pass
