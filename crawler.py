@@ -20,7 +20,6 @@ class crawler():
     def __init__(self, url):
         self.url = url
         self.web_links = []
-        self.web_links_queue = []
         self.favicon = ''
         self.page_data = ''
         self.dictionary = {}

@@ -22,8 +22,14 @@ class BFS:
         self.favicon = []
         self.source = []
         self.target = []
+        self.allSourceTargetLinks = []
         self.JSON_Nodes = {}
         self.JSON_Edges = {}
+
+    def find_source_index(self, num):
+        for item in self.allSourceTargetLinks:
+            if item[1] == num:
+                return item[0]
 
     def start(self):
         depthCount = 0
@@ -55,12 +61,17 @@ class BFS:
             self.domainName.append(self.bot.strip_out_domain(self.url[-1]))
             self.favicon.append(self.bot.favicon)
 
-            # Step 4: add edges
-            beg = linkIndex+1
-            end = len(self.bot.web_links)
-            for i in range(beg, end):
-                self.source.append(linkIndex)
-                self.target.append(i)
+            if linkIndex < len(self.bot.web_links):
+                # add to linkDictionary
+                beg = linkIndex+1
+                end = len(self.bot.web_links)
+                for i in range(beg, end):
+                    self.allSourceTargetLinks.append(tuple((linkIndex, i)))
+
+                # Step 4: add visited edges - does not include the root
+                if( linkIndex > 0 ):
+                    self.source.append(self.find_source_index(linkIndex))
+                    self.target.append(linkIndex)
 
             linkIndex += 1
 
