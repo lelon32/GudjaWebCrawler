@@ -80,7 +80,7 @@ class crawler():
 
         r = requests.get(currLink)
         soup = BeautifulSoup(r.text, 'lxml')
-        # web_url = "https://en.wikipedia.org/wiki/SMALL"
+        # web_url = convert_to_base_url(currLink)
         for link in soup.find_all('a'):
             tmpString = str(link.get('href'))
             # Include external links (links only starting with "http")
@@ -96,7 +96,7 @@ class crawler():
                 pass
 
         # scrape some other info
-        self.title = soup.title 
+        self.title = str(soup.title) 
         self.favicon = self.convert_to_base_url(currLink) + "/favicon.ico"
 
     # for debugging
