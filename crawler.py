@@ -73,7 +73,6 @@ class crawler():
         currLink = ""
         if URL is None:
             currLink = self.url
-            self.web_links_queue.append(currLink)
             self.web_links.append(currLink)
         else:
             currLink = URL
@@ -83,16 +82,12 @@ class crawler():
         # web_url = convert_to_base_url(currLink)
         for link in soup.find_all('a'):
             tmpString = str(link.get('href'))
-            # Include external links (links only starting with "http")
-            # Additionally, check for duplicate links
-            if tmpString.startswith("http") and tmpString not in self.web_links_queue:
-                # check if the URL has already been added
-                if tmpString not in self.web_links:
-                    self.web_links_queue.append(tmpString)
-                    self.web_links.append(tmpString)
+            # Include external links (links only starting with "http") and only adds unique links 
+            if tmpString.startswith("http") and tmpString not in self.web_links:
+                self.web_links.append(tmpString)
             else:
                 # option to include internal links as absolute links
-                # self.web_links_queue.append(urljoin(web_url,link.get('href'))) # used to convert relative links to absolute
+                # self.web_links.append(urljoin(web_url,link.get('href'))) # used to convert relative links to absolute
                 pass
 
         # scrape some other info
@@ -102,7 +97,7 @@ class crawler():
     # for debugging
     def print_queue(self):
         print("Queue: \n")
-        for i in self.web_links_queue:
+        for i in self.web_links:
             print(i)
 
     #####################################################################
