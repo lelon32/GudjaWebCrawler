@@ -96,7 +96,7 @@ class crawler():
                 pass
 
         # scrape some other info
-        self.title = str(soup.title) 
+        self.title = str(soup.title.get_text()) 
         self.favicon = self.convert_to_base_url(currLink) + "/favicon.ico"
 
     # for debugging

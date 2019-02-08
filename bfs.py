@@ -28,7 +28,7 @@ class BFS:
 
         # Implemented as a do while loop
         while True:
-            tmpStr = "\nDepth Number:  " + str(depthCount+1) + "\n"
+            tmpStr = "\nDepth Number:  " + str(depthCount+1)
             print( tmpStr )
 
             # Start BFS algorithm 
@@ -71,7 +71,10 @@ class BFS:
                 break
 
         # https://stackoverflow.com/questions/42865013/python-create-array-of-json-objects-from-for-loops    
-        nodes = [ {"url": u, "domainName": d, "title": t, "favicon": f} for u, d, t, f in zip(self.url, self.domainName, self.title, self.favicon) ] 
+        nodes = [ {"url": u, "domainName": d, "title": t, "favicon": f} 
+                        for u, d, t, f 
+                        in zip(self.url, self.domainName, self.title, self.favicon) ] 
+
         self.JSON_Nodes = json.dumps(nodes)
 
         # debugging
