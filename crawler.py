@@ -63,7 +63,6 @@ class crawler():
     #####################################################################
     # Description: Long - Using to test BFS search
     # Testing Relative Links Conversion
-    # Testing Dictionary Title:URL pair
     # https://stackoverflow.com/questions/44001007/scrape-the-absolute-url-instead-of-a-relative-path-in-python
     #####################################################################
     def get_all_links(self, URL=None):
@@ -90,7 +89,11 @@ class crawler():
                 pass
 
         # scrape some other info
-        self.title = str(soup.title.get_text()) 
+        # check to see if title exists
+        # https://stackoverflow.com/questions/53876649/beautifulsoup-nonetype-object-has-no-attribute-gettext
+        tmpString = soup.title
+        tmpString = soup.title.get_text() if tmpString else "No Title"
+        self.title = str(tmpString) 
         self.favicon = self.convert_to_base_url(currLink) + "/favicon.ico"
 
     # for debugging

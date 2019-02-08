@@ -25,6 +25,7 @@ class BFS:
         self.allSourceTargetLinks = []
         self.JSON_Nodes = {}
         self.JSON_Edges = {}
+        self.depthBookmarks = 0
 
     def find_source_index(self, num):
         for item in self.allSourceTargetLinks:
@@ -37,8 +38,11 @@ class BFS:
 
         # Implemented as a do while loop
         while True:
+            # debuggin
             tmpStr = "\nDepth Number:  " + str(depthCount+1)
             print( tmpStr )
+            if len(self.url) > 0:
+                print(self.url[-1])
 
             # Start BFS algorithm 
             # The initial start will utilize the root node url
@@ -49,6 +53,9 @@ class BFS:
 
                 # Step 2a: initiate visit the root url 
                 self.url.append(self.bot.web_links[linkIndex])
+
+                # add a bookmark to know when to increase the depth count
+                self.depthBookmarks = len(self.bot.web_links)-1
             else:
                 # Step 1b: move to next indexed url
                 self.url.append(self.bot.web_links[linkIndex])
@@ -75,8 +82,12 @@ class BFS:
 
             linkIndex += 1
 
-            # Step 5: increase depth count if applicable
-            depthCount += 1
+            # see if new BFS level has been reached
+            if linkIndex > self.depthBookmarks:
+                # set new bookmark
+                self.depthBookmarks = len(self.bot.web_links)-1
+                # Step 5: increase depth count if applicable
+                depthCount += 1
 
             # debugging
             #self.bot.print_queue()
