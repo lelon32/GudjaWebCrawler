@@ -8,8 +8,8 @@ app.use((req, res, next) => {
 	res.sendFile(path.join(__dirname, 'front_end', 'index.html'));
 });
 
-module.exports = app;
-
 app.listen(3000, function () {
 	   console.log('Example app listening on port 3000!');
 });
+
+module.exports = app;

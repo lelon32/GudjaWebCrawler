@@ -1,0 +1,31 @@
+/* Node and edge arrays hold individual nodes and edges
+ Nodes contain url, domainName, title, favicon url
+ Edges reference nodes by array index in O(1)
+ access to node array to quickly render the animation
+*/
+{
+  "nodes": [
+    {
+      "url": "https://www.google.com/",
+      "domainName": "google",
+      "title", "Google",
+      "favicon": "https://www.google.com/s2/favicons?domain=www.google.com"
+    },
+    {
+      // ...
+    }
+  ],
+  "edges": [
+    {
+      "source": "0",
+      "target": "1"
+    },
+    {
+      "source": "2",
+      "target": "0"
+    },
+    {
+      // ...
+    }
+  ]
+}
