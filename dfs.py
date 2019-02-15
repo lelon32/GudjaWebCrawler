@@ -1,91 +1,209 @@
-from crawler import crawler
+#####################################################################
+# Class: Crawler
+# Author: Brent Freeman, Long Le
+# Class: CS 467 Capstone
+# Group: Gudja
+# Project: Graphical Web Crawler
+# Description:
+#
+#####################################################################
+
+#my initial crawler class file was messed up during an attempt to merge and changes got missed. a temporary fix is to have that class in the same file
 import sys
 import json
-from urllib.parse import urlparse
+
 import random
+import requests
+from datetime  import datetime
+sys.path.insert(0, 'lib') #use this on GCP
+from bs4 import BeautifulSoup
+from urllib.parse import urlparse
 
+class crawler():
+
+    def __init__(self):
+        self.url = ''
+        self.web_links = []
+        self.favicon = ''
+        self.page_data = ''
+        self.dictionary = {}
+        self.unique_links = []
+        self.soup = None
+        self.domain = ""
+        self.title = ""
+
+
+    def create_soup(self):
+        r = requests.get(self.url)
+        self.soup = BeautifulSoup(r.text, 'html.parser')
+
+
+    def check_url(self, url):
+        parse = urlparse(url)
+        page_host = urlparse(self.url).netloc
+        if parse.scheme == 'http' or parse.scheme == 'https':
+            if parse.netloc != page_host:
+                return True
+        return False
+
+    def create_unique_link_list2(self):
+        temp_list = []
+        for link in self.soup.find_all('a'):
+            if link is not None:
+                if self.check_url(link.get('href')) or self.check_url(link.get('href')):
+                #self.check_url(link.get('href'))
+
+                    temp_list.append(link.get('href'))
+
+        tset = set(temp_list)
+        self.unique_links = list(tset)
+        #print("these are the unique links ", self.unique_links)
+
+
+    def create_unique_link_list(self):
+        temp_list = []
+        for link in self.soup.find_all('a'):
+            if link is not None:
+                if self.check_url(link.get('href')):
+
+                    temp_list.append(link.get('href'))
+
+        tset = set(temp_list)
+        self.unique_links = list(tset)
+        #print("these are the unique links ", self.unique_links)
+
+    def get_domain(self):
+        temp = urlparse(self.url)
+        self.domain = temp.netloc
+
+
+    def get_favicon(self):
+        self.favicon = self.favicon = self.url + "/favicon.ico"
+
+    def get_title(self):
+        self.title = self.soup.title
+
+
+#####################################################################
+# Class: DFS
+# Author: Brent Freeman
+# Class: CS 467 Capstone
+# Group: Gudja
+# Project: Graphical Web Crawler
+# Description: Creates the depth first search using the crawler class
+#
+#####################################################################
 class dfs():
-    pass
 
-#new
-
-
-# Live tests
-# Code Execution begins here, may move to another file
-
-# create the crawler with provided url
-#pycharm set to send an argument at execution
-dfs_crawl = crawler(sys.argv[1])
-
-# get the domain
-dfs_crawl.get_domain()
-
-# get the favicon
-dfs_crawl.get_favicon()
+    def __init__(self):
+        self.next_link = ''
+        self.nodes = []
+        self.edges = []
 
 
+#This is the primary function that runs the depth first search
+    def run_crawl(self, url):
+        source_edge = len(self.nodes)
 
-#visit site and create soup
-# still need to determine where the URL should 'live'
-dfs_crawl.create_soup(dfs_crawl.url)
+    # instantiate the crawler class
+        dfs_crawl = crawler()
 
-#get the title
-dfs_crawl.get_title()
+    # provide the first url
+        dfs_crawl.url = url
 
-# get unique list of links
-dfs_crawl.create_unique_link_list()
+    # get the domain
+        dfs_crawl.get_domain()
 
-# get the next link
-#Wnext_link = random.choice(dfs_crawl.unique_links)
+    # get the favicon
+        dfs_crawl.get_favicon()
 
-#build object
-nodes_url = {"url": dfs_crawl.url}
-nodes_domain = {"domainName": dfs_crawl.domain}
-nodes_title = {"title": dfs_crawl.title}
-nodes_favicon = {"favicon": dfs_crawl.favicon}
+    #visit site and create soup
+        dfs_crawl.create_soup()
 
-node_dict = {"nodes": [{"url": dfs_crawl.url, "domainName": dfs_crawl.domain, "title": dfs_crawl.title.text, "favicon": dfs_crawl.favicon}]}
+    #get the title
+        dfs_crawl.get_title()
 
+    # get unique list of links
+        dfs_crawl.create_unique_link_list()
+
+    # get the next link
+        if len(dfs_crawl.unique_links) != 0:
+            self.next_link = random.choice(dfs_crawl.unique_links)
+
+    #build the object
+            nodes_url = {"url": dfs_crawl.url}
+            nodes_domain = {"domainName": dfs_crawl.domain}
+            nodes_title = {"title": dfs_crawl.title}
+            nodes_favicon = {"favicon": dfs_crawl.favicon}
+
+            node_dict = {"url": dfs_crawl.url, "domainName": dfs_crawl.domain, "title": dfs_crawl.title.text, "favicon": dfs_crawl.favicon}
+            self.nodes.append(node_dict)
+
+            target_edge = len(self.nodes)
+
+            edge_dict = {"source": source_edge, "target": target_edge}
+            self.edges.append(edge_dict)
+
+            export_json = {"nodes": self.nodes, "edges": self.edges }
+
+    #create json
+            json_node = json.dumps(node_dict)
+
+    def write_data_structure_to_file(self, data, name):
+        with open(name, 'w') as outfile:
+            json.dump(data, name)
+
+
+#####################################################################
+# Class: main
+# Author: Brent Freeman
+# Class: CS 467 Capstone
+# Group: Gudja
+# Project: Graphical Web Crawler
+# Description: this section executes the dfs search and can either take
+# 2 arguments (website and depth) or will run a from a random selection to a depth of 5
+#####################################################################            
+# begin Main
+# this is what would normally be the main function, this should be moved to a separeate file that can later call either bfs or dfs
+
+#instantiate the dfs class
+run_dfs = dfs()
+
+#here are some test links that i use during testing
+test_links = ["http://www.cnn.com", "http://www.oregonlive.com", "http://www.gizmodo.com", "http://www.stackexchange.com", "http://www.engadget.com", "http://xkcd.com", "http://www.wired.com"]
+
+#print(len(sys.argv))
+if len(sys.argv) == 3:
+    new_url = sys.argv[1]
+    depth = int(sys.argv[2])
+    #print("url is ", new_url)
+    #print("depth is ", depth)
+else:
+    depth = 5
+    new_url = random.choice(test_links)
+
+#add the url to the next link
+run_dfs.next_link = new_url
+
+
+#dfs can use a simple for loop to get all the links
+for i in range(0, depth):
+    run_dfs.run_crawl(run_dfs.next_link)
+
+#build the final object for converting to stringified json
+export = {"nodes": run_dfs.nodes, "edges": run_dfs.edges }
 
 #create json
+#export_json = json.dumps(export)
 
+#print out the stingified json to console (where it can be picked up by)
+#print(export_json)
 
-json_node = json.dumps(node_dict)
-
-print("here is the JSON data")
-print(node_dict)
-print(json_node)
-
-
-#dfs_crawl.get_all_links_and_put_them_in_a_dictionary()
-
-#dfs_crawl.get_favicon_and_add_to_dictionary()
-
-#json_data = json.dumps(dfs_crawl.dictionary)
-
-#print("here is the JSON data: ")
-#print(json_data)
-
-
-
-# File IO tests
-#dfs_crawl.write_to_file()
-#for link in dfs_crawl.web_links:
-#    print(link)
-
-#dfs_crawl.open_file_test()
-#print(dfs_crawl.web_links)
-
-#dfs_crawl.create_unique_list()
-#dfs_crawl.write_data_structure_to_file(dfs_crawl.unique_links, "unique_gizmodo_links.txt")
-#print(dfs_crawl.unique_links)
-
-#for link in dfs_crawl.web_links:
-#    print(link)
-
-
+with open('data.json', 'w+') as outfile:
+    json.dump(export, outfile)
 
 # Resources I used
+# https://stackoverflow.com/questions/12309269/how-do-i-write-json-data-to-a-file
 # https://www.crummy.com/software/BeautifulSoup/bs4/doc/
 # http://blog.adnansiddiqi.me/tag/scraping/
 # https://www.sohamkamani.com/blog/2015/08/21/python-nodejs-comm/
