@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
+import { environment } from '../../environments/environment';
 import { Post } from './post.model';
 import { CrawlerData } from '../crawler/crawlerdata.model';
 import { CrawlerService } from '../crawler/crawlerdata.service';
@@ -34,7 +35,7 @@ export class PostsService {
       })
     };
 
-    var url = 'http://127.0.0.1:3000/data';
+    var url = environment.baseUrl + '/data';
     this.http.post<string>(url, post, httpOptions)
       .subscribe((response) => {
         console.log("POST response: ", response);
