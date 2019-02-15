@@ -12,7 +12,7 @@ class dfs():
         self.edges = []
 
 
-#This is the primary function that ruuns the depth first search
+#This is the primary function that runs the depth first search
     def run_crawl(self, url):
         source_edge = len(self.nodes)
 
@@ -60,6 +60,9 @@ class dfs():
     #create json
             json_node = json.dumps(node_dict)
 
+    def write_data_structure_to_file(self, data, name):
+        with open(name, 'w') as outfile:
+            json.dump(data, name)
 # begin Main
 # this is what would normally be the main function, this should be moved to a separeate file that can later call either bfs or dfs
 
@@ -69,7 +72,7 @@ run_dfs = dfs()
 #here are some test links that i use during testing
 test_links = ["http://www.cnn.com", "http://www.oregonlive.com", "http://www.gizmodo.com", "http://www.stackexchange.com", "http://www.engadget.com", "http://xkcd.com", "http://www.wired.com"]
 
-print(len(sys.argv))
+#print(len(sys.argv))
 if len(sys.argv) == 3:
     new_url = sys.argv[1]
     depth = sys.argv[2]
@@ -91,13 +94,16 @@ for i in range(0, depth):
 export = {"nodes": run_dfs.nodes, "edges": run_dfs.edges }
 
 #create json
-export_json = json.dumps(export)
+#export_json = json.dumps(export)
 
 #print out the stingified json to console (where it can be picked up by)
-print(export_json)
+#print(export_json)
 
+with open('json.data', 'w+') as outfile:
+    json.dump(export, outfile)
 
 # Resources I used
+# https://stackoverflow.com/questions/12309269/how-do-i-write-json-data-to-a-file
 # https://www.crummy.com/software/BeautifulSoup/bs4/doc/
 # http://blog.adnansiddiqi.me/tag/scraping/
 # https://www.sohamkamani.com/blog/2015/08/21/python-nodejs-comm/
