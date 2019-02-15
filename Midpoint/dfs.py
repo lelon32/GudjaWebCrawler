@@ -99,7 +99,7 @@ export = {"nodes": run_dfs.nodes, "edges": run_dfs.edges }
 #print out the stingified json to console (where it can be picked up by)
 #print(export_json)
 
-with open('json.data', 'w+') as outfile:
+with open('data.json', 'w+') as outfile:
     json.dump(export, outfile)
 
 # Resources I used
