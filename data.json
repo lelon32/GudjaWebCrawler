@@ -1,0 +1,102 @@
+{
+    "edges": [
+        {
+            "source": 0,
+            "target": 1
+        },
+        {
+            "source": 0,
+            "target": 2
+        },
+        {
+            "source": 0,
+            "target": 3
+        },
+        {
+            "source": 0,
+            "target": 4
+        },
+        {
+            "source": 0,
+            "target": 5
+        },
+        {
+            "source": 0,
+            "target": 6
+        },
+        {
+            "source": 0,
+            "target": 7
+        },
+        {
+            "source": 0,
+            "target": 8
+        },
+        {
+            "source": 0,
+            "target": 9
+        }
+    ],
+    "nodes": [
+        {
+            "domainName": "wikipedia",
+            "favicon": "https://en.wikipedia.org/favicon.ico",
+            "title": "SMALL - Wikipedia",
+            "url": "https://en.wikipedia.org/wiki/SMALL"
+        },
+        {
+            "domainName": "caida",
+            "favicon": "http://www.caida.org/favicon.ico",
+            "title": "CAIDA Staff",
+            "url": "http://www.caida.org/home/seniorstaff/nevil.xml"
+        },
+        {
+            "domainName": "wikipedia",
+            "favicon": "https://en.wikipedia.org/favicon.ico",
+            "title": "SMALL - Wikipedia",
+            "url": "https://en.wikipedia.org/w/index.php?title=SMALL&oldid=764861645"
+        },
+        {
+            "domainName": "wikimedia",
+            "favicon": "https://donate.wikimedia.org/favicon.ico",
+            "title": "Make your donation now - Wikimedia Foundation",
+            "url": "https://donate.wikimedia.org/wiki/Special:FundraiserRedirector?utm_source=donate&utm_medium=sidebar&utm_campaign=C13_en.wikipedia.org&uselang=en"
+        },
+        {
+            "domainName": "wikidata",
+            "favicon": "https://www.wikidata.org/favicon.ico",
+            "title": "SMALL - Wikidata",
+            "url": "https://www.wikidata.org/wiki/Special:EntityPage/Q7391044"
+        },
+        {
+            "domainName": "wikidata",
+            "favicon": "https://www.wikidata.org/favicon.ico",
+            "title": "SMALL - Wikidata",
+            "url": "https://www.wikidata.org/wiki/Special:EntityPage/Q7391044#sitelinks-wikipedia"
+        },
+        {
+            "domainName": "wikimedia",
+            "favicon": "https://foundation.wikimedia.org/favicon.ico",
+            "title": "Privacy policy - Wikimedia Foundation Governance Wiki",
+            "url": "https://foundation.wikimedia.org/wiki/Privacy_policy"
+        },
+        {
+            "domainName": "mediawiki",
+            "favicon": "https://www.mediawiki.org/favicon.ico",
+            "title": "How to contribute - MediaWiki",
+            "url": "https://www.mediawiki.org/wiki/Special:MyLanguage/How_to_contribute"
+        },
+        {
+            "domainName": "wikimedia",
+            "favicon": "https://foundation.wikimedia.org/favicon.ico",
+            "title": "Cookie statement - Wikimedia Foundation Governance Wiki",
+            "url": "https://foundation.wikimedia.org/wiki/Cookie_statement"
+        },
+        {
+            "domainName": "wikimediafoundation",
+            "favicon": "https://wikimediafoundation.org/favicon.ico",
+            "title": "Wikimedia Foundation",
+            "url": "https://wikimediafoundation.org/"
+        }
+    ]
+}
