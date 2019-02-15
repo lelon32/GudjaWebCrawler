@@ -16,7 +16,7 @@ from crawler import crawler
 class BFS:
     def __init__(self, URL, userEnteredDepth):
         self.bot = crawler(URL)
-        #self.rootURL = URL
+        self.rootURL = URL
         #self.depthNumber = int(userEnteredDepth)
         self.depthNumber = userEnteredDepth
         self.url = []
@@ -46,15 +46,16 @@ class BFS:
     def start(self):
         depthCount = 0
         linkIndex = 0
+        print("BFS CRAWLING INITIATED\nURL: " + self.rootURL + "\nDepth Number: " + str(self.depthNumber)) 
 
         # Implemented as a do while loop
         while True:
             # debuggin
-            tmpStr = "\nDepth Number:  " + str(depthCount+1)
-            print( tmpStr )
-            if len(self.url) > 0:
-                print(self.url[-1])
-
+            #tmpStr = "\nDepth Number:  " + str(depthCount+1)
+            #print( tmpStr )
+            #if len(self.url) > 0:
+            #    print(self.url[-1])
+            
             # Start BFS algorithm 
             # The initial start will utilize the root node url
 
@@ -121,13 +122,21 @@ class BFS:
 
         edges = [ {"source": s, "target": t} for s, t in zip(self.source, self.target) ]
 
+        # combine the two lists into a dictionary
+        nodes_edges = {}
+        nodes_edges["nodes"] = nodes
+        nodes_edges["edges"] = edges
 
-        mergedNodesEdges = {key: value for (key, value) in (nodes.items() + edges.items())}
-        JSON_NodesEdges = json.dumps(mergedNodesEdges);
+        #self.JSON_Nodes = json.dumps(nodes, sort_keys=True, indent=4)
+        #self.JSON_Edges = json.dumps(edges)
+
+        # convert to JSON
+        JSON_NodesEdges = json.dumps(nodes_edges, sort_keys=True, indent=4);
+
+        with open('data.json', 'w+') as outfile:
+            json.dump(nodes_edges, outfile, sort_keys=True, indent=4)
+
         print(JSON_NodesEdges)
-
-        # self.JSON_Nodes = json.dumps(nodes)
-        # self.JSON_Edges = json.dumps(edges)
 
         # debugging
         # print("\nNodes: \n")
@@ -146,6 +155,6 @@ class BFS:
         return self.JSON_Edges
 
 # Test Driver Program
-#bfs = BFS("https://en.wikipedia.org/wiki/SMALL", 2)
-#bfs = BFS(sys.argv[1], sys.argv[2]) # for console with arguments
+#bfs = BFS("https://en.wikipedia.org/wiki/SMALL", 1)
+# bfs = BFS(sys.argv[1], sys.argv[2]) # for console with arguments
 #bfs.start()
