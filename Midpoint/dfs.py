@@ -1,9 +1,98 @@
-from crawler import crawler
+#####################################################################
+# Class: Crawler
+# Author: Brent Freeman, Long Le
+# Class: CS 467 Capstone
+# Group: Gudja
+# Project: Graphical Web Crawler
+# Description:
+#
+#####################################################################
+
+#my initial crawler class file was messed up during an attempt to merge and changes got missed. a temporary fix is to have that class in the same file
 import sys
 import json
-from urllib.parse import urlparse
-import random
 
+import random
+import requests
+from datetime  import datetime
+sys.path.insert(0, 'lib') #use this on GCP
+from bs4 import BeautifulSoup
+from urllib.parse import urlparse
+
+class crawler():
+
+    def __init__(self):
+        self.url = ''
+        self.web_links = []
+        self.favicon = ''
+        self.page_data = ''
+        self.dictionary = {}
+        self.unique_links = []
+        self.soup = None
+        self.domain = ""
+        self.title = ""
+
+
+    def create_soup(self):
+        r = requests.get(self.url)
+        self.soup = BeautifulSoup(r.text, 'html.parser')
+
+
+    def check_url(self, url):
+        parse = urlparse(url)
+        page_host = urlparse(self.url).netloc
+        if parse.scheme == 'http' or parse.scheme == 'https':
+            if parse.netloc != page_host:
+                return True
+        return False
+
+    def create_unique_link_list2(self):
+        temp_list = []
+        for link in self.soup.find_all('a'):
+            if link is not None:
+                if self.check_url(link.get('href')) or self.check_url(link.get('href')):
+                #self.check_url(link.get('href'))
+
+                    temp_list.append(link.get('href'))
+
+        tset = set(temp_list)
+        self.unique_links = list(tset)
+        #print("these are the unique links ", self.unique_links)
+
+
+    def create_unique_link_list(self):
+        temp_list = []
+        for link in self.soup.find_all('a'):
+            if link is not None:
+                if self.check_url(link.get('href')):
+
+                    temp_list.append(link.get('href'))
+
+        tset = set(temp_list)
+        self.unique_links = list(tset)
+        #print("these are the unique links ", self.unique_links)
+
+    def get_domain(self):
+        temp = urlparse(self.url)
+        self.domain = temp.netloc
+
+
+    def get_favicon(self):
+        self.favicon = self.favicon = self.url + "/favicon.ico"
+
+    def get_title(self):
+        self.title = self.soup.title
+
+
+#####################################################################
+# Class: DFS
+# Author: Brent Freeman
+# Class: CS 467 Capstone
+# Group: Gudja
+# Project: Graphical Web Crawler
+# Description: Creates the depth first search using the crawler class
+#
+#####################################################################
 class dfs():
 
     def __init__(self):
@@ -63,6 +152,17 @@ class dfs():
     def write_data_structure_to_file(self, data, name):
         with open(name, 'w') as outfile:
             json.dump(data, name)
+
+
+#####################################################################
+# Class: main
+# Author: Brent Freeman
+# Class: CS 467 Capstone
+# Group: Gudja
+# Project: Graphical Web Crawler
+# Description: this section executes the dfs search and can either take
+# 2 arguments (website and depth) or will run a from a random selection to a depth of 5
+#####################################################################            
 # begin Main
 # this is what would normally be the main function, this should be moved to a separeate file that can later call either bfs or dfs
 
@@ -75,9 +175,9 @@ test_links = ["http://www.cnn.com", "http://www.oregonlive.com", "http://www.giz
 #print(len(sys.argv))
 if len(sys.argv) == 3:
     new_url = sys.argv[1]
-    depth = sys.argv[2]
-    print("url is ", new_url)
-    print("depth is ", depth)
+    depth = int(sys.argv[2])
+    #print("url is ", new_url)
+    #print("depth is ", depth)
 else:
     depth = 5
     new_url = random.choice(test_links)
