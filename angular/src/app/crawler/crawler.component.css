@@ -1,0 +1,28 @@
+h1 {
+  text-align: center;
+  padding-top: 30px;
+}
+
+svg {
+  background-color: #efefef;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.node {
+  stroke: #000;
+  stroke-width: 1.5px;
+}
+
+.link {
+  stroke: #999;
+  stroke-width: 1.5px;
+}
+
+.tooltip {
+  position: absolute;
+  background-color: transparent;
+  color: black;
+  width: 60px;
+}

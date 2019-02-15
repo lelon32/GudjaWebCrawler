@@ -1,0 +1,10 @@
+mat-form-field, textarea {
+  width: 100%;
+}
+h1, h3 {
+  text-align: center;
+}
+
+h1 {
+  font-size: 50px;
+}
