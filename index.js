@@ -1,7 +1,6 @@
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
-const fs = require('fs')
 const bodyParser = require('body-parser');
 
 const app = express();
@@ -30,7 +29,7 @@ app.post("/data", (req, res, next) => {
 
 	}
 
-	// Call DFS 
+	// Call DFS
 	else if (algorithm === "dfs") {
 
 	}
