@@ -300,6 +300,9 @@ MIT
 @angular/router
 MIT
 
+@angular/animations
+MIT
+
 @angular/cdk
 MIT
 The MIT License
@@ -325,17 +328,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 
-@angular/material/toolbar
-
-@angular/animations
-MIT
-
 @angular/material/card
 
 @angular/forms
 MIT
 
 @angular/material/form-field
+
+@angular/material/radio
 
 @angular/material/button
 
@@ -1424,6 +1424,8 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+
+@angular/material/toolbar
 
 zone.js
 MIT

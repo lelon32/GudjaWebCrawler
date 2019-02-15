@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/lelon32/GudjaWebCrawler#readme",
   "dependencies": {
+    "cors": "^2.8.5",
     "d3": "^5.9.0",
     "express": "^4.16.4"
   }
