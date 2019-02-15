@@ -8,6 +8,7 @@
 #
 #####################################################################
 
+import sys
 import requests
 import json
 from crawler import crawler
@@ -15,6 +16,8 @@ from crawler import crawler
 class BFS:
     def __init__(self, URL, userEnteredDepth):
         self.bot = crawler(URL)
+        #self.rootURL = URL
+        #self.depthNumber = int(userEnteredDepth)
         self.depthNumber = userEnteredDepth
         self.url = []
         self.domainName = []
@@ -26,6 +29,14 @@ class BFS:
         self.JSON_Nodes = {}
         self.JSON_Edges = {}
         self.depthBookmarks = 0
+
+        self.start() # immediately start the crawl
+
+#    def getRootURL(self):
+#        return self.rootURL
+#
+#    def getDepthNumber(self):
+#        return self.depthNumber
 
     def find_source_index(self, num):
         for item in self.allSourceTargetLinks:
@@ -110,18 +121,23 @@ class BFS:
 
         edges = [ {"source": s, "target": t} for s, t in zip(self.source, self.target) ]
 
-        self.JSON_Nodes = json.dumps(nodes)
-        self.JSON_Edges = json.dumps(edges)
+
+        mergedNodesEdges = {key: value for (key, value) in (nodes.items() + edges.items())}
+        JSON_NodesEdges = json.dumps(mergedNodesEdges);
+        print(JSON_NodesEdges)
+
+        # self.JSON_Nodes = json.dumps(nodes)
+        # self.JSON_Edges = json.dumps(edges)
 
         # debugging
         # print("\nNodes: \n")
         # print(nodes)
 
-        print("\nJSON Nodes: \n")
-        print(self.getNodes())
+        #print("\nJSON Nodes: \n")
+        #print(self.getNodes())
 
-        print("\nJSON Edges: \n")
-        print(self.getEdges())
+        #print("\nJSON Edges: \n")
+        #print(self.getEdges())
 
     def getNodes(self):
         return self.JSON_Nodes
@@ -130,5 +146,6 @@ class BFS:
         return self.JSON_Edges
 
 # Test Driver Program
-bfs = BFS("https://en.wikipedia.org/wiki/SMALL", 2)
-bfs.start()
+#bfs = BFS("https://en.wikipedia.org/wiki/SMALL", 2)
+#bfs = BFS(sys.argv[1], sys.argv[2]) # for console with arguments
+#bfs.start()
