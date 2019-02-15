@@ -11,8 +11,9 @@ import { PostsService } from '../posts.service';
   styleUrls: ['./post-create.component.css']
 })
 export class PostCreateComponent {
-  enteredContent = '';
-  enteredTitle = '';
+  enteredUrl = '';
+  enteredDepth = '';
+  enteredAlgorithm = '';
 
   constructor(public postsService: PostsService) {}
 
@@ -20,7 +21,7 @@ export class PostCreateComponent {
     if (form.invalid) {
       return;
     }
-    this.postsService.addPost(form.value.title, form.value.content);
+    this.postsService.addPost(form.value.url, form.value.depth, form.value.algorithm);
     form.resetForm();
   }
 }

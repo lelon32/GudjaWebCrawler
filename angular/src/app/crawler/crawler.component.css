@@ -1,6 +1,5 @@
 h1 {
   text-align: center;
-  padding-top: 30px;
 }
 
 svg {
@@ -11,12 +10,12 @@ svg {
 }
 
 .node {
-  stroke: #000;
+  stroke: #222;
   stroke-width: 1.5px;
 }
 
 .link {
-  stroke: #999;
+  stroke: #222;
   stroke-width: 1.5px;
 }
 
@@ -24,5 +23,10 @@ svg {
   position: absolute;
   background-color: transparent;
   color: black;
-  width: 60px;
+  width: 80px;
+}
+
+#crawlerContainer {
+  margin-top: 3rem;
+  margin-bottom: 5rem;
 }
