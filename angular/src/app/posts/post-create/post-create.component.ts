@@ -11,9 +11,6 @@ import { PostsService } from '../posts.service';
   styleUrls: ['./post-create.component.css']
 })
 export class PostCreateComponent {
-  enteredUrl = '';
-  enteredDepth = '';
-  enteredAlgorithm = '';
 
   constructor(public postsService: PostsService) {}
 
