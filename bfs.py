@@ -155,6 +155,6 @@ class BFS:
         return self.JSON_Edges
 
 # Test Driver Program
-#bfs = BFS("https://en.wikipedia.org/wiki/SMALL", 1)
+bfs = BFS("https://en.wikipedia.org/wiki/SMALL", 2)
 # bfs = BFS(sys.argv[1], sys.argv[2]) # for console with arguments
 #bfs.start()
