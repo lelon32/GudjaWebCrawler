@@ -175,7 +175,7 @@ class crawler():
     # I created this so we can hava static document to test on
     def write_website_to_file(self):
         r = requests.get(self.url)
-        f = open("giz.txt", "w+")
+        #f = open("giz.txt", "w+")
         for line in r.text:
             f.write(line)
         f.close()
@@ -191,7 +191,7 @@ class crawler():
 
     #method to open file and use its data for testing BS4
     def open_file_test(self):
-        test_file = open("giz.txt", 'r')
+        #test_file = open("giz.txt", 'r')
         soup = BeautifulSoup(test_file, "html.parser")
         count = 0
         for link in soup.find_all('a'):
