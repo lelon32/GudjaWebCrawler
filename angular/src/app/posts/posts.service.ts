@@ -12,8 +12,6 @@ export class PostsService {
   private posts: Post[] = [];
   private postsUpdated = new Subject<Post[]>();
 
-  // constructor(private http: HttpClient) { }
-
   constructor(public crawlerService: CrawlerService, private http: HttpClient) {  }
 
   getPosts() {

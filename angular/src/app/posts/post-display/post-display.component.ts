@@ -5,12 +5,12 @@ import { Post } from '../post.model';
 import { PostsService } from '../posts.service';
 
 @Component({
-  selector: 'app-post-list',
-  templateUrl: './post-list.component.html',
-  styleUrls: ['./post-list.component.css']
+  selector: 'app-post-display',
+  templateUrl: './post-display.component.html',
+  styleUrls: ['./post-display.component.css']
 })
 
-export class PostListComponent implements OnInit, OnDestroy {
+export class PostDisplayComponent implements OnInit, OnDestroy {
   posts: Post[] = [];
   private postsSub: Subscription;
 

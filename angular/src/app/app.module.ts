@@ -10,14 +10,15 @@ import {
   MatButtonModule,
   MatToolbarModule,
   MatExpansionModule,
-  MatRadioModule
+  MatRadioModule,
+  MatListModule
 } from '@angular/material';
 
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
 import { PostCreateComponent } from './posts/post-create/post-create.component';
-import { PostListComponent } from './posts/post-list/post-list.component';
+import { PostDisplayComponent } from './posts/post-display/post-display.component';
 import { CrawlerComponent } from './crawler/crawler.component';
 import { HomeComponent } from './home/home.component';
 
@@ -26,7 +27,7 @@ import { HomeComponent } from './home/home.component';
     AppComponent,
     HeaderComponent,
     PostCreateComponent,
-    PostListComponent,
+    PostDisplayComponent,
     CrawlerComponent,
     HomeComponent
   ],
@@ -41,7 +42,8 @@ import { HomeComponent } from './home/home.component';
     MatButtonModule,
     MatToolbarModule,
     MatExpansionModule,
-    MatRadioModule
+    MatRadioModule,
+    MatListModule
   ],
   providers: [],
   bootstrap: [AppComponent]

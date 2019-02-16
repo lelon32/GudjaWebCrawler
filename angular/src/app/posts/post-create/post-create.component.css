@@ -1,17 +1,10 @@
-.form_row {
-  display: flex;
-  flex-direction: row;
-}
-
-.form_row > mat-form-field, mat-radio-group {
+h1, h2, h3 {
+  text-align: center;
   padding: 20px;
 }
 
-.width_25 {
-  width: 25%;
-}
-.form_submit {
-  text-align: right;
+h1 {
+  font-size: 40px;
 }
 
 mat-form-field, textarea {
@@ -31,11 +24,18 @@ mat-radio-button {
   padding: 10px;
 }
 
-h1, h2, h3 {
-  text-align: center;
+.form_row {
+  display: flex;
+  flex-direction: row;
+}
+
+.form_row > mat-form-field, mat-radio-group {
   padding: 20px;
 }
 
-h1 {
-  font-size: 40px;
+.width_25 {
+  width: 25%;
+}
+.form_submit {
+  text-align: right;
 }

@@ -90,11 +90,11 @@ function renderD3data(dataset) {
 
   // Simulation
   var simulation = d3.forceSimulation()
-      .force("charge", chargeForce)
-      .force("link", linkForce)
       .force("x", d3.forceX(width / 2))
       .force("y", d3.forceY(height / 2))
-      .on("tick", ticked);
+      .force("link", linkForce)
+      .force("charge", chargeForce)
+      .on("tick", onTick);
 
   simulation.nodes(dataset.nodes);
   simulation.force("link").links(dataset.edges);
@@ -108,12 +108,12 @@ function renderD3data(dataset) {
   nodeElems = nodeElems
     .data(dataset.nodes)
     .enter().append("circle")
+      .style("fill", (d) => randColor())
       .attr("class", "node")
-      .attr("r", 7)
-      .style("fill", (d) => randColor());
+      .attr("r", 7);
 }
 
-function ticked() {
+function onTick() {
   var svg = d3.select("svg"),
     linkElems = svg.selectAll(".link"),
     nodeElems = svg.selectAll(".node");
@@ -125,9 +125,9 @@ function ticked() {
 
   nodeElems.attr("cx", (d) => d.x)
       .attr("cy", (d) => d.y)
+      .on('mousemove', mousemoveHandler)
       .on('mouseover', mouseoverHandler)
-      .on('mouseout', mouseoutHandler)
-      .on('mousemove', mousemoveHandler);
+      .on('mouseout', mouseoutHandler);
 }
 
 function mouseoverHandler(d) {
