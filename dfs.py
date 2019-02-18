@@ -1,14 +1,3 @@
-#####################################################################
-# Class: Crawler
-# Author: Brent Freeman, Long Le
-# Class: CS 467 Capstone
-# Group: Gudja
-# Project: Graphical Web Crawler
-# Description:
-#
-#####################################################################
-
-#my initial crawler class file was messed up during an attempt to merge and changes got missed. a temporary fix is to have that class in the same file
 import sys
 import json
 
@@ -18,81 +7,9 @@ from datetime  import datetime
 sys.path.insert(0, 'lib') #use this on GCP
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
-
-class crawler():
-
-    def __init__(self):
-        self.url = ''
-        self.web_links = []
-        self.favicon = ''
-        self.page_data = ''
-        self.dictionary = {}
-        self.unique_links = []
-        self.soup = None
-        self.domain = ""
-        self.title = ""
+from crawler import crawler
 
 
-    def create_soup(self):
-        r = requests.get(self.url)
-        self.soup = BeautifulSoup(r.text, 'html.parser')
-
-
-    def check_url(self, url):
-        parse = urlparse(url)
-        page_host = urlparse(self.url).netloc
-        if parse.scheme == 'http' or parse.scheme == 'https':
-            if parse.netloc != page_host:
-                return True
-        return False
-
-    def create_unique_link_list2(self):
-        temp_list = []
-        for link in self.soup.find_all('a'):
-            if link is not None:
-                if self.check_url(link.get('href')) or self.check_url(link.get('href')):
-                #self.check_url(link.get('href'))
-
-                    temp_list.append(link.get('href'))
-
-        tset = set(temp_list)
-        self.unique_links = list(tset)
-        #print("these are the unique links ", self.unique_links)
-
-
-    def create_unique_link_list(self):
-        temp_list = []
-        for link in self.soup.find_all('a'):
-            if link is not None:
-                if self.check_url(link.get('href')):
-
-                    temp_list.append(link.get('href'))
-
-        tset = set(temp_list)
-        self.unique_links = list(tset)
-        #print("these are the unique links ", self.unique_links)
-
-    def get_domain(self):
-        temp = urlparse(self.url)
-        self.domain = temp.netloc
-
-
-    def get_favicon(self):
-        self.favicon = self.favicon = self.url + "/favicon.ico"
-
-    def get_title(self):
-        self.title = self.soup.title
-
-
-#####################################################################
-# Class: DFS
-# Author: Brent Freeman
-# Class: CS 467 Capstone
-# Group: Gudja
-# Project: Graphical Web Crawler
-# Description: Creates the depth first search using the crawler class
-#
-#####################################################################
 class dfs():
 
     def __init__(self):
@@ -106,10 +23,12 @@ class dfs():
         source_edge = len(self.nodes)
 
     # instantiate the crawler class
-        dfs_crawl = crawler()
+        dfs_crawl = crawler(url)
 
     # provide the first url
+#dont need to do this as it was passed when instantiated
         dfs_crawl.url = url
+
 
     # get the domain
         dfs_crawl.get_domain()
@@ -118,13 +37,16 @@ class dfs():
         dfs_crawl.get_favicon()
 
     #visit site and create soup
-        dfs_crawl.create_soup()
+        dfs_crawl.create_soup(dfs_crawl.url)
+
 
     #get the title
-        dfs_crawl.get_title()
+        dfs_crawl.get_title2()
+
 
     # get unique list of links
-        dfs_crawl.create_unique_link_list()
+        dfs_crawl.create_unique_link_list2()
+
 
     # get the next link
         if len(dfs_crawl.unique_links) != 0:
@@ -202,19 +124,4 @@ export = {"nodes": run_dfs.nodes, "edges": run_dfs.edges }
 with open('data.json', 'w+') as outfile:
     json.dump(export, outfile)
 
-# Resources I used
-# https://stackoverflow.com/questions/12309269/how-do-i-write-json-data-to-a-file
-# https://www.crummy.com/software/BeautifulSoup/bs4/doc/
-# http://blog.adnansiddiqi.me/tag/scraping/
-# https://www.sohamkamani.com/blog/2015/08/21/python-nodejs-comm/
-# https://stackoverflow.com/questions/23450534/how-to-call-a-python-function-from-node-js
-# https://stackoverflow.com/questions/48136501/run-python-script-from-index-js-cloud-function
-# https://stackoverflow.com/questions/45092342/using-google-cloud-function-to-spawn-a-python-script
-# https://www.scrapehero.com/how-to-prevent-getting-blacklisted-while-scraping/
-# https://stackoverflow.com/questions/43052290/representing-a-graph-in-json
-# https://www.reddit.com/r/learnpython/comments/1br6u6/how_do_i_pass_arguments_to_a_py_script_in_pycharm/
-# https://stackoverflow.com/questions/46941312/python-create-dictionary-from-lines-of-txt-file
-# https://www.geeksforgeeks.org/working-with-json-data-in-python/
-# https://www.jetbrains.com/help/pycharm/commit-and-push-changes.html#push
-# https://www.peterbe.com/plog/uniqifiers-benchmark
-# https://cloud.google.com/appengine/docs/standard/python/tools/using-libraries-python-27
+

@@ -2,6 +2,7 @@
 node_modules/
 *.pyc
 *.swp
+*data.json
 =======
 angular/node_modules/
 node_modules/

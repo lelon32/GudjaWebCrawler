@@ -28,10 +28,28 @@ class crawler():
         self.domain = ""
         self.title = ""
 
+    def check_url(self, url):
+        parse = urlparse(url)
+        page_host = urlparse(self.url).netloc
+        if parse.scheme == 'http' or parse.scheme == 'https':
+            if parse.netloc != page_host:
+                return True
+        return False
 
     def create_soup(self, url):
         r = requests.get(url)
         self.soup = BeautifulSoup(r.text, 'html.parser')
+
+    def create_unique_link_list2(self):
+        temp_list = []
+        for link in self.soup.find_all('a'):
+            if link is not None:
+                if self.check_url(link.get('href')):
+                    temp_list.append(link.get('href'))
+
+        tset = set(temp_list)
+        self.unique_links = list(tset)
+
 
     def create_unique_link_list(self):
         temp_list = []
@@ -48,7 +66,7 @@ class crawler():
     def get_favicon(self):
         self.favicon = self.favicon = self.url + "/favicon.ico"
 
-    def get_title(self):
+    def get_title2(self):
         self.title = self.soup.title
 
     # Maybe need to use this later
@@ -121,9 +139,6 @@ class crawler():
         baseURL = urlparse(URL)
         return baseURL.scheme + "://" + baseURL.netloc
 
-    def get_title(self, URL):
-        pass
-
     def get_all_links_and_put_them_in_a_dictionary(self):
         r = requests.get(self.url)
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -155,17 +170,6 @@ class crawler():
         self.favicon = self.url + "/favicon.ico"
         self.dictionary["favicon"] = self.favicon
 
-    # method to check that urls have correct syntax
-    def check_urls(self):
-        pass
-
-    # method to add links to data structure
-    def build_tree(self):
-        pass
-
-    # method to return data to server
-    def send_tree(self):
-        pass
 
     def create_unique_list(self):
         self.unique_links = set(self.web_links)
@@ -175,7 +179,7 @@ class crawler():
     # I created this so we can hava static document to test on
     def write_website_to_file(self):
         r = requests.get(self.url)
-        #f = open("giz.txt", "w+")
+        f = open("giz.txt", "w+")
         for line in r.text:
             f.write(line)
         f.close()
@@ -191,7 +195,7 @@ class crawler():
 
     #method to open file and use its data for testing BS4
     def open_file_test(self):
-        #test_file = open("giz.txt", 'r')
+        test_file = open("giz.txt", 'r')
         soup = BeautifulSoup(test_file, "html.parser")
         count = 0
         for link in soup.find_all('a'):
