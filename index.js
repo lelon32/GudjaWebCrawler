@@ -96,6 +96,7 @@ app.post("/data", (req, res, next) => {
 		callBFS(url, depth).then(result => {
 			console.log("BSF success: ", result);
 			if (result) {
+        crawl_web(url, depth, true);        
 				res.status(201).sendFile(path.join(__dirname, 'data.json'));
 			}
 			else { res.status(500).send(null); }
@@ -107,6 +108,7 @@ app.post("/data", (req, res, next) => {
 		callDFS(url, depth).then(result => {
 			console.log("DFS success: ", result);
 			if (result) {
+        crawl_web(url, depth, false);        
 				res.status(201).sendFile(path.join(__dirname, 'data.json'));
 			}
 			else { res.status(500).send(null); }
@@ -135,3 +137,31 @@ app.listen(process.env.PORT || 3000, function () {
 });
 
 module.exports = app;
+
+function crawl_web(url, depthNum, BFS_algosIsChosen) {
+
+    var chosenAlgos = "";
+
+    if(BFS_algosIsChosen == true) {
+        chosenAlgos = 'bfs.py'; 
+    } else {
+        chosenAlgos = 'dfs.py';
+    }
+
+    var spawn = require('child_process').spawn,
+        py    = spawn('python3', [chosenAlgos]),
+        data = [url, depthNum]
+        dataString = '';
+
+    py.stdout.on('data', function(data){
+        dataString += data.toString();
+    });
+
+    // Prints the initial confirmation message from stdout.
+    py.stdout.on('end', function(){
+        console.log('result=',dataString)
+    ;});
+
+    py.stdin.write(JSON.stringify(data));
+    py.stdin.end();
+}

@@ -11,14 +11,29 @@
 import sys
 import requests
 import json
+import numpy as np
 from crawler import crawler
 
 class BFS:
-    def __init__(self, URL, userEnteredDepth):
-        self.bot = crawler(URL)
-        self.rootURL = URL
-        #self.depthNumber = int(userEnteredDepth)
-        self.depthNumber = userEnteredDepth
+    def read_in(self):
+        lines = sys.stdin.readlines()
+        return json.loads(lines[0])
+
+    def __init__(self):
+        lines = self.read_in()
+
+        np_lines = np.array(lines)
+
+        self.rootURL = np_lines[0]
+        self.depthNumber = int(np_lines[1])
+
+        # debugging
+        #print("self.rootURL: " + np_lines[0])
+        #print("self.depthNumber : " + np_lines[0])
+        #print("after readin!")
+
+        self.bot = crawler(self.rootURL)
+
         self.url = []
         self.domainName = []
         self.title = []
@@ -32,25 +47,20 @@ class BFS:
 
         self.start() # immediately start the crawl
 
-#    def getRootURL(self):
-#        return self.rootURL
-#
-#    def getDepthNumber(self):
-#        return self.depthNumber
-
     def find_source_index(self, num):
         for item in self.allSourceTargetLinks:
             if item[1] == num:
                 return item[0]
 
     def start(self):
+        print("**BFS CRAWLING INITIATED**\nUser Entered URL: " + self.rootURL + "\nUser Entered Depth Number: " + str(self.depthNumber)) 
+
         depthCount = 0
         linkIndex = 0
-        print("BFS CRAWLING INITIATED\nURL: " + self.rootURL + "\nDepth Number: " + str(self.depthNumber)) 
 
         # Implemented as a do while loop
         while True:
-            # debuggin
+            # debugging
             #tmpStr = "\nDepth Number:  " + str(depthCount+1)
             #print( tmpStr )
             #if len(self.url) > 0:
@@ -127,34 +137,17 @@ class BFS:
         nodes_edges["nodes"] = nodes
         nodes_edges["edges"] = edges
 
-        #self.JSON_Nodes = json.dumps(nodes, sort_keys=True, indent=4)
-        #self.JSON_Edges = json.dumps(edges)
-
         # convert to JSON
         JSON_NodesEdges = json.dumps(nodes_edges, sort_keys=True, indent=4);
 
         with open('data.json', 'w+') as outfile:
             json.dump(nodes_edges, outfile, sort_keys=True, indent=4)
 
-        print(JSON_NodesEdges)
+        print("BFS has created data.json file.")
+        #print(JSON_NodesEdges) # debugging
 
-        # debugging
-        # print("\nNodes: \n")
-        # print(nodes)
-
-        #print("\nJSON Nodes: \n")
-        #print(self.getNodes())
-
-        #print("\nJSON Edges: \n")
-        #print(self.getEdges())
-
-    def getNodes(self):
-        return self.JSON_Nodes
-
-    def getEdges(self):
-        return self.JSON_Edges
+bfs = BFS() # instantiate class
 
 # Test Driver Program
-bfs = BFS("https://en.wikipedia.org/wiki/SMALL", 2)
+#bfs = BFS("https://en.wikipedia.org/wiki/SMALL", 1)
 # bfs = BFS(sys.argv[1], sys.argv[2]) # for console with arguments
-#bfs.start()

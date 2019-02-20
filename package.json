@@ -1,7 +1,7 @@
 {
   "name": "gudjawebcrawler",
   "version": "1.0.0",
-  "description": "",
+  "description": "This project allows a user to enter a starting point for the program and visually see a web crawling program in action. The simulation will give the end user basic insight on how a web crawler, such as a Googlebot, might visit pages on the Surface Web in a real life scenario. The user will ultimately view a high level map of all the pages that were visited by the web crawler, in an organized, coherent way.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -27,5 +27,8 @@
     "d3": "^5.9.0",
     "express": "^4.16.4",
     "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "module-js": "^7.0.1"
   }
 }
