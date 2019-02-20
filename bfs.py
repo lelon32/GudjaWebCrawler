@@ -144,6 +144,7 @@ class BFS:
             json.dump(nodes_edges, outfile, sort_keys=True, indent=4)
 
         print("BFS has created data.json file.")
+
         #print(JSON_NodesEdges) # debugging
 
 bfs = BFS() # instantiate class

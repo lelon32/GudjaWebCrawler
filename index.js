@@ -17,6 +17,7 @@ app.use(bodyParser.json());
 
 /*********************************************************************
 	Model functions
+  https://www.sohamkamani.com/blog/2015/08/21/python-nodejs-comm/
 *********************************************************************/
 // Call BFS Python script
 async function callBFS(url, depth) {
@@ -24,19 +25,28 @@ async function callBFS(url, depth) {
 
 		var crawlSuccess = false;
 
+    var spawn = require('child_process').spawn,
+        py    = spawn('python3', ['bfs.py']),
+        data = [url, depth]
+        dataString = '';
 
-		// Code to call BFS python crawler here
-		// Perhaps similar to this adapted from:
-		// https://www.sohamkamani.com/blog/2015/08/21/python-nodejs-comm/
-		//
-		// var spawn = require('child_process').spawn;
-		// var py = spawn('python', ['bfs.py']);
-		// py.stdout.on('end', function(){
-		//   crawlSuccess = true;
-		// });
+    py.stdout.on('data', function(data){
+        dataString += data.toString();
+    });
 
+    // Prints the confirmation message from stdout.
+    py.stdout.on('end', function(){
+      // crawlSuccess = true; 		// temporary
+        console.log('result=',dataString)
+    ;});
 
-		crawlSuccess = true; 		// temporary
+    //here is where the data is written to std in to actually call the python function
+    console.log(data);
+
+    py.stdin.write(JSON.stringify(data));
+    py.stdin.end();
+
+    crawlSuccess = true; 		// temporary
 
 		if (crawlSuccess) { resolve(crawlSuccess); }
 		else { reject(crawlSuccess); }
@@ -53,17 +63,26 @@ async function callDFS(url, depth) {
 
 		var crawlSuccess = false;
 
+    var spawn = require('child_process').spawn,
+        py    = spawn('python3', ['dfs.py']),
+        data = [url, depth]
+        dataString = '';
 
-		// Code to call DFS python crawler here
-		// Perhaps similar to this adapted from:
-		// https://www.sohamkamani.com/blog/2015/08/21/python-nodejs-comm/
-		//
-		// var spawn = require('child_process').spawn;
-		// var py = spawn('python', ['dfs.py']);
-		// py.stdout.on('end', function(){
-		//   crawlSuccess = true;
-		// });
+    py.stdout.on('data', function(data){
+        dataString += data.toString();
+    });
 
+    // Prints the confirmation message from stdout.
+    py.stdout.on('end', function(){
+      // crawlSuccess = true; 		// temporary
+        console.log('result=',dataString)
+    ;});
+
+    //here is where the data is written to std in to actually call the python function
+    console.log(data);
+
+    py.stdin.write(JSON.stringify(data));
+    py.stdin.end();
 
 		crawlSuccess = true; 		// temporary
 
@@ -96,7 +115,6 @@ app.post("/data", (req, res, next) => {
 		callBFS(url, depth).then(result => {
 			console.log("BSF success: ", result);
 			if (result) {
-        crawl_web(url, depth, true);        
 				res.status(201).sendFile(path.join(__dirname, 'data.json'));
 			}
 			else { res.status(500).send(null); }
@@ -108,7 +126,6 @@ app.post("/data", (req, res, next) => {
 		callDFS(url, depth).then(result => {
 			console.log("DFS success: ", result);
 			if (result) {
-        crawl_web(url, depth, false);        
 				res.status(201).sendFile(path.join(__dirname, 'data.json'));
 			}
 			else { res.status(500).send(null); }
@@ -137,31 +154,3 @@ app.listen(process.env.PORT || 3000, function () {
 });
 
 module.exports = app;
-
-function crawl_web(url, depthNum, BFS_algosIsChosen) {
-
-    var chosenAlgos = "";
-
-    if(BFS_algosIsChosen == true) {
-        chosenAlgos = 'bfs.py'; 
-    } else {
-        chosenAlgos = 'dfs.py';
-    }
-
-    var spawn = require('child_process').spawn,
-        py    = spawn('python3', [chosenAlgos]),
-        data = [url, depthNum]
-        dataString = '';
-
-    py.stdout.on('data', function(data){
-        dataString += data.toString();
-    });
-
-    // Prints the initial confirmation message from stdout.
-    py.stdout.on('end', function(){
-        console.log('result=',dataString)
-    ;});
-
-    py.stdin.write(JSON.stringify(data));
-    py.stdin.end();
-}
