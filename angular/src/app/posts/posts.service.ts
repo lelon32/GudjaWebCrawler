@@ -37,8 +37,7 @@ export class PostsService {
     this.http.post<string>(url, post, httpOptions)
       .subscribe((response) => {
         console.log("POST response: ", response);
+        this.crawlerService.updateCrawlerData(response);
       });
-
-    this.crawlerService.updateCrawlerData();
   }
 }

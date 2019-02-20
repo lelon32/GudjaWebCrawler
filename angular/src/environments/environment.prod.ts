@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  baseUrl: 'https://crawltest.appspot.com'  
+  baseUrl: 'http://www.capstone-web-crawler.appspot.com'
 };

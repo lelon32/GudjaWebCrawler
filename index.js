@@ -5,19 +5,86 @@ const bodyParser = require('body-parser');
 
 const app = express();
 
+/*********************************************************************
+	Middleware
+*********************************************************************/
 // Allow GET request to /data from external sites
-app.use(cors({credentials: true, origin: true}));
+// app.use(cors({credentials: true, origin: true}));
 
 // Use body parser to get POST request parameters
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+/*********************************************************************
+	Model functions
+*********************************************************************/
+// Call BFS Python script
+async function callBFS(url, depth) {
+	let promise = new Promise((resolve, reject) => {
+
+		var crawlSuccess = false;
+
+
+		// Code to call BFS python crawler here
+		// Perhaps similar to this adapted from:
+		// https://www.sohamkamani.com/blog/2015/08/21/python-nodejs-comm/
+		//
+		// var spawn = require('child_process').spawn;
+		// var py = spawn('python', ['bfs.py']);
+		// py.stdout.on('end', function(){
+		//   crawlSuccess = true;
+		// });
+
+
+		crawlSuccess = true; 		// temporary
+
+		if (crawlSuccess) { resolve(crawlSuccess); }
+		else { reject(crawlSuccess); }
+
+  });
+
+	let message = await promise;
+	return message;
+}
+
+// Call DFS Python script
+async function callDFS(url, depth) {
+	let promise = new Promise((resolve, reject) => {
+
+		var crawlSuccess = false;
+
+
+		// Code to call DFS python crawler here
+		// Perhaps similar to this adapted from:
+		// https://www.sohamkamani.com/blog/2015/08/21/python-nodejs-comm/
+		//
+		// var spawn = require('child_process').spawn;
+		// var py = spawn('python', ['dfs.py']);
+		// py.stdout.on('end', function(){
+		//   crawlSuccess = true;
+		// });
+
+
+		crawlSuccess = true; 		// temporary
+
+		if (crawlSuccess) { resolve(crawlSuccess); }
+		else { reject(crawlSuccess); }
+
+  });
+
+	let message = await promise;
+	return message;
+}
+
+/*********************************************************************
+	Controller
+*********************************************************************/
 // GET request sends data.json
 app.get("/data", (req, res, next) => {
 	res.sendFile(path.join(__dirname, 'data.json'));
 })
 
-// POST request for data calls python script
+// POST request for data calls python script, response back data.json
 app.post("/data", (req, res, next) => {
 	var url = req.body.url,
 		depth = req.body.depth,
@@ -26,19 +93,30 @@ app.post("/data", (req, res, next) => {
 
 	// Call BFS
 	if (algorithm === "bfs") {
-
+		callBFS(url, depth).then(result => {
+			console.log("BSF success: ", result);
+			if (result) {
+				res.status(201).sendFile(path.join(__dirname, 'data.json'));
+			}
+			else { res.status(500).send(null); }
+		})
 	}
 
 	// Call DFS
 	else if (algorithm === "dfs") {
-
+		callDFS(url, depth).then(result => {
+			console.log("DFS success: ", result);
+			if (result) {
+				res.status(201).sendFile(path.join(__dirname, 'data.json'));
+			}
+			else { res.status(500).send(null); }
+		})
 	}
 
 	else {
 		console.log("error");
-		res.status(400).end();
+		res.status(400).end('Error in POST /data');
 	}
-	res.status(201).send();
 })
 
 app.use("/", express.static(path.join(__dirname, "front_end")));

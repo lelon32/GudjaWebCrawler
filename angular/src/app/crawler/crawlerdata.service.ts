@@ -16,13 +16,15 @@ export class CrawlerService {
     return this.crawlerData;
   }
 
-  updateCrawlerData() {
+  updateCrawlerData(data_from_post) {
     var url = environment.baseUrl + '/data';
-    this.http.get<CrawlerData>(url)
-      .subscribe((data) => {
-        this.crawlerData = data;
-        this.crawlerDataUpdated.next(this.crawlerData);
-      });
+    this.crawlerData = data_from_post;
+    this.crawlerDataUpdated.next(this.crawlerData);
+    // this.http.get<CrawlerData>(url)
+    //   .subscribe((data) => {
+    //     this.crawlerData = data;
+    //     this.crawlerDataUpdated.next(this.crawlerData);
+    //   });
   }
 
   getCrawlerUpdateListener() {
