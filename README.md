@@ -7,7 +7,7 @@ high level map of all the pages that were visited by the web crawler, in an orga
 
 
 ## Getting Started
-This program was developed using Angular on the front end, Node on the back end and Python for crawling the web. This application has been optimisedd for use on the Google Cloud Platform. Alternatively, anny application that can read from a data.json file can simply use the Python code to crawl the web.
+This program was developed using Angular on the front end, Node.js on the back end and Python for crawling the web. This application has been optimized for use on the Google Cloud Platform. Alternatively, any application that can read from a data.json file can simply use the Python code to crawl the web.
 
 ### Requirements
 - [Angular.js](https://angular.io/)
@@ -41,7 +41,6 @@ search, you will need to install the Beautiful Soup library and the lxml library
 $pip install beautifulsoup
 $pip install python3-lxml
 ```
-_Note: You may have to install lxml with the command:_ ```sudo apt-get install python3-lxml``` _(on linux)_
 
 **Testing Breadth First Search**
 
@@ -49,7 +48,7 @@ The front end website has not been fully integrated with Python spider bot code.
 bfs.py will output the file data.json which represents the nodes and edges in the URL visited graph.
 Use the following command on terminal to run the bfs.py code and generate the data.json file.
 ```shell
-$ python3 bfs.py
+$ python3 bfs.py [Full URL] [Depth of Search]
 ```
 **Testing Depth First Search**
 
@@ -100,3 +99,7 @@ attempt to crawl them to a depth of five.
 <a href="https://github.com/freeman-bw">
   <img src="https://avatars2.githubusercontent.com/u/29698652?s=96&v=4" alt="Brent Freeman" width="50" height="50">
  Brent Freeman </a>
+<br/>
+<a href="https://github.com/lelon32">
+  <img src="https://avatars1.githubusercontent.com/u/26614507?v=4" alt="Long Le" width="50" height="50">
+ Long Le </a>
