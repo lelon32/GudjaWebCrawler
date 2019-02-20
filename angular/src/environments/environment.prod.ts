@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  baseUrl: 'https://angelic-coder-229401.appspot.com'
+  baseUrl: 'http://localhost:3000'
 };
