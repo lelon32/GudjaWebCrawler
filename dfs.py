@@ -20,7 +20,7 @@ class dfs():
 
 #This is the primary function that runs the depth first search
     def run_crawl(self, url):
-        source_edge = len(self.nodes)
+
 
     # instantiate the crawler class
         dfs_crawl = crawler(url)
@@ -58,8 +58,12 @@ class dfs():
             nodes_title = {"title": dfs_crawl.title}
             nodes_favicon = {"favicon": dfs_crawl.favicon}
 
+            source_edge = len(self.nodes)
+
             node_dict = {"url": dfs_crawl.url, "domainName": dfs_crawl.domain, "title": dfs_crawl.title.text, "favicon": dfs_crawl.favicon}
             self.nodes.append(node_dict)
+
+
 
             target_edge = len(self.nodes)
 
@@ -92,14 +96,13 @@ class dfs():
 run_dfs = dfs()
 
 #here are some test links that i use during testing
-test_links = ["http://www.cnn.com", "http://www.oregonlive.com", "http://www.gizmodo.com", "http://www.stackexchange.com", "http://www.engadget.com", "http://xkcd.com", "http://www.wired.com"]
+test_links = ["https://www.cnn.com", "https://www.oregonlive.com", "https://www.gizmodo.com", "https://www.stackexchange.com", "https://www.engadget.com", "https://xkcd.com", "https://www.wired.com"]
 
 #print(len(sys.argv))
 if len(sys.argv) == 3:
     new_url = sys.argv[1]
     depth = int(sys.argv[2])
-    #print("url is ", new_url)
-    #print("depth is ", depth)
+
 else:
     depth = 5
     new_url = random.choice(test_links)
@@ -113,7 +116,7 @@ for i in range(0, depth):
     run_dfs.run_crawl(run_dfs.next_link)
 
 #build the final object for converting to stringified json
-export = {"nodes": run_dfs.nodes, "edges": run_dfs.edges }
+export = {"nodes": run_dfs.nodes, "edges": run_dfs.edges[0:-1] }
 
 #create json
 #export_json = json.dumps(export)
