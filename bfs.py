@@ -4,7 +4,7 @@
 # Class: CS 467 Capstone
 # Group: Gudja
 # Project: Graphical Web Crawler
-# Description: 
+# Description:
 #
 #####################################################################
 
@@ -28,7 +28,7 @@ class BFS:
             self.rootURL = np_lines[0]
             self.depthNumber = int(np_lines[1])
         else: # run program with parameters
-            self.rootURL = argv[0] 
+            self.rootURL = argv[0]
             self.depthNumber = int(argv[1])
 
         # debugging
@@ -57,7 +57,7 @@ class BFS:
                 return item[0]
 
     def start(self):
-        print("**BFS CRAWLING INITIATED**\nUser Entered URL: " + self.rootURL + "\nUser Entered Depth Number: " + str(self.depthNumber)) 
+        print("**BFS CRAWLING INITIATED**\nUser Entered URL: " + self.rootURL + "\nUser Entered Depth Number: " + str(self.depthNumber))
 
         depthCount = 0
         linkIndex = 0
@@ -69,15 +69,15 @@ class BFS:
             #print( tmpStr )
             #if len(self.url) > 0:
             #    print(self.url[-1])
-            
-            # Start BFS algorithm 
+
+            # Start BFS algorithm
             # The initial start will utilize the root node url
 
-            if linkIndex == 0: 
+            if linkIndex == 0:
                 # Step 1a: grab all links from root url
                 self.bot.get_all_links()
 
-                # Step 2a: initiate visit the root url 
+                # Step 2a: initiate visit the root url
                 self.url.append(self.bot.web_links[linkIndex])
 
                 # add a bookmark to know when to increase the depth count
@@ -85,8 +85,8 @@ class BFS:
             else:
                 # Step 1b: move to next indexed url
                 self.url.append(self.bot.web_links[linkIndex])
-                
-                # Step 2b: grab links from the current url 
+
+                # Step 2b: grab links from the current url
                 self.bot.get_all_links(self.url[-1])
 
             # Step 3: scrape information
@@ -122,17 +122,17 @@ class BFS:
             #print(self.title)
             #print("\nDomain Names: ")
             #print(self.domainName)
-            #print("\nFavicons: ") 
+            #print("\nFavicons: ")
             #print(self.favicon)
-            
+
             # break if user entered depth number is reached or the link index has reached the end of the array
             if depthCount >= self.depthNumber or linkIndex >= len(self.bot.web_links):
                 break
 
-        # https://stackoverflow.com/questions/42865013/python-create-array-of-json-objects-from-for-loops    
-        nodes = [ {"url": u, "domainName": d, "title": t, "favicon": f} 
-                        for u, d, t, f 
-                        in zip(self.url, self.domainName, self.title, self.favicon) ] 
+        # https://stackoverflow.com/questions/42865013/python-create-array-of-json-objects-from-for-loops
+        nodes = [ {"url": u, "domainName": d, "title": t, "favicon": f}
+                        for u, d, t, f
+                        in zip(self.url, self.domainName, self.title, self.favicon) ]
 
         edges = [ {"source": s, "target": t} for s, t in zip(self.source, self.target) ]
 
@@ -144,7 +144,7 @@ class BFS:
         # convert to JSON
         JSON_NodesEdges = json.dumps(nodes_edges, sort_keys=True, indent=4);
 
-        with open('data.json', 'w+') as outfile:
+        with open('data.json', 'w') as outfile:
             json.dump(nodes_edges, outfile, sort_keys=True, indent=4)
 
         print("BFS has created data.json file.")
@@ -153,7 +153,7 @@ class BFS:
 
 # Test Driver Program
 #bfs = BFS("https://en.wikipedia.org/wiki/SMALL", 1)
-if len(sys.argv) < 3: 
-    bfs = BFS() # call BFS for use with front-end site 
+if len(sys.argv) < 3:
+    bfs = BFS() # call BFS for use with front-end site
 else:
     bfs = BFS(sys.argv[1], sys.argv[2]) # use with console arguments

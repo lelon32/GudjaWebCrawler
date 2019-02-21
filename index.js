@@ -27,7 +27,7 @@ async function callBFS(url, depth) {
 
     var spawn = require('child_process').spawn,
         py    = spawn('python3', ['bfs.py']),
-        data = [url, depth]
+        data = [url, depth],
         dataString = '';
 
     py.stdout.on('data', function(data){
@@ -37,7 +37,8 @@ async function callBFS(url, depth) {
     // Prints the confirmation message from stdout.
     py.stdout.on('end', function(){
       // crawlSuccess = true; 		// temporary
-        console.log('result=',dataString)
+        console.log('result=',dataString);
+				resolve(true);
     ;});
 
     //here is where the data is written to std in to actually call the python function
@@ -45,11 +46,6 @@ async function callBFS(url, depth) {
 
     py.stdin.write(JSON.stringify(data));
     py.stdin.end();
-
-    crawlSuccess = true; 		// temporary
-
-		if (crawlSuccess) { resolve(crawlSuccess); }
-		else { reject(crawlSuccess); }
 
   });
 
@@ -65,7 +61,7 @@ async function callDFS(url, depth) {
 
     var spawn = require('child_process').spawn,
         py    = spawn('python3', ['dfs.py']),
-        data = [url, depth]
+        data = [url, depth],
         dataString = '';
 
     py.stdout.on('data', function(data){
@@ -74,20 +70,15 @@ async function callDFS(url, depth) {
 
     // Prints the confirmation message from stdout.
     py.stdout.on('end', function(){
-      // crawlSuccess = true; 		// temporary
-        console.log('result=',dataString)
+        console.log('result=',dataString);
+				resolve(true);
     ;});
 
     //here is where the data is written to std in to actually call the python function
-    console.log(data);
+    console.log('data: ', data);
 
     py.stdin.write(JSON.stringify(data));
     py.stdin.end();
-
-		crawlSuccess = true; 		// temporary
-
-		if (crawlSuccess) { resolve(crawlSuccess); }
-		else { reject(crawlSuccess); }
 
   });
 
@@ -113,11 +104,11 @@ app.post("/data", (req, res, next) => {
 	// Call BFS
 	if (algorithm === "bfs") {
 		callBFS(url, depth).then(result => {
-			console.log("BSF success: ", result);
-			if (result) {
-				res.status(201).sendFile(path.join(__dirname, 'data.json'));
-			}
-			else { res.status(500).send(null); }
+			console.log("BFS success: ", result);
+			res.status(201).sendFile(path.join(__dirname, 'data.json'));
+		}).catch(result => {
+			console.log("BFS success: ", result);
+			res.status(500).send(null);
 		})
 	}
 
@@ -125,10 +116,10 @@ app.post("/data", (req, res, next) => {
 	else if (algorithm === "dfs") {
 		callDFS(url, depth).then(result => {
 			console.log("DFS success: ", result);
-			if (result) {
-				res.status(201).sendFile(path.join(__dirname, 'data.json'));
-			}
-			else { res.status(500).send(null); }
+			res.status(201).sendFile(path.join(__dirname, 'data.json'));
+		}).catch(result => {
+			console.log("DFS success: ", result);
+			res.status(500).send(null);
 		})
 	}
 
