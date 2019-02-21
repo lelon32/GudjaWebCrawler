@@ -16,6 +16,7 @@ class dfs():
         self.next_link = ''
         self.nodes = []
         self.edges = []
+        self.all_links = []
 
 
 #This is the primary function that runs the depth first search
@@ -34,7 +35,7 @@ class dfs():
         dfs_crawl.get_domain()
 
     # get the favicon
-        dfs_crawl.get_favicon()
+        dfs_crawl.get_favicon_2()
 
     #visit site and create soup
         dfs_crawl.create_soup(dfs_crawl.url)
@@ -53,17 +54,15 @@ class dfs():
             self.next_link = random.choice(dfs_crawl.unique_links)
 
     #build the object
-            nodes_url = {"url": dfs_crawl.url}
-            nodes_domain = {"domainName": dfs_crawl.domain}
-            nodes_title = {"title": dfs_crawl.title}
-            nodes_favicon = {"favicon": dfs_crawl.favicon}
+            #nodes_url = {"url": dfs_crawl.url}
+            #nodes_domain = {"domainName": dfs_crawl.domain}
+            #nodes_title = {"title": dfs_crawl.title}
+            #nodes_favicon = {"favicon": dfs_crawl.favicon}
 
             source_edge = len(self.nodes)
 
-            node_dict = {"url": dfs_crawl.url, "domainName": dfs_crawl.domain, "title": dfs_crawl.title.text, "favicon": dfs_crawl.favicon}
+            node_dict = {"url": dfs_crawl.url, "domainName": dfs_crawl.strip_out_domain(dfs_crawl.url), "title": dfs_crawl.title.text, "favicon": dfs_crawl.favicon}
             self.nodes.append(node_dict)
-
-
 
             target_edge = len(self.nodes)
 
@@ -75,9 +74,6 @@ class dfs():
     #create json
             json_node = json.dumps(node_dict)
 
-    def write_data_structure_to_file(self, data, name):
-        with open(name, 'w') as outfile:
-            json.dump(data, name)
 
 
 #####################################################################

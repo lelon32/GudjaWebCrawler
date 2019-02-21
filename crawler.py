@@ -38,7 +38,7 @@ class crawler():
 
     def create_soup(self, url):
         r = requests.get(url)
-        self.soup = BeautifulSoup(r.text, 'html.parser')
+        self.soup = BeautifulSoup(r.text, 'lxml')
 
     def create_unique_link_list2(self):
         temp_list = []
@@ -65,6 +65,11 @@ class crawler():
 
     def get_favicon(self):
         self.favicon = self.favicon = self.url + "/favicon.ico"
+
+    def get_favicon_2(self):
+        temp = urlparse(self.url)
+        base = temp.netloc
+        self.favicon = base + "/favicon.ico"
 
     def get_title2(self):
         self.title = self.soup.title
