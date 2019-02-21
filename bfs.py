@@ -19,13 +19,17 @@ class BFS:
         lines = sys.stdin.readlines()
         return json.loads(lines[0])
 
-    def __init__(self):
-        lines = self.read_in()
+    def __init__(self, *argv):
+        # check the number of the arguments
+        if len(argv) <= 0:
+            lines = self.read_in()
+            np_lines = np.array(lines)
 
-        np_lines = np.array(lines)
-
-        self.rootURL = np_lines[0]
-        self.depthNumber = int(np_lines[1])
+            self.rootURL = np_lines[0]
+            self.depthNumber = int(np_lines[1])
+        else: # run program with parameters
+            self.rootURL = argv[0] 
+            self.depthNumber = int(argv[1])
 
         # debugging
         #print("self.rootURL: " + np_lines[0])
@@ -147,8 +151,9 @@ class BFS:
 
         #print(JSON_NodesEdges) # debugging
 
-bfs = BFS() # instantiate class
-
 # Test Driver Program
 #bfs = BFS("https://en.wikipedia.org/wiki/SMALL", 1)
-# bfs = BFS(sys.argv[1], sys.argv[2]) # for console with arguments
+if len(sys.argv) < 3: 
+    bfs = BFS() # call BFS for use with front-end site 
+else:
+    bfs = BFS(sys.argv[1], sys.argv[2]) # use with console arguments
