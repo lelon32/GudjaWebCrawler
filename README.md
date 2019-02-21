@@ -103,3 +103,6 @@ attempt to crawl them to a depth of five.
 <a href="https://github.com/lelon32">
   <img src="https://avatars1.githubusercontent.com/u/26614507?v=4" alt="Long Le" width="50" height="50">
  Long Le </a>
+<a href="https://github.com/cadelx">
+  <img src="https://avatars.githubusercontent.com/cadelx" alt="Kerensa Crump" width="50" height="50">
+ Kerensa Crump </a>
