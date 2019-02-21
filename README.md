@@ -7,7 +7,7 @@ high level map of all the pages that were visited by the web crawler, in an orga
 
 
 ## Getting Started
-This program was developed using Angular on the front end, Node.js on the back end and Python for crawling the web. This application has been optimized for use on the Google Cloud Platform. Alternatively, any application that can read from a data.json file can simply use the Python code to crawl the web.
+This program was developed using Angular and the D3 Javascript library on the front end, Node.js on the back end and Python for crawling the web. This application has been optimized for use on the Google Cloud Platform. Alternatively, any application that can read from a data.json file can simply use the Python code to crawl the web.
 
 ### Requirements
 - [Angular.js](https://angular.io/)
