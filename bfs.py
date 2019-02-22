@@ -4,8 +4,8 @@
 # Class: CS 467 Capstone
 # Group: Gudja
 # Project: Graphical Web Crawler
-# Description:
-#
+# Description: Breadth first search web crawler implemented using
+# Python. 
 #####################################################################
 
 import sys
@@ -31,12 +31,7 @@ class BFS:
             self.rootURL = argv[0]
             self.depthNumber = int(argv[1])
 
-        # debugging
-        #print("self.rootURL: " + np_lines[0])
-        #print("self.depthNumber : " + np_lines[0])
-        #print("after readin!")
-
-        self.bot = crawler(self.rootURL)
+        self.bot = crawler(self.rootURL) # parse root URL
 
         self.url = []
         self.domainName = []
@@ -49,7 +44,7 @@ class BFS:
         self.JSON_Edges = {}
         self.depthBookmarks = 0
 
-        self.start() # immediately start the crawl
+        self.start() # initiate the crawl
 
     def find_source_index(self, num):
         for item in self.allSourceTargetLinks:
@@ -57,7 +52,7 @@ class BFS:
                 return item[0]
 
     def start(self):
-        print("**BFS CRAWLING INITIATED**\nUser Entered URL: " + self.rootURL + "\nUser Entered Depth Number: " + str(self.depthNumber))
+        print("**BFS CRAWLING COMPLETED**\n\nUser Entered URL: " + self.rootURL + "\nUser Entered Depth Number: " + str(self.depthNumber))
 
         depthCount = 0
         linkIndex = 0
@@ -141,19 +136,23 @@ class BFS:
         nodes_edges["nodes"] = nodes
         nodes_edges["edges"] = edges
 
-        # convert to JSON
-        JSON_NodesEdges = json.dumps(nodes_edges, sort_keys=True, indent=4);
+        # convert to JSON string
+        #JSON_NodesEdges = json.dumps(nodes_edges, sort_keys=True, indent=4);
 
         with open('data.json', 'w') as outfile:
             json.dump(nodes_edges, outfile, sort_keys=True, indent=4)
 
-        print("BFS has created data.json file.")
+        print("\nBFS has created file: data.json")
 
         #print(JSON_NodesEdges) # debugging
 
-# Test Driver Program
-#bfs = BFS("https://en.wikipedia.org/wiki/SMALL", 1)
-if len(sys.argv) < 3:
-    bfs = BFS() # call BFS for use with front-end site
-else:
-    bfs = BFS(sys.argv[1], sys.argv[2]) # use with console arguments
+# Initiate crawler for use with front-end site or console arguments  
+def main():
+    if len(sys.argv) < 3:
+        bfs = BFS() # call BFS for use with front-end site
+    else:
+        bfs = BFS(sys.argv[1], sys.argv[2]) # use with console arguments
+
+# Start program
+if __name__ == '__main__':
+    main()

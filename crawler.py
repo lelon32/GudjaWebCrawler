@@ -4,8 +4,7 @@
 # Class: CS 467 Capstone
 # Group: Gudja
 # Project: Graphical Web Crawler
-# Description:
-#
+# Description: HTML parser using Beautiful Soup 4.
 #####################################################################
 
 import sys
@@ -50,7 +49,6 @@ class crawler():
         tset = set(temp_list)
         self.unique_links = list(tset)
 
-
     def create_unique_link_list(self):
         temp_list = []
         for link in self.soup.find_all('a'):
@@ -61,7 +59,6 @@ class crawler():
     def get_domain(self):
         temp = urlparse(self.url)
         self.domain = temp.netloc
-
 
     def get_favicon(self):
         self.favicon = self.favicon = self.url + "/favicon.ico"
@@ -84,8 +81,7 @@ class crawler():
         return final_list  
 
     #####################################################################
-    # Description: Long - Using to test BFS search
-    # Testing Relative Links Conversion
+    # Description: Finds all links on the current URL page. Uses lxml parser.
     # https://stackoverflow.com/questions/44001007/scrape-the-absolute-url-instead-of-a-relative-path-in-python
     #####################################################################
     def get_all_links(self, URL=None):
@@ -126,18 +122,16 @@ class crawler():
             print(i)
 
     #####################################################################
-    # Description: Long - used to strip a URL to its domain name 
+    # Description: Used to strip a URL to its domain name 
     # https://www.quora.com/How-do-I-extract-only-the-domain-name-from-an-URL
     #####################################################################
     def strip_out_domain(self, URL):
         domain = URL.split("//")[-1].split("/")[0]
-        # print(domain)
         domain = domain.split(".")[-2]
-        # print(domain)
         return domain
 
     #####################################################################
-    # Description: Long - used to strip a URL to its base URL 
+    # Description: Used to strip a URL to its base URL 
     # https://www.quora.com/How-do-I-extract-only-the-domain-name-from-an-URL
     #####################################################################
     def convert_to_base_url(self, URL):
@@ -175,11 +169,9 @@ class crawler():
         self.favicon = self.url + "/favicon.ico"
         self.dictionary["favicon"] = self.favicon
 
-
     def create_unique_list(self):
         self.unique_links = set(self.web_links)
         print(len(self.unique_links))
-
 
     # I created this so we can hava static document to test on
     def write_website_to_file(self):
@@ -195,8 +187,6 @@ class crawler():
             if entry is not None:
                 f.write("%s\n" % entry)
         f.close()
-
-
 
     #method to open file and use its data for testing BS4
     def open_file_test(self):
