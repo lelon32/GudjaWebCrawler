@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 // Use to generate cookies
 app.use(cookieParser())
 
-var prevURL = '';
+var urlHistory = [];
 
 /*********************************************************************
 	Model functions
@@ -43,7 +43,7 @@ async function callBFS(url, depth) {
     // Prints the confirmation message from stdout.
     py.stdout.on('end', function(){
         console.log('result=', dataString);
-        prevURL = dataString;
+        urlHistory.push(dataString);
 				resolve(true);
     ;});
 
@@ -111,28 +111,7 @@ app.post("/data", (req, res, next) => {
 	if (algorithm === "bfs") {
 		callBFS(url, depth).then(result => {
 			console.log("BFS success: ", result);
-
-      // https://stackoverflow.com/questions/34857458/reading-local-text-file-into-a-javascript-array
-      //const fileName = "./urlHistory.txt";
-      //var fs = require("fs");
-      //var text = fs.readFileSync(fileName) + '';
-
-      // https://arjunphp.com/how-to-delete-a-file-in-node-js/
-      //fs.access(fileName, error => {
-			//		if (!error) {
-			//				fs.unlink(fileName,function(error){
-			//						console.log(error);
-			//				});
-			//		} else {
-			//				console.log(error);
-			//		}
-			//});      
-
-      console.log("\nAdding URL to cookie: : " + prevURL);
-
-      res.cookie("url", prevURL);
-      prevURL = '';
-
+      res.cookie("urlHistory", urlHistory);
 			res.status(201).sendFile(path.join(__dirname, 'data.json'));
 		}).catch(result => {
 			console.log("BFS success: ", result);
