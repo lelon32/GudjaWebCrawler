@@ -8,6 +8,7 @@ sys.path.insert(0, 'lib') #use this on GCP
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 from crawler import crawler
+import numpy as np
 
 
 class dfs():
@@ -94,14 +95,26 @@ run_dfs = dfs()
 #here are some test links that i use during testing
 test_links = ["https://www.cnn.com", "https://www.oregonlive.com", "https://www.gizmodo.com", "https://www.stackexchange.com", "https://www.engadget.com", "https://xkcd.com", "https://www.wired.com"]
 
-#print(len(sys.argv))
+
+# function to read in the data from the server
+# From https://www.sohamkamani.com/blog/2015/08/21/python-nodejs-comm/
+def read_in():
+    lines = sys.stdin.readlines()
+    return json.loads(lines[0])
+
+
 if len(sys.argv) == 3:
     new_url = sys.argv[1]
     depth = int(sys.argv[2])
 
 else:
-    depth = 5
-    new_url = random.choice(test_links)
+    lines = read_in()
+    np_lines = np.array(lines)
+    rootURL = np_lines[0]
+    depthNumber = int(np_lines[1])
+    depth = depthNumber
+    new_url = rootURL
+
 
 #add the url to the next link
 run_dfs.next_link = new_url
