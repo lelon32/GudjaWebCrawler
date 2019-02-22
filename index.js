@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 
@@ -14,6 +15,11 @@ const app = express();
 // Use body parser to get POST request parameters
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+// Use to generate cookies
+app.use(cookieParser())
+
+var prevURL = '';
 
 /*********************************************************************
 	Model functions
@@ -36,8 +42,8 @@ async function callBFS(url, depth) {
 
     // Prints the confirmation message from stdout.
     py.stdout.on('end', function(){
-      // crawlSuccess = true; 		// temporary
-        console.log('result=',dataString);
+        console.log('result=', dataString);
+        prevURL = dataString;
 				resolve(true);
     ;});
 
@@ -105,6 +111,28 @@ app.post("/data", (req, res, next) => {
 	if (algorithm === "bfs") {
 		callBFS(url, depth).then(result => {
 			console.log("BFS success: ", result);
+
+      // https://stackoverflow.com/questions/34857458/reading-local-text-file-into-a-javascript-array
+      //const fileName = "./urlHistory.txt";
+      //var fs = require("fs");
+      //var text = fs.readFileSync(fileName) + '';
+
+      // https://arjunphp.com/how-to-delete-a-file-in-node-js/
+      //fs.access(fileName, error => {
+			//		if (!error) {
+			//				fs.unlink(fileName,function(error){
+			//						console.log(error);
+			//				});
+			//		} else {
+			//				console.log(error);
+			//		}
+			//});      
+
+      console.log("\nAdding URL to cookie: : " + prevURL);
+
+      res.cookie("url", prevURL);
+      prevURL = '';
+
 			res.status(201).sendFile(path.join(__dirname, 'data.json'));
 		}).catch(result => {
 			console.log("BFS success: ", result);
@@ -129,7 +157,14 @@ app.post("/data", (req, res, next) => {
 	}
 })
 
+//Iterate users data from cookie 
+app.get('/gethistory', (req, res)=>{ 
+  //shows all the cookies 
+  res.send(req.cookies); 
+}); 
+
 app.use("/", express.static(path.join(__dirname, "front_end")));
+
 app.use((req, res, next) => {
 	res.sendFile(path.join(__dirname, 'front_end', 'index.html'));
 });

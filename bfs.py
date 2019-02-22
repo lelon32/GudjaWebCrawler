@@ -52,7 +52,8 @@ class BFS:
                 return item[0]
 
     def start(self):
-        print("**BFS CRAWLING COMPLETED**\n\nUser Entered URL: " + self.rootURL + "\nUser Entered Depth Number: " + str(self.depthNumber))
+        print(self.rootURL)
+        #print("**BFS CRAWLING INITIATED**\n\nUser Entered URL: " + self.rootURL + "\nUser Entered Depth Number: " + str(self.depthNumber))
 
         depthCount = 0
         linkIndex = 0
@@ -123,6 +124,22 @@ class BFS:
             # break if user entered depth number is reached or the link index has reached the end of the array
             if depthCount >= self.depthNumber or linkIndex >= len(self.bot.web_links):
                 break
+
+        # for use with creating a temp file to use with cookies 
+        #URLsToCookie = [ {"url":u} for u in self.url ]
+        #URL_history = {}
+        #URL_history["URLhistory"] = URLsToCookie
+
+        #print( "\n\n" + json.dumps(URL_history, sort_keys=True, indent=4)) # debugging
+
+        #with open('forCookies.txt', 'w') as cookieFile:
+        #    json.dump(self.url, cookieFile, sort_keys=True, indent=4)
+
+        # create a temp file to use with cookies 
+        #f = open("previousURL", "w")
+        #f.write(self.rootURL)
+        #for i in self.url:
+        #    f.write(i + "\n")
 
         # https://stackoverflow.com/questions/42865013/python-create-array-of-json-objects-from-for-loops
         nodes = [ {"url": u, "domainName": d, "title": t, "favicon": f}
