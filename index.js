@@ -9,15 +9,15 @@ const app = express();
 /*********************************************************************
 	Middleware
 *********************************************************************/
-// Allow GET request to /data from external sites
-// app.use(cors({credentials: true, origin: true}));
+// Allow cross-origin reqs for Angular testing 
+app.use(cors({credentials: true, origin: true}));
 
 // Use body parser to get POST request parameters
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 // Use to generate cookies
-app.use(cookieParser())
+app.use(cookieParser());
 
 var urlHistory = [];
 
@@ -136,11 +136,11 @@ app.post("/data", (req, res, next) => {
 	}
 })
 
-//Iterate users data from cookie 
-app.get('/gethistory', (req, res)=>{ 
-  //shows all the cookies 
-  res.send(req.cookies); 
-}); 
+//Iterate users data from cookie
+app.get('/gethistory', (req, res)=>{
+  //shows all the cookies
+  res.send(req.cookies);
+});
 
 app.use("/", express.static(path.join(__dirname, "front_end")));
 

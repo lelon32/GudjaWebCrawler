@@ -20,6 +20,8 @@
         type="text"
         name="algorithm"
         ngModel
+        required
+        placeholder="bfs"
         #algorithm="ngModel">Select an algorithm
         <mat-radio-button
           value="bfs">Breadth First Search (1 degree of separation at a time)</mat-radio-button>
@@ -34,7 +36,7 @@
           name="depth"
           ngModel
           required
-          placeholder="Page depth, eg. 25"
+          placeholder="Page depth, eg. 2"
           #depth="ngModel"/>
         <mat-error *ngIf="depth.invalid">Please enter a page depth.</mat-error>
       </mat-form-field>
