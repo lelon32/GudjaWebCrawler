@@ -9,7 +9,7 @@ const app = express();
 /*********************************************************************
 	Middleware
 *********************************************************************/
-// Allow cross-origin reqs for Angular testing 
+// Allow cross-origin reqs for Angular testing
 app.use(cors({credentials: true, origin: true}));
 
 // Use body parser to get POST request parameters
@@ -102,6 +102,7 @@ app.get("/data", (req, res, next) => {
 
 // POST request for data calls python script, response back data.json
 app.post("/data", (req, res, next) => {
+	req.socket.setKeepAlive();
 	var url = req.body.url,
 		depth = req.body.depth,
 		algorithm = req.body.algorithm;
@@ -109,6 +110,7 @@ app.post("/data", (req, res, next) => {
 
 	// Call BFS
 	if (algorithm === "bfs") {
+		res.status(201).sendFile(path.join(__dirname, 'data.json'));
 		callBFS(url, depth).then(result => {
 			console.log("BFS success: ", result);
       res.cookie("urlHistory", urlHistory);
