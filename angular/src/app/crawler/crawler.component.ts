@@ -54,15 +54,17 @@ function buildCrawler(realData) {
     width = containerWidth - margin.left - margin.right,
     height = containerHeight - margin.top - margin.bottom;
 
-  var container = d3.select("#crawlerContainer")
-    .attr("width", containerWidth)
-    .attr("height", containerHeight);
+  var container = d3.select("#crawlerContainer");
+    // .attr("width", containerWidth)
+    // .attr("height", containerHeight);
 
   var svg = d3.select("svg")
     .attr("width", width)
     .attr("height", height)
     .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+      .attr('id', 'crawlerGroup');
+
+  var crawlerGroup = d3.select('#crawlerGroup');
 
   // Tooltip element
   var tooltip = d3.select("#crawlerContainer").append("div")
@@ -80,8 +82,9 @@ function renderD3data(dataset) {
   var svg = d3.select("svg"),
     width = svg.attr("width"),
     height = svg.attr("height"),
-    linkElems = svg.selectAll(".link"),
-    nodeElems = svg.selectAll(".node");
+    crawlerGroup = d3.select("#crawlerGroup"),
+    linkElems = crawlerGroup.selectAll(".link"),
+    nodeElems = crawlerGroup.selectAll(".node");
 
   // Simulation params
   var linkDist = 40, chargeStrength = -170;
@@ -108,22 +111,27 @@ function renderD3data(dataset) {
 
   // Remove and append all nodeElems to render above new links
   nodeElems.remove();
-  nodeElems = svg.selectAll(".node");
+  nodeElems = crawlerGroup.selectAll(".node");
   nodeElems = nodeElems.data(dataset.nodes);
   nodeElems.enter().append("circle")
       .style("fill", (d) => randColor())
       .attr("class", "node")
       .attr("r", 7)
       .on("click", (d) => window.open(d.url));
-
   nodeElems.exit().remove();
 
+  // Revise height if crawlerGroup exceeds height
+  var reviseHeight = d3.select("#crawlerGroup").node().getBoundingClientRect().height;
+  if (reviseHeight > (height * 0.9)) {
+    d3.select("svg")
+      .attr('height', height * 1.1);
+  }
 }
 
 function onTick() {
-  var svg = d3.select("svg"),
-    linkElems = svg.selectAll(".link"),
-    nodeElems = svg.selectAll(".node");
+  var crawlerGroup = d3.select("#crawlerGroup"),
+    linkElems = crawlerGroup.selectAll(".link"),
+    nodeElems = crawlerGroup.selectAll(".node");
 
   linkElems.attr("x1", (d) => d.source.x)
       .attr("y1", (d) => d.source.y)
