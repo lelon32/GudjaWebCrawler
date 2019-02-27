@@ -13,6 +13,7 @@ from datetime  import datetime
 #sys.path.insert(0, 'lib') #use this on GCP
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
+import lxml
 
 class crawler():
 
@@ -26,6 +27,14 @@ class crawler():
         self.soup = None
         self.domain = ""
         self.title = ""
+        self.keyword = ""
+
+    def search_soup(self):
+        check = self.soup.get_text().find(self.keyword)
+        if check != -1:
+            print(self.url, " ", check)
+            return True
+        return False
 
     def check_url(self, url):
         parse = urlparse(url)
@@ -37,7 +46,7 @@ class crawler():
 
     def create_soup(self, url):
         r = requests.get(url)
-        self.soup = BeautifulSoup(r.text, 'html.parser')
+        self.soup = BeautifulSoup(r.text, 'lxml')
 
     def create_unique_link_list2(self):
         temp_list = []
