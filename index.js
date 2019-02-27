@@ -77,6 +77,7 @@ async function callDFS(url, depth) {
     // Prints the confirmation message from stdout.
     py.stdout.on('end', function(){
         console.log('result=',dataString);
+        urlHistory.push(dataString);
 				resolve(true);
     ;});
 
@@ -153,6 +154,23 @@ app.post("/data", (req, res, next) => {
 	else if (algorithm === "dfs") {
 		callDFS(url, depth).then(result => {
 			console.log("DFS success: ", result);
+      var myCookie = req.cookies.urlHistory; 
+
+      if(myCookie != null) {
+        var str =  JSON.stringify(myCookie) + '';
+
+        // keep the substring between [ and ]
+        str = str.substring(str.lastIndexOf("[") + 1,
+                            str.lastIndexOf("]"))
+
+        str = str.replace(/(\r\n|\n|\r)/gm, "");
+
+        var strArray = JSON.parse("[" + str + "]"); // convert string to array
+
+        urlHistory = strArray.concat(urlHistory); 
+      }
+
+      res.cookie("urlHistory", urlHistory);
 			res.status(201).sendFile(path.join(__dirname, 'data.json'));
 		}).catch(result => {
 			console.log("DFS success: ", result);
