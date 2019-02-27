@@ -107,16 +107,40 @@ app.post("/data", (req, res, next) => {
 		algorithm = req.body.algorithm;
 	console.log("req.body: ", req.body);
 
+  // Clear out the urlHistory array
+  urlHistory.splice(0,urlHistory.length);
+
 	// Call BFS
 	if (algorithm === "bfs") {
 		callBFS(url, depth).then(result => {
 			console.log("BFS success: ", result);
-      var str = toString(req.cookies) + '';
-      console.log("first string is this: " + str);
-      str = str.split('[')[1];
-      console.log("2nd string is this: " + str);
-      str = str.split(']')[-1]; 
-      console.log("3rd string is this: " + str);
+
+      var myCookie = req.cookies.urlHistory; 
+
+      if(myCookie != null) {
+        // console.log("Cookie exists!"); // debugging
+
+        var str =  JSON.stringify(myCookie) + '';
+
+        // console.log("first string is this: " + str); // debugging
+
+        // keep the substring between [ and ]
+        str = str.substring(str.lastIndexOf("[") + 1,
+                            str.lastIndexOf("]"))
+
+        // console.log("2nd string is this: " + str); // debugging
+
+        str = str.replace(/(\r\n|\n|\r)/gm, "");
+
+        var strArray = JSON.parse("[" + str + "]"); // convert string to array
+
+        // console.log("As an array: " + strArray); // debugging
+
+        urlHistory = strArray.concat(urlHistory); 
+
+        // console.log("As an combined array: " + urlHistory); // debugging
+      }
+
       res.cookie("urlHistory", urlHistory);
 			res.status(201).sendFile(path.join(__dirname, 'data.json'));
 		}).catch(result => {
