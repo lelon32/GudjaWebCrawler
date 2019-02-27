@@ -37,7 +37,7 @@ class crawler():
 
     def create_soup(self, url):
         r = requests.get(url)
-        self.soup = BeautifulSoup(r.text, 'lxml')
+        self.soup = BeautifulSoup(r.text, 'html.parser')
 
     def create_unique_link_list2(self):
         temp_list = []

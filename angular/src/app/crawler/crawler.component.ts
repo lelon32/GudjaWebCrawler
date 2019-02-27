@@ -45,10 +45,10 @@ export class CrawlerComponent implements OnInit, OnDestroy {
   }
 }
 
+/****************** D3 ********************/
 function buildCrawler(realData) {
-  // d3
   // Container and svg params
-  var margin = {top: 20, right: 20, bottom: 20, left: 20},
+  var margin = {top: 0, right: 0, bottom: 0, left: 0},
     containerWidth = 960,
     containerHeight = 500,
     width = containerWidth - margin.left - margin.right,
@@ -67,12 +67,12 @@ function buildCrawler(realData) {
   // Tooltip element
   var tooltip = d3.select("#crawlerContainer").append("div")
     .attr("class", "tooltip")
-    .attr("id", "tooltip_id");
+    .attr("id", "tooltipID");
 
-  // Dataset
-  var dataSize = 20, edgesToNodes = 1.3;
-  var dataset_test = generateData(dataSize, edgesToNodes);
-  var dataset = dataset_test;
+  // // Test Dataset
+  // var dataSize = 20, edgesToNodes = 1.3;
+  // var dataset_test = generateData(dataSize, edgesToNodes);
+  // var dataset = dataset_test;
 }
 
 function renderD3data(dataset) {
@@ -99,18 +99,25 @@ function renderD3data(dataset) {
   simulation.nodes(dataset.nodes);
   simulation.force("link").links(dataset.edges);
 
-  // Set bind link and node elements with data
-  linkElems = linkElems
-    .data(dataset.edges)
-    .enter().append("line")
-      .attr("class", "link");
+  // Update links elements, append new ones, remove unbound linkElems
+  linkElems = linkElems.data(dataset.edges);
+  linkElems.enter().append("line")
+      .attr("class", "link")
+      .style("z-index", 0);
+  linkElems.exit().remove();
 
-  nodeElems = nodeElems
-    .data(dataset.nodes)
-    .enter().append("circle")
+  // Remove and append all nodeElems to render above new links
+  nodeElems.remove();
+  nodeElems = svg.selectAll(".node");
+  nodeElems = nodeElems.data(dataset.nodes);
+  nodeElems.enter().append("circle")
       .style("fill", (d) => randColor())
       .attr("class", "node")
-      .attr("r", 7);
+      .attr("r", 7)
+      .on("click", (d) => window.open(d.url));
+
+  nodeElems.exit().remove();
+
 }
 
 function onTick() {
@@ -131,19 +138,21 @@ function onTick() {
 }
 
 function mouseoverHandler(d) {
-  var tooltip = d3.select("#tooltip_id");
-  tooltip.html('<p>' + d.url + '</p>');
-  tooltip.transition().duration(250).style('opacity', 1);
+  var tooltip = d3.select("#tooltipID")
+    .html('<p>' + d.title + '</p><p>' + d.url + '</p>')
+    .style('display', 'block')
+    .transition().duration(50).style('opacity', 1);
 }
 
 function mouseoutHandler(d) {
-  var tooltip = d3.select("#tooltip_id");
-  tooltip.style('opacity', 0);
+  var tooltip = d3.select("#tooltipID")
+    .transition().duration(50).style('opacity', 0)
+    .style('display', 'none');
 }
 
 function mousemoveHandler(d) {
-  var tooltip = d3.select("#tooltip_id");
-  tooltip.style("top", (d3.event.pageY - 10) + "px")
+  var tooltip = d3.select("#tooltipID")
+    .style("top", (d3.event.pageY - 10) + "px")
     .style("left",(d3.event.pageX + 10) + "px");
 }
 
