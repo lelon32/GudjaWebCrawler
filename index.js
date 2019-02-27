@@ -111,6 +111,12 @@ app.post("/data", (req, res, next) => {
 	if (algorithm === "bfs") {
 		callBFS(url, depth).then(result => {
 			console.log("BFS success: ", result);
+      var str = toString(req.cookies) + '';
+      console.log("first string is this: " + str);
+      str = str.split('[')[1];
+      console.log("2nd string is this: " + str);
+      str = str.split(']')[-1]; 
+      console.log("3rd string is this: " + str);
       res.cookie("urlHistory", urlHistory);
 			res.status(201).sendFile(path.join(__dirname, 'data.json'));
 		}).catch(result => {

@@ -1,10 +1,7 @@
-<<<<<<< HEAD
 node_modules/
 *.pyc
 *.swp
 *data.json
-=======
 angular/node_modules/
 node_modules/
 .DS_Store
->>>>>>> b239839baeacabd19f9171f515bdf6ad5bb1dbca
