@@ -18,7 +18,8 @@ export class PostCreateComponent {
     if (form.invalid) {
       return;
     }
-    this.postsService.addPost(form.value.url, form.value.depth, form.value.algorithm);
+    this.postsService.addPost(form.value.url, form.value.depth,
+      form.value.algorithm, form.value.keyword);
     form.resetForm();
   }
 }
