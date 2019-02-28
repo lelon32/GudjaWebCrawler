@@ -3,6 +3,7 @@ const path = require('path');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const request = require('request');
 
 const app = express();
 
@@ -26,7 +27,7 @@ var urlHistory = [];
   https://www.sohamkamani.com/blog/2015/08/21/python-nodejs-comm/
 *********************************************************************/
 // Call BFS Python script
-async function callBFS(url, depth) {
+async function callBFS(url, depth, keyword) {
 	let promise = new Promise((resolve, reject) => {
 
 		var crawlSuccess = false;
@@ -60,7 +61,7 @@ async function callBFS(url, depth) {
 }
 
 // Call DFS Python script
-async function callDFS(url, depth) {
+async function callDFS(url, depth, keyword) {
 	let promise = new Promise((resolve, reject) => {
 
 		var crawlSuccess = false;
@@ -77,6 +78,7 @@ async function callDFS(url, depth) {
     // Prints the confirmation message from stdout.
     py.stdout.on('end', function(){
         console.log('result=',dataString);
+        urlHistory.push(dataString);
 				resolve(true);
     ;});
 
@@ -105,9 +107,11 @@ app.post("/data", (req, res, next) => {
 	req.socket.setKeepAlive();
 	var url = req.body.url,
 		depth = req.body.depth,
-		algorithm = req.body.algorithm;
+		algorithm = req.body.algorithm,
+		keyword = req.body.keyword;
 	console.log("req.body: ", req.body);
 
+<<<<<<< HEAD
 	// Call BFS
 	if (algorithm === "bfs") {
 		res.status(201).sendFile(path.join(__dirname, 'data.json'));
@@ -136,6 +140,89 @@ app.post("/data", (req, res, next) => {
 		console.log("error");
 		res.status(400).end('Error in POST /data');
 	}
+=======
+  // Clear out the urlHistory array
+  urlHistory.splice(0,urlHistory.length);
+
+  var validatedURL = url;
+
+  var validSubstrHttp = validatedURL.substring(0,7);
+  var validSubstrHttps = validatedURL.substring(0,8);
+
+  if(!(validSubstrHttp == "http://" || validSubstrHttps == "https://")) {
+    validatedURL = "http://" + validatedURL;
+  }
+
+  // https://stackoverflow.com/questions/16687618/how-do-i-get-the-redirected-url-from-the-nodejs-request-module
+  var r = request.get(validatedURL, function (err, response, body) {
+    //console.log(res.request.uri.href); // alternate
+    validatedURL = r.uri.href;
+
+    // Call BFS
+    if (algorithm === "bfs") {
+      //console.log("final validated URL: " + validatedURL); // debugging
+      callBFS(validatedURL, depth, keyword).then(result => {
+        console.log("BFS success: ", result);
+
+        var myCookie = req.cookies.urlHistory;
+
+        if(myCookie != null) {
+          var str =  JSON.stringify(myCookie) + '';
+
+          // keep the substring between [ and ]
+          str = str.substring(str.lastIndexOf("[") + 1,
+                              str.lastIndexOf("]"))
+
+          str = str.replace(/(\r\n|\n|\r)/gm, "");
+
+          var strArray = JSON.parse("[" + str + "]"); // convert string to array
+
+          urlHistory = strArray.concat(urlHistory);
+        }
+
+        res.cookie("urlHistory", urlHistory);
+        res.status(201).sendFile(path.join(__dirname, 'data.json'));
+      }).catch(result => {
+        console.log("BFS success: ", result);
+        res.status(500).send(null);
+      })
+    }
+
+    // Call DFS
+    else if (algorithm === "dfs") {
+      callDFS(validatedURL, depth, keyword).then(result => {
+        console.log("DFS success: ", result);
+
+        var myCookie = req.cookies.urlHistory;
+
+        if(myCookie != null) {
+          var str =  JSON.stringify(myCookie) + '';
+
+          // keep the substring between [ and ]
+          str = str.substring(str.lastIndexOf("[") + 1,
+                              str.lastIndexOf("]"))
+
+          str = str.replace(/(\r\n|\n|\r)/gm, "");
+
+          var strArray = JSON.parse("[" + str + "]"); // convert string to array
+
+          urlHistory = strArray.concat(urlHistory);
+        }
+
+        res.cookie("urlHistory", urlHistory);
+        res.status(201).sendFile(path.join(__dirname, 'data.json'));
+      }).catch(result => {
+        console.log("DFS success: ", result);
+        res.status(500).send(null);
+      });
+    }
+
+    else {
+      console.log("error");
+      res.status(400).end('Error in POST /data');
+    }
+  });
+>>>>>>> 05a282e87858d9d36aafd530b56443f1b8f6391a
 })
 
 //Iterate users data from cookie

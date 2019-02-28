@@ -22,8 +22,9 @@ export class PostsService {
     return this.postsUpdated.asObservable();
   }
 
-  addPost(url: string, depth: number, algorithm: string) {
-    const post: Post = {url: url, depth: depth, algorithm: algorithm};
+  addPost(url: string, depth: number, algorithm: string, keyword: string) {
+    const post: Post = {url: url, depth: depth,
+      algorithm: algorithm, keyword: keyword};
     this.posts.push(post);
     this.postsUpdated.next([...this.posts]);
 

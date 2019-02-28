@@ -27,18 +27,28 @@
           value="bfs">Breadth First Search (1 degree of separation at a time)</mat-radio-button>
         <mat-radio-button
           value="dfs">Depth First Search (follow each link all the way down)</mat-radio-button>
-          <mat-error *ngIf="algorithm.invalid">Please select an algorithm.</mat-error>
       </mat-radio-group>
       <mat-form-field class="width_25">
+        <mat-label>Page Depth</mat-label>
         <input
           matInput
           type="number"
           name="depth"
           ngModel
           required
-          placeholder="Page depth, eg. 2"
+          placeholder="e.g. 2"
           #depth="ngModel"/>
         <mat-error *ngIf="depth.invalid">Please enter a page depth.</mat-error>
+      </mat-form-field>
+      <mat-form-field class="width_25">
+        <mat-label>Stop at keyword (optional)</mat-label>
+        <input
+          matInput
+          type="text"
+          name="keyword"
+          ngModel
+          placeholder="e.g. cat"
+          #keyword="ngModel"/>
       </mat-form-field>
     </div>
     <div class="form_submit">
