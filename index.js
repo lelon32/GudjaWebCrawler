@@ -114,7 +114,7 @@ app.post("/data", (req, res, next) => {
 	// Call BFS
 	if (algorithm === "bfs") {
 		res.status(201).sendFile(path.join(__dirname, 'data.json'));
-		callBFS(url, depth).then(result => {
+		callBFS(url, depth, keyword).then(result => {
 			console.log("BFS success: ", result);
       res.cookie("urlHistory", urlHistory);
 			res.status(201).sendFile(path.join(__dirname, 'data.json'));
@@ -126,7 +126,7 @@ app.post("/data", (req, res, next) => {
 
 	// Call DFS
 	else if (algorithm === "dfs") {
-		callDFS(url, depth).then(result => {
+		callDFS(url, depth, keyword).then(result => {
 			console.log("DFS success: ", result);
 			res.status(201).sendFile(path.join(__dirname, 'data.json'));
 		}).catch(result => {
