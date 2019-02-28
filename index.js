@@ -3,6 +3,7 @@ const path = require('path');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const request = require('request');
 
 const app = express();
 
@@ -111,77 +112,84 @@ app.post("/data", (req, res, next) => {
   // Clear out the urlHistory array
   urlHistory.splice(0,urlHistory.length);
 
-	// Call BFS
-	if (algorithm === "bfs") {
-		callBFS(url, depth).then(result => {
-			console.log("BFS success: ", result);
+  var validatedURL = url;
 
-      var myCookie = req.cookies.urlHistory; 
+  var validSubstrHttp = validatedURL.substring(0,7);
+  var validSubstrHttps = validatedURL.substring(0,8);
+  
+  if(validSubstrHttp != "http://" && validSubstrHttps != "https://") {
+    validatedURL = "http://" + validatedURL;
+  } 
+  
+  // https://stackoverflow.com/questions/16687618/how-do-i-get-the-redirected-url-from-the-nodejs-request-module
+  var r = request.get(validatedURL, function (err, response, body) {
+    //console.log(res.request.uri.href); // alternate
+    validatedURL = r.uri.href;
 
-      if(myCookie != null) {
-        // console.log("Cookie exists!"); // debugging
+    // Call BFS
+    if (algorithm === "bfs") {
+      //console.log("final validated URL: " + validatedURL); // debugging
+      callBFS(validatedURL, depth).then(result => {
+        console.log("BFS success: ", result);
 
-        var str =  JSON.stringify(myCookie) + '';
+        var myCookie = req.cookies.urlHistory; 
 
-        // console.log("first string is this: " + str); // debugging
+        if(myCookie != null) {
+          var str =  JSON.stringify(myCookie) + '';
 
-        // keep the substring between [ and ]
-        str = str.substring(str.lastIndexOf("[") + 1,
-                            str.lastIndexOf("]"))
+          // keep the substring between [ and ]
+          str = str.substring(str.lastIndexOf("[") + 1,
+                              str.lastIndexOf("]"))
 
-        // console.log("2nd string is this: " + str); // debugging
+          str = str.replace(/(\r\n|\n|\r)/gm, "");
 
-        str = str.replace(/(\r\n|\n|\r)/gm, "");
+          var strArray = JSON.parse("[" + str + "]"); // convert string to array
 
-        var strArray = JSON.parse("[" + str + "]"); // convert string to array
+          urlHistory = strArray.concat(urlHistory); 
+        }
 
-        // console.log("As an array: " + strArray); // debugging
+        res.cookie("urlHistory", urlHistory);
+        res.status(201).sendFile(path.join(__dirname, 'data.json'));
+      }).catch(result => {
+        console.log("BFS success: ", result);
+        res.status(500).send(null);
+      })
+    }
 
-        urlHistory = strArray.concat(urlHistory); 
+    // Call DFS
+    else if (algorithm === "dfs") {
+      callDFS(validatedURL, depth).then(result => {
+        console.log("DFS success: ", result);
 
-        // console.log("As an combined array: " + urlHistory); // debugging
-      }
+        var myCookie = req.cookies.urlHistory; 
 
-      res.cookie("urlHistory", urlHistory);
-			res.status(201).sendFile(path.join(__dirname, 'data.json'));
-		}).catch(result => {
-			console.log("BFS success: ", result);
-			res.status(500).send(null);
-		})
-	}
+        if(myCookie != null) {
+          var str =  JSON.stringify(myCookie) + '';
 
-	// Call DFS
-	else if (algorithm === "dfs") {
-		callDFS(url, depth).then(result => {
-			console.log("DFS success: ", result);
-      var myCookie = req.cookies.urlHistory; 
+          // keep the substring between [ and ]
+          str = str.substring(str.lastIndexOf("[") + 1,
+                              str.lastIndexOf("]"))
 
-      if(myCookie != null) {
-        var str =  JSON.stringify(myCookie) + '';
+          str = str.replace(/(\r\n|\n|\r)/gm, "");
 
-        // keep the substring between [ and ]
-        str = str.substring(str.lastIndexOf("[") + 1,
-                            str.lastIndexOf("]"))
+          var strArray = JSON.parse("[" + str + "]"); // convert string to array
 
-        str = str.replace(/(\r\n|\n|\r)/gm, "");
+          urlHistory = strArray.concat(urlHistory); 
+        }
 
-        var strArray = JSON.parse("[" + str + "]"); // convert string to array
+        res.cookie("urlHistory", urlHistory);
+        res.status(201).sendFile(path.join(__dirname, 'data.json'));
+      }).catch(result => {
+        console.log("DFS success: ", result);
+        res.status(500).send(null);
+      });
+    }
 
-        urlHistory = strArray.concat(urlHistory); 
-      }
-
-      res.cookie("urlHistory", urlHistory);
-			res.status(201).sendFile(path.join(__dirname, 'data.json'));
-		}).catch(result => {
-			console.log("DFS success: ", result);
-			res.status(500).send(null);
-		})
-	}
-
-	else {
-		console.log("error");
-		res.status(400).end('Error in POST /data');
-	}
+    else {
+      console.log("error");
+      res.status(400).end('Error in POST /data');
+    }
+  });
 })
 
 //Iterate users data from cookie
