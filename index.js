@@ -117,7 +117,7 @@ app.post("/data", (req, res, next) => {
   var validSubstrHttp = validatedURL.substring(0,7);
   var validSubstrHttps = validatedURL.substring(0,8);
   
-  if(validSubstrHttp != "http://" && validSubstrHttps != "https://") {
+  if(!(validSubstrHttp == "http://" || validSubstrHttps == "https://")) {
     validatedURL = "http://" + validatedURL;
   } 
   
