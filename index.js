@@ -10,7 +10,7 @@ const app = express();
 /*********************************************************************
 	Middleware
 *********************************************************************/
-// Allow cross-origin reqs for Angular testing 
+// Allow cross-origin reqs for Angular testing
 app.use(cors({credentials: true, origin: true}));
 
 // Use body parser to get POST request parameters
@@ -27,7 +27,7 @@ var urlHistory = [];
   https://www.sohamkamani.com/blog/2015/08/21/python-nodejs-comm/
 *********************************************************************/
 // Call BFS Python script
-async function callBFS(url, depth) {
+async function callBFS(url, depth, keyword) {
 	let promise = new Promise((resolve, reject) => {
 
 		var crawlSuccess = false;
@@ -61,7 +61,7 @@ async function callBFS(url, depth) {
 }
 
 // Call DFS Python script
-async function callDFS(url, depth) {
+async function callDFS(url, depth, keyword) {
 	let promise = new Promise((resolve, reject) => {
 
 		var crawlSuccess = false;
@@ -106,7 +106,8 @@ app.get("/data", (req, res, next) => {
 app.post("/data", (req, res, next) => {
 	var url = req.body.url,
 		depth = req.body.depth,
-		algorithm = req.body.algorithm;
+		algorithm = req.body.algorithm,
+		keyword = req.body.keyword;
 	console.log("req.body: ", req.body);
 
   // Clear out the urlHistory array
@@ -116,11 +117,11 @@ app.post("/data", (req, res, next) => {
 
   var validSubstrHttp = validatedURL.substring(0,7);
   var validSubstrHttps = validatedURL.substring(0,8);
-  
+
   if(!(validSubstrHttp == "http://" || validSubstrHttps == "https://")) {
     validatedURL = "http://" + validatedURL;
-  } 
-  
+  }
+
   // https://stackoverflow.com/questions/16687618/how-do-i-get-the-redirected-url-from-the-nodejs-request-module
   var r = request.get(validatedURL, function (err, response, body) {
     //console.log(res.request.uri.href); // alternate
@@ -129,10 +130,10 @@ app.post("/data", (req, res, next) => {
     // Call BFS
     if (algorithm === "bfs") {
       //console.log("final validated URL: " + validatedURL); // debugging
-      callBFS(validatedURL, depth).then(result => {
+      callBFS(validatedURL, depth, keyword).then(result => {
         console.log("BFS success: ", result);
 
-        var myCookie = req.cookies.urlHistory; 
+        var myCookie = req.cookies.urlHistory;
 
         if(myCookie != null) {
           var str =  JSON.stringify(myCookie) + '';
@@ -145,7 +146,7 @@ app.post("/data", (req, res, next) => {
 
           var strArray = JSON.parse("[" + str + "]"); // convert string to array
 
-          urlHistory = strArray.concat(urlHistory); 
+          urlHistory = strArray.concat(urlHistory);
         }
 
         res.cookie("urlHistory", urlHistory);
@@ -158,10 +159,10 @@ app.post("/data", (req, res, next) => {
 
     // Call DFS
     else if (algorithm === "dfs") {
-      callDFS(validatedURL, depth).then(result => {
+      callDFS(validatedURL, depth, keyword).then(result => {
         console.log("DFS success: ", result);
 
-        var myCookie = req.cookies.urlHistory; 
+        var myCookie = req.cookies.urlHistory;
 
         if(myCookie != null) {
           var str =  JSON.stringify(myCookie) + '';
@@ -174,7 +175,7 @@ app.post("/data", (req, res, next) => {
 
           var strArray = JSON.parse("[" + str + "]"); // convert string to array
 
-          urlHistory = strArray.concat(urlHistory); 
+          urlHistory = strArray.concat(urlHistory);
         }
 
         res.cookie("urlHistory", urlHistory);

@@ -1,7 +1,8 @@
 <mat-accordion multi="false" *ngIf="posts.length > 0">
   <mat-expansion-panel *ngFor="let post of posts">
     <mat-expansion-panel-header>
-      {{ post.url }}, Algorithm: {{ post.algorithm }}, Depth: {{ post.depth }}
+      URL: {{ post.url }}, Algorithm: {{ post.algorithm }},
+      Depth: {{ post.depth }}, Keyword: {{ post.keyword }}
     </mat-expansion-panel-header>
     More info to come...
   </mat-expansion-panel>
