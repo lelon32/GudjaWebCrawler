@@ -111,7 +111,6 @@ app.post("/data", (req, res, next) => {
 		keyword = req.body.keyword;
 	console.log("req.body: ", req.body);
 
-<<<<<<< HEAD
 	// Call BFS
 	if (algorithm === "bfs") {
 		res.status(201).sendFile(path.join(__dirname, 'data.json'));
