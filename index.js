@@ -49,7 +49,7 @@ async function callBFS(url, depth) {
     ;});
 
     //here is where the data is written to std in to actually call the python function
-    console.log(data);
+    console.log('data: ', data);
 
     py.stdin.write(JSON.stringify(data));
     py.stdin.end();

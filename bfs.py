@@ -20,6 +20,8 @@ class BFS:
         return json.loads(lines[0])
 
     def __init__(self, *argv):
+        self.keyword = ""
+
         # check the number of the arguments
         if len(argv) <= 0:
             lines = self.read_in()
@@ -30,8 +32,13 @@ class BFS:
         else: # run program with parameters
             self.rootURL = argv[0]
             self.depthNumber = int(argv[1])
+            if len(argv) > 2:
+                self.keyword = argv[2]
 
         self.bot = crawler(self.rootURL) # parse root URL
+        self.bot.create_soup(self.rootURL)
+        self.bot.add_keyword(self.keyword);
+        print("Keyword: " + self.bot.keyword)
 
         self.url = []
         self.domainName = []
@@ -52,7 +59,7 @@ class BFS:
                 return item[0]
 
     def start(self):
-        print(self.rootURL)
+        print(self.rootURL) # returns to index.js as data, then concat to dataString  
         #print("**BFS CRAWLING INITIATED**\n\nUser Entered URL: " + self.rootURL + "\nUser Entered Depth Number: " + str(self.depthNumber))
 
         depthCount = 0
@@ -102,6 +109,14 @@ class BFS:
                     self.source.append(self.find_source_index(linkIndex))
                     self.target.append(linkIndex)
 
+            if self.keyword != "": 
+                if self.bot.search_soup() == True:
+                    print("found ", self.bot.keyword)
+                    print("halting program")
+                    break
+            else:
+                print("word not found")
+
             linkIndex += 1
 
             # see if new BFS level has been reached
@@ -149,8 +164,10 @@ class BFS:
 def main():
     if len(sys.argv) < 3:
         bfs = BFS() # call BFS for use with front-end site
-    else:
+    elif len(sys.argv) < 4:
         bfs = BFS(sys.argv[1], sys.argv[2]) # use with console arguments
+    else:
+        bfs = BFS(sys.argv[1], sys.argv[2], sys.argv[3]) # use with console arguments
 
 # Start program
 if __name__ == '__main__':

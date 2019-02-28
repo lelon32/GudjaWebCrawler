@@ -29,6 +29,9 @@ class crawler():
         self.title = ""
         self.keyword = ""
 
+    def add_keyword(self, keyword):
+        self.keyword = keyword
+
     def search_soup(self):
         check = self.soup.get_text().find(self.keyword)
         if check != -1:
