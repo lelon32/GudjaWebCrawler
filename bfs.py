@@ -29,6 +29,7 @@ class BFS:
 
             self.rootURL = np_lines[0]
             self.depthNumber = int(np_lines[1])
+            self.keyword = np_lines[2]
         else: # run program with parameters
             self.rootURL = argv[0]
             self.depthNumber = int(argv[1])
@@ -38,7 +39,7 @@ class BFS:
         self.bot = crawler(self.rootURL) # parse root URL
         self.bot.create_soup(self.rootURL)
         self.bot.add_keyword(self.keyword);
-        print("Keyword: " + self.bot.keyword)
+        #print("Keyword: " + self.bot.keyword)
 
         self.url = []
         self.domainName = []
@@ -111,11 +112,11 @@ class BFS:
 
             if self.keyword != "": 
                 if self.bot.search_soup() == True:
-                    print("found ", self.bot.keyword)
-                    print("halting program")
+                 #   print("found ", self.bot.keyword)
+                 #   print("halting program")
                     break
-            else:
-                print("word not found")
+            #else:
+            #    print("word not found")
 
             linkIndex += 1
 

@@ -32,10 +32,17 @@ async function callBFS(url, depth, keyword) {
 
 		var crawlSuccess = false;
 
+    var word = "";
+    if(keyword == null){
+      word = "";
+    } else {
+      word = keyword;
+    }
+
     var spawn = require('child_process').spawn,
-        py    = spawn('python3', ['bfs.py']),
-        data = [url, depth],
-        dataString = '';
+      py    = spawn('python3', ['bfs.py']),
+      data = [url, depth, word],
+      dataString = '';
 
     py.stdout.on('data', function(data){
         dataString += data.toString();
