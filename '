@@ -47,21 +47,21 @@ async function callBFS(url, depth, keyword) {
 
     py.stdout.on('data', function(data){
       dataString += data.toString();
+
+      if(dataString.includes(",")) {
+        let dataString2 = dataString;
+        keywordFoundURL = dataString2.substring(dataString2.lastIndexOf(",") + 2, dataString2.length-1);
+        dataString = dataString.substring(0, dataString.lastIndexOf(","));
+      }
     });
 
     // Prints the confirmation message from stdout.
     py.stdout.on('end', function(){
-        // Check the string returned by stdout from bfs.py. If there exists a comma, then
-        // the secondary URL is the one which the keyword is found.
-        if(dataString.includes(",")) {
-          keywordFoundURL = dataString.substring(dataString.lastIndexOf(",") + 1, dataString.length-1);
-          dataString = dataString.substring(0, dataString.lastIndexOf(","));
-        }
-
-        console.log('rootURL= ', dataString);
+        console.log('result=', dataString);
         urlHistory.push(dataString);
-        console.log("keywordFoundURL= " + keywordFoundURL);
 				resolve(true);
+      //console.log("dataString: " + dataString);
+      console.log("keywordFoundURL: " + keywordFoundURL);
     ;});
 
     //here is where the data is written to std in to actually call the python function

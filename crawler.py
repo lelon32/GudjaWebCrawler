@@ -35,7 +35,7 @@ class crawler():
     def search_soup(self):
         check = self.soup.get_text().find(self.keyword)
         if check != -1:
-            print(self.url, " ", check)
+            #print(self.url, " ", check)
             return True
         return False
 
@@ -107,9 +107,9 @@ class crawler():
             currLink = URL
 
         r = requests.get(currLink)
-        soup = BeautifulSoup(r.text, 'lxml')
+        self.soup = BeautifulSoup(r.text, 'lxml')
         # web_url = convert_to_base_url(currLink)
-        for link in soup.find_all('a'):
+        for link in self.soup.find_all('a'):
             tmpString = str(link.get('href'))
             # Include external links (links only starting with "http") and only adds unique links 
             if tmpString.startswith("http") and tmpString not in self.web_links:
@@ -121,9 +121,9 @@ class crawler():
 
         # scrape some other info
         # check to see if title exists
-        # https://stackoverflow.com/questions/53876649/beautifulsoup-nonetype-object-has-no-attribute-gettext
-        tmpString = soup.title
-        tmpString = soup.title.get_text() if tmpString else "No Title"
+        # https://stackoverflow.com/questions/53876649/beautifulself.soup-nonetype-object-has-no-attribute-gettext
+        tmpString = self.soup.title
+        tmpString = self.soup.title.get_text() if tmpString else "No Title"
         self.title = str(tmpString) 
         self.favicon = self.convert_to_base_url(currLink) + "/favicon.ico"
 

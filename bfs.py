@@ -60,7 +60,6 @@ class BFS:
                 return item[0]
 
     def start(self):
-        print(self.rootURL) # returns to index.js as data, then concat to dataString  
         #print("**BFS CRAWLING INITIATED**\n\nUser Entered URL: " + self.rootURL + "\nUser Entered Depth Number: " + str(self.depthNumber))
 
         depthCount = 0
@@ -112,11 +111,9 @@ class BFS:
 
             if self.keyword != "": 
                 if self.bot.search_soup() == True:
-                 #   print("found ", self.bot.keyword)
-                 #   print("halting program")
+                    # This print statement to stdout is sent to index.js when a keyword is found
+                    print(self.rootURL + "," + self.url[-1]) # returns to index.js as data, then concat to dataString  
                     break
-            #else:
-            #    print("word not found")
 
             linkIndex += 1
 
@@ -139,6 +136,8 @@ class BFS:
 
             # break if user entered depth number is reached or the link index has reached the end of the array
             if depthCount >= self.depthNumber or linkIndex >= len(self.bot.web_links):
+                # This print statement to stdout is sent to index.js when there is no keyword entered or it is not found
+                print(self.rootURL)
                 break
 
         # https://stackoverflow.com/questions/42865013/python-create-array-of-json-objects-from-for-loops
