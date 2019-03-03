@@ -1,5 +1,5 @@
-<h1>Web Crawler</h1>
 <mat-card>
+  <h2>Web Crawler</h2>
   <form (submit)="onAddPost(postForm)" #postForm="ngForm">
     <div class="form_row">
       <mat-form-field>
@@ -28,7 +28,9 @@
         <mat-radio-button
           value="dfs">Depth First Search (follow each link all the way down)</mat-radio-button>
       </mat-radio-group>
-      <mat-form-field class="width_25">
+    </div>
+    <div class="form_row">
+      <mat-form-field>
         <mat-label>Page Depth</mat-label>
         <input
           matInput
@@ -40,7 +42,7 @@
           #depth="ngModel"/>
         <mat-error *ngIf="depth.invalid">Please enter a page depth.</mat-error>
       </mat-form-field>
-      <mat-form-field class="width_25">
+      <mat-form-field>
         <mat-label>Stop at keyword (optional)</mat-label>
         <input
           matInput

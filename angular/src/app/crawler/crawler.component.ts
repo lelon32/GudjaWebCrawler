@@ -49,8 +49,8 @@ export class CrawlerComponent implements OnInit, OnDestroy {
 function buildCrawler(realData) {
   // Container and svg params
   var margin = {top: 0, right: 0, bottom: 0, left: 0},
-    containerWidth = 960,
-    containerHeight = 500,
+    containerWidth = 1100,
+    containerHeight = 700,
     width = containerWidth - margin.left - margin.right,
     height = containerHeight - margin.top - margin.bottom;
 

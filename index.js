@@ -110,6 +110,23 @@ async function callDFS(url, depth, keyword) {
 	return message;
 }
 
+// Process cookie
+function processCookie(cookie, validatedURL, keyword) {
+	var url = validatedURL.trim();
+	if (keyword === null || keyword.length === 0) {
+		keyword = "-";
+	} else {
+		keyword = keyword.trim();
+	}
+	cookie = JSON.parse(cookie);
+	cookie.push(url);
+	cookie.push(keyword);
+	cookie = JSON.stringify(cookie);
+
+	console.log("cookie: ", cookie);
+	return cookie;
+}
+
 /*********************************************************************
 	Controller
 *********************************************************************/
@@ -150,25 +167,25 @@ app.post("/data", (req, res, next) => {
     if (algorithm === "bfs") {
       //console.log("final validated URL: " + validatedURL); // debugging
       callBFS(validatedURL, depth, keyword).then(result => {
+
         console.log("BFS success: ", result);
+				var cookie = processCookie(req.cookies.urlHistory, validatedURL, keyword);
+        res.cookie("urlHistory", cookie);
 
-        var myCookie = req.cookies.urlHistory;
+				// if(myCookie != null) {
+          // var str =  JSON.stringify(myCookie) + '';
+					//
+          // // keep the substring between [ and ]
+          // str = str.substring(str.lastIndexOf("[") + 1,
+          //                     str.lastIndexOf("]"))
+					//
+          // str = str.replace(/(\r\n|\n|\r)/gm, "");
+					//
+          // var strArray = JSON.parse("[" + str + "]"); // convert string to array
+					//
+          // urlHistory = strArray.concat(urlHistory);
+        // }
 
-        if(myCookie != null) {
-          var str =  JSON.stringify(myCookie) + '';
-
-          // keep the substring between [ and ]
-          str = str.substring(str.lastIndexOf("[") + 1,
-                              str.lastIndexOf("]"))
-
-          str = str.replace(/(\r\n|\n|\r)/gm, "");
-
-          var strArray = JSON.parse("[" + str + "]"); // convert string to array
-
-          urlHistory = strArray.concat(urlHistory);
-        }
-
-        res.cookie("urlHistory", urlHistory);
         res.status(201).sendFile(path.join(__dirname, 'data.json'));
       }).catch(result => {
         console.log("BFS success: ", result);
@@ -179,26 +196,12 @@ app.post("/data", (req, res, next) => {
     // Call DFS
     else if (algorithm === "dfs") {
       callDFS(validatedURL, depth, keyword).then(result => {
-        console.log("DFS success: ", result);
 
-        var myCookie = req.cookies.urlHistory;
+	      console.log("DFS success: ", result);
+				var cookie = processCookie(req.cookies.urlHistory, validatedURL, keyword);
+	      res.cookie("urlHistory", cookie);
+	      res.status(201).sendFile(path.join(__dirname, 'data.json'));
 
-        if(myCookie != null) {
-          var str =  JSON.stringify(myCookie) + '';
-
-          // keep the substring between [ and ]
-          str = str.substring(str.lastIndexOf("[") + 1,
-                              str.lastIndexOf("]"))
-
-          str = str.replace(/(\r\n|\n|\r)/gm, "");
-
-          var strArray = JSON.parse("[" + str + "]"); // convert string to array
-
-          urlHistory = strArray.concat(urlHistory);
-        }
-
-        res.cookie("urlHistory", urlHistory);
-        res.status(201).sendFile(path.join(__dirname, 'data.json'));
       }).catch(result => {
         console.log("DFS success: ", result);
         res.status(500).send(null);
@@ -218,11 +221,19 @@ app.get('/gethistory', (req, res)=>{
   res.send(req.cookies);
 });
 
-app.use("/", express.static(path.join(__dirname, "front_end")));
-
-app.use((req, res, next) => {
-	res.sendFile(path.join(__dirname, 'front_end', 'index.html'));
+// Initialize the urlHistory cookie
+app.use("/", (req, res, next) => {
+	if (req.cookies === undefined || req.cookies.urlHistory === undefined) {
+		res.cookie("urlHistory", "[]");
+	}
+	next();
 });
+
+app.use(express.static(path.join(__dirname, "front_end")));
+
+// app.use((req, res, next) => {
+// 	res.sendFile(path.join(__dirname, 'front_end', 'index.html'));
+// });
 
 // Catch and handle errors
 app.use(function(err, req, res, next) {

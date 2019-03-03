@@ -4,6 +4,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
+import { CookieService } from 'ngx-cookie-service';
 import {
   MatInputModule,
   MatCardModule,
@@ -11,25 +12,29 @@ import {
   MatToolbarModule,
   MatExpansionModule,
   MatRadioModule,
-  MatListModule
+  MatListModule,
+  MatTableModule
 } from '@angular/material';
 
-
 import { AppComponent } from './app.component';
+import { CookieComponent } from './cookie/cookie.component';
+import { CrawlerComponent } from './crawler/crawler.component';
 import { HeaderComponent } from './header/header.component';
+import { FooterComponent } from './footer/footer.component';
 import { PostCreateComponent } from './posts/post-create/post-create.component';
 import { PostDisplayComponent } from './posts/post-display/post-display.component';
-import { CrawlerComponent } from './crawler/crawler.component';
 import { HomeComponent } from './home/home.component';
 
 @NgModule({
   declarations: [
     AppComponent,
+    CookieComponent,
+    CrawlerComponent,
     HeaderComponent,
+    FooterComponent,
+    HomeComponent,
     PostCreateComponent,
     PostDisplayComponent,
-    CrawlerComponent,
-    HomeComponent
   ],
   imports: [
     BrowserModule,
@@ -43,9 +48,10 @@ import { HomeComponent } from './home/home.component';
     MatToolbarModule,
     MatExpansionModule,
     MatRadioModule,
-    MatListModule
+    MatListModule,
+    MatTableModule
   ],
-  providers: [],
+  providers: [CookieService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,0 +1,10 @@
+mat-toolbar {
+  background-color: #0088ff;
+  color: white;
+  display: block;
+}
+
+h3 {
+  padding-top: 1rem;
+  text-align: center;
+}

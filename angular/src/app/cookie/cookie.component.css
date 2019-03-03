@@ -1,0 +1,40 @@
+div {
+  padding-top: 1rem;
+  padding-bottom: 1.5rem;
+}
+
+table {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  padding: 20px;
+  width: 100%;
+}
+
+td, th {
+  padding: 10px !important;
+}
+
+button {
+  color: white;
+}
+
+h3 {
+  padding-top: 1.5rem;
+  color: white;
+}
+
+.hide_button {
+  margin-left: 0.5rem;
+  background-color: #efefef;
+  color: black;
+}
+
+.delete_button {
+  margin-left: 0.5rem;
+  background-color: red;
+  color: white;
+}
+
+.hidden {
+  display: none;
+}
