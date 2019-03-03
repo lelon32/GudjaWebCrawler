@@ -1,7 +1,6 @@
 mat-card {
   padding: 2rem;
   padding-bottom: 1rem;
-  background-color: #0088ff;
 }
 
 .site_title {
@@ -15,7 +14,6 @@ mat-card {
 h1 {
   display: block;
   width: 100%;
-  color: white;
 }
 
 app-post-create, mat-card {
@@ -27,13 +25,13 @@ app-post-display, app-cookie {
 }
 
 app-post-create {
-  width: 67%;
+  width: 50%;
 }
 
 mat-card {
   vertical-align: top;
-  margin-left: 2%;
-  width: 25%;
+  margin-left: 3%;
+  width: 40.8%;
 }
 
 app-crawler {

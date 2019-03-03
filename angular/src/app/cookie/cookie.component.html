@@ -3,7 +3,7 @@
   <button (click)="refreshData()" mat-raised-button color="accent">Refresh</button>
   <button (click)="hideTable()" mat-raised-button class="hide_button">Hide</button>
   <button (click)="deleteData()" mat-raised-button class="delete_button">Clear History</button>
-  <table mat-table [dataSource]="contents" [class.hidden]="!show" class="mat-elevation-z8">
+  <table mat-table [dataSource]="contents" [class.hidden]="!show" class="mat-elevation-z3">
     <ng-container matColumnDef="site">
       <th mat-header-cell *matHeaderCellDef>Site</th>
       <td mat-cell *matCellDef="let data"> {{ data.site }} </td>

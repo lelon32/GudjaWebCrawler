@@ -1,10 +1,6 @@
 mat-accordion {
   display: block;
-  border-top: 5px solid #ffd740;
-}
-
-h3, p {
-  color: white;
+  border-top: 5px solid #673ab7;
 }
 
 h3 {

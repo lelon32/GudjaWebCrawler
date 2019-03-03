@@ -2,3 +2,24 @@ main {
   width: 90%;
   margin: auto;
 }
+
+.toolbar {
+  justify-content: center;
+  background-color: #2B2B2B;
+  text-align: center;
+  font-family: monospace;
+  font-size: 13px;
+  color: white;
+}
+
+.cool_header {
+  font-family: SignPainter;
+  text-align: left;
+  font-size: 2.7rem;
+}
+
+.mat_card_border {
+  border: 3px solid #fed550;
+  /* border: 3px solid #178bfb; */
+  color: black;
+}

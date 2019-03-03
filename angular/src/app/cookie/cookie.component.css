@@ -1,13 +1,13 @@
 div {
   padding-top: 1rem;
-  padding-bottom: 1.5rem;
+  padding-bottom: 1rem;
 }
 
 table {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+  margin-top: 2rem;
   padding: 20px;
   width: 100%;
+  border-radius: 4px;
 }
 
 td, th {
@@ -20,7 +20,6 @@ button {
 
 h3 {
   padding-top: 1.5rem;
-  color: white;
 }
 
 .hide_button {
