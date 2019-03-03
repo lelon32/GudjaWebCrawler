@@ -48,7 +48,7 @@ The front end website has not been fully integrated with Python spider bot code.
 bfs.py will output the file data.json which represents the nodes and edges in the URL visited graph.
 Use the following command on terminal to run the bfs.py code and generate the data.json file.
 ```shell
-$ python3 bfs.py [Full URL] [Depth of Search] [Optional Keyword]
+$ python3 bfs.py [URL] [Depth of Search] [Optional Keyword]
 ```
 For example:
 ```shell
