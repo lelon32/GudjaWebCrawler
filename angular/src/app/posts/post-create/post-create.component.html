@@ -30,7 +30,7 @@
       </mat-radio-group>
     </div>
     <div class="form_row">
-      <mat-form-field>
+      <mat-form-field class="small_space">
         <mat-label>Page Depth</mat-label>
         <input
           matInput
@@ -42,7 +42,7 @@
           #depth="ngModel"/>
         <mat-error *ngIf="depth.invalid">Please enter a page depth.</mat-error>
       </mat-form-field>
-      <mat-form-field>
+      <mat-form-field class="med_space">
         <mat-label>Stop at keyword (optional)</mat-label>
         <input
           matInput
@@ -52,9 +52,7 @@
           placeholder="e.g. cat"
           #keyword="ngModel"/>
       </mat-form-field>
-    </div>
-    <div class="form_submit">
-      <button mat-raised-button color="accent" type="submit" >Crawl</button>
+      <button class="form_submit" mat-raised-button color="accent" type="submit">Crawl</button>
     </div>
   </form>
 </mat-card>

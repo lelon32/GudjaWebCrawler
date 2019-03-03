@@ -6,7 +6,7 @@ h2 {
 }
 
 mat-form-field, textarea {
-  width: 100%;
+  width: 95%;
 }
 
 mat-card {
@@ -24,14 +24,22 @@ mat-radio-button {
 }
 
 .form_row {
-  display: flex;
+  display: block;
   flex-direction: row;
 }
 
 .form_row > mat-form-field, mat-radio-group {
-  padding: 20px;
+  padding: 10px;
 }
 
 .form_submit {
-  text-align: right;
+  margin-left: 15rem;
+}
+
+.small_space {
+  width: 20%;
+}
+
+.med_space {
+  width: 30%;
 }

@@ -1,7 +1,9 @@
 <h3>Current Session</h3>
 <mat-accordion multi="false" *ngIf="posts.length > 0">
   <p *ngFor="let post of posts">
-      URL: {{ post.url }}, Algorithm: {{ post.algorithm }},
+      {{ post.url }}
+      <br />
+      Algorithm: {{ post.algorithm }},
       Depth: {{ post.depth }}, Keyword: {{ post.keyword }}
   </p>
 </mat-accordion>

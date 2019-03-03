@@ -4,6 +4,9 @@ mat-accordion {
 }
 
 h3, p {
-  padding-top: 1.5rem;
   color: white;
+}
+
+h3 {
+  padding-top: 1.5rem;
 }
