@@ -171,21 +171,6 @@ app.post("/data", (req, res, next) => {
         console.log("BFS success: ", result);
 				var cookie = processCookie(req.cookies.urlHistory, validatedURL, keyword);
         res.cookie("urlHistory", cookie);
-
-				// if(myCookie != null) {
-          // var str =  JSON.stringify(myCookie) + '';
-					//
-          // // keep the substring between [ and ]
-          // str = str.substring(str.lastIndexOf("[") + 1,
-          //                     str.lastIndexOf("]"))
-					//
-          // str = str.replace(/(\r\n|\n|\r)/gm, "");
-					//
-          // var strArray = JSON.parse("[" + str + "]"); // convert string to array
-					//
-          // urlHistory = strArray.concat(urlHistory);
-        // }
-
         res.status(201).sendFile(path.join(__dirname, 'data.json'));
       }).catch(result => {
         console.log("BFS success: ", result);
