@@ -118,6 +118,7 @@ function processCookie(cookie, validatedURL, keyword) {
 	} else {
 		keyword = keyword.trim();
 	}
+	console.log("req.cookies.urlHistory: ", cookie);
 	cookie = JSON.parse(cookie);
 	cookie.push(url);
 	cookie.push(keyword);
@@ -169,11 +170,9 @@ app.post("/data", (req, res, next) => {
       callBFS(validatedURL, depth, keyword).then(result => {
 
         console.log("BFS success: ", result);
-				console.log("req.cookies: ", req.cookies);
-				var cookie = processCookie(req.cookies.urlHistory, validatedURL, keyword);
-        res.cookie("urlHistory", cookie);
+				//var cookie = processCookie(req.cookies.urlHistory, validatedURL, keyword);
+        //res.cookie("urlHistory", cookie);
         res.status(201).sendFile(path.join(__dirname, 'data.json'));
-
       }).catch(result => {
         console.log("BFS success: ", result);
         res.status(500).send(null);
@@ -185,9 +184,9 @@ app.post("/data", (req, res, next) => {
       callDFS(validatedURL, depth, keyword).then(result => {
 
 	      console.log("DFS success: ", result);
-				console.log("req.cookies: ", req.cookies);
-				var cookie = processCookie(req.cookies.urlHistory, validatedURL, keyword);
-	      res.cookie("urlHistory", cookie);
+				console.log("cookies: ", req.cookies);
+				//var cookie = processCookie(req.cookies.urlHistory, validatedURL, keyword);
+	      //res.cookie("urlHistory", cookie);
 	      res.status(201).sendFile(path.join(__dirname, 'data.json'));
 
       }).catch(result => {

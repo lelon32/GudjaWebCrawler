@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
 import { CookieService } from 'ngx-cookie-service';
+
 import {
   MatInputModule,
   MatCardModule,
@@ -24,6 +25,7 @@ import { FooterComponent } from './footer/footer.component';
 import { PostCreateComponent } from './posts/post-create/post-create.component';
 import { PostDisplayComponent } from './posts/post-display/post-display.component';
 import { HomeComponent } from './home/home.component';
+import { ActivityComponent } from './activity/activity.component';
 
 @NgModule({
   declarations: [
@@ -35,6 +37,7 @@ import { HomeComponent } from './home/home.component';
     HomeComponent,
     PostCreateComponent,
     PostDisplayComponent,
+    ActivityComponent
   ],
   imports: [
     BrowserModule,

@@ -1,39 +1,6 @@
-mat-card {
-  padding: 2rem;
-  padding-bottom: 1rem;
-}
-
-.site_title {
-  display: block;
-  width: 100%;
-  color: black;
-  font-size: 45px;
-  display: none;
-}
-
-h1 {
-  display: block;
-  width: 100%;
-}
-
-app-post-create, mat-card {
+app-post-create, app-activity {
   display: inline-block;
-}
-
-app-post-display, app-cookie {
-  display: block;
-}
-
-app-post-create {
-  width: 50%;
-}
-
-mat-card {
+  width: 48%;
   vertical-align: top;
-  margin-left: 3%;
-  width: 40.8%;
-}
-
-app-crawler {
-  display: block;
+  margin: 0 1% 0 1%;
 }
