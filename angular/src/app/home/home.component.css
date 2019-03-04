@@ -1,0 +1,6 @@
+app-post-create, app-activity {
+  display: inline-block;
+  width: 48%;
+  vertical-align: top;
+  margin: 0 1% 0 1%;
+}

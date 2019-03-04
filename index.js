@@ -21,6 +21,7 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 var urlHistory = [];
+var keywordFoundURL = "";
 
 /*********************************************************************
 	Model functions
@@ -32,24 +33,39 @@ async function callBFS(url, depth, keyword) {
 
 		var crawlSuccess = false;
 
+    var word = "";
+    if(keyword == null){
+      word = "";
+    } else {
+      word = keyword;
+    }
+
     var spawn = require('child_process').spawn,
-        py    = spawn('python3', ['bfs.py']),
-        data = [url, depth],
-        dataString = '';
+      py    = spawn('python3', ['bfs.py']),
+      data = [url, depth, word],
+      dataString = '';
 
     py.stdout.on('data', function(data){
-        dataString += data.toString();
+      dataString += data.toString();
     });
 
     // Prints the confirmation message from stdout.
     py.stdout.on('end', function(){
-        console.log('result=', dataString);
+        // Check the string returned by stdout from bfs.py. If there exists a comma, then
+        // the secondary URL is the one which the keyword is found.
+        if(dataString.includes(",")) {
+          keywordFoundURL = dataString.substring(dataString.lastIndexOf(",") + 1, dataString.length-1);
+          dataString = dataString.substring(0, dataString.lastIndexOf(","));
+        }
+
+        console.log('rootURL= ', dataString);
         urlHistory.push(dataString);
+        console.log("keywordFoundURL= " + keywordFoundURL);
 				resolve(true);
     ;});
 
     //here is where the data is written to std in to actually call the python function
-    console.log(data);
+    console.log('data: ', data);
 
     py.stdin.write(JSON.stringify(data));
     py.stdin.end();
@@ -92,6 +108,23 @@ async function callDFS(url, depth, keyword) {
 
 	let message = await promise;
 	return message;
+}
+
+// Process cookie
+function processCookie(cookie, validatedURL, keyword) {
+	var url = validatedURL.trim();
+	if (keyword === null || keyword.length === 0) {
+		keyword = "-";
+	} else {
+		keyword = keyword.trim();
+	}
+	cookie = JSON.parse(cookie);
+	cookie.push(url);
+	cookie.push(keyword);
+	cookie = JSON.stringify(cookie);
+
+	console.log("cookie: ", cookie);
+	return cookie;
 }
 
 /*********************************************************************
@@ -143,6 +176,9 @@ app.post("/data", (req, res, next) => {
   // Clear out the urlHistory array
   urlHistory.splice(0,urlHistory.length);
 
+  // Clear out the URL
+  keywordFoundURL = "";
+
   var validatedURL = url;
 
   var validSubstrHttp = validatedURL.substring(0,7);
@@ -161,26 +197,13 @@ app.post("/data", (req, res, next) => {
     if (algorithm === "bfs") {
       //console.log("final validated URL: " + validatedURL); // debugging
       callBFS(validatedURL, depth, keyword).then(result => {
+
         console.log("BFS success: ", result);
-
-        var myCookie = req.cookies.urlHistory;
-
-        if(myCookie != null) {
-          var str =  JSON.stringify(myCookie) + '';
-
-          // keep the substring between [ and ]
-          str = str.substring(str.lastIndexOf("[") + 1,
-                              str.lastIndexOf("]"))
-
-          str = str.replace(/(\r\n|\n|\r)/gm, "");
-
-          var strArray = JSON.parse("[" + str + "]"); // convert string to array
-
-          urlHistory = strArray.concat(urlHistory);
-        }
-
-        res.cookie("urlHistory", urlHistory);
+				console.log("req.cookies: ", req.cookies);
+				var cookie = processCookie(req.cookies.urlHistory, validatedURL, keyword);
+        res.cookie("urlHistory", cookie);
         res.status(201).sendFile(path.join(__dirname, 'data.json'));
+
       }).catch(result => {
         console.log("BFS success: ", result);
         res.status(500).send(null);
@@ -190,26 +213,13 @@ app.post("/data", (req, res, next) => {
     // Call DFS
     else if (algorithm === "dfs") {
       callDFS(validatedURL, depth, keyword).then(result => {
-        console.log("DFS success: ", result);
 
-        var myCookie = req.cookies.urlHistory;
+	      console.log("DFS success: ", result);
+				console.log("req.cookies: ", req.cookies);
+				var cookie = processCookie(req.cookies.urlHistory, validatedURL, keyword);
+	      res.cookie("urlHistory", cookie);
+	      res.status(201).sendFile(path.join(__dirname, 'data.json'));
 
-        if(myCookie != null) {
-          var str =  JSON.stringify(myCookie) + '';
-
-          // keep the substring between [ and ]
-          str = str.substring(str.lastIndexOf("[") + 1,
-                              str.lastIndexOf("]"))
-
-          str = str.replace(/(\r\n|\n|\r)/gm, "");
-
-          var strArray = JSON.parse("[" + str + "]"); // convert string to array
-
-          urlHistory = strArray.concat(urlHistory);
-        }
-
-        res.cookie("urlHistory", urlHistory);
-        res.status(201).sendFile(path.join(__dirname, 'data.json'));
       }).catch(result => {
         console.log("DFS success: ", result);
         res.status(500).send(null);
@@ -230,11 +240,19 @@ app.get('/gethistory', (req, res)=>{
   res.send(req.cookies);
 });
 
-app.use("/", express.static(path.join(__dirname, "front_end")));
-
-app.use((req, res, next) => {
-	res.sendFile(path.join(__dirname, 'front_end', 'index.html'));
+// Initialize the urlHistory cookie
+app.use("/", (req, res, next) => {
+	if (req.cookies === undefined || req.cookies.urlHistory === undefined) {
+		res.cookie("urlHistory", "[]");
+	}
+	next();
 });
+
+app.use(express.static(path.join(__dirname, "front_end")));
+
+// app.use((req, res, next) => {
+// 	res.sendFile(path.join(__dirname, 'front_end', 'index.html'));
+// });
 
 // Catch and handle errors
 app.use(function(err, req, res, next) {

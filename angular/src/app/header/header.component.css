@@ -1,3 +1,17 @@
 mat-toolbar {
-  margin-bottom: 3rem;
+  display: block;
+  margin-bottom: 2rem;
+  padding-top: 1.5rem;
+  padding-bottom: 4rem;
+}
+
+h1 {
+  font-family: SignPainter;
+  font-size: 50px;
+}
+
+h4 {
+  font-family: AmericanTypewriter;
+  font-size: 13px;
+  line-height: 1.5rem;
 }

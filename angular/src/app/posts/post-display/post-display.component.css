@@ -1,10 +1,8 @@
-.empty {
-  margin-top: 1rem;
-  text-align: center;
-}
-
 mat-accordion {
   display: block;
-  margin-top: 1rem;
-  border-top: 5px solid #673AB7;
+  border-top: 5px solid #673ab7;
+}
+
+h3 {
+  padding-top: 1.5rem;
 }

@@ -1,5 +1,5 @@
-<h1>Web Crawler</h1>
-<mat-card>
+<mat-card class="mat_card_border">
+  <h2 class="cool_header">Start here</h2>
   <form (submit)="onAddPost(postForm)" #postForm="ngForm">
     <div class="form_row">
       <mat-form-field>
@@ -26,10 +26,12 @@
         <mat-radio-button
           value="bfs">Breadth First Search (1 degree of separation at a time)</mat-radio-button>
         <mat-radio-button
-          value="dfs">Depth First Search (follow each link all the way down)</mat-radio-button>
+          value="dfs">Depth First Search (1 branch at a time)</mat-radio-button>
       </mat-radio-group>
-      <mat-form-field class="width_25">
-        <mat-label>Page Depth</mat-label>
+    </div>
+    <div class="form_row">
+      <mat-form-field class="small_space">
+        <mat-label>Depth</mat-label>
         <input
           matInput
           type="number"
@@ -38,9 +40,9 @@
           required
           placeholder="e.g. 2"
           #depth="ngModel"/>
-        <mat-error *ngIf="depth.invalid">Please enter a page depth.</mat-error>
+        <mat-error *ngIf="depth.invalid">Please enter a search depth.</mat-error>
       </mat-form-field>
-      <mat-form-field class="width_25">
+      <mat-form-field class="med_space">
         <mat-label>Stop at keyword (optional)</mat-label>
         <input
           matInput
@@ -50,9 +52,7 @@
           placeholder="e.g. cat"
           #keyword="ngModel"/>
       </mat-form-field>
-    </div>
-    <div class="form_submit">
-      <button mat-raised-button color="accent" type="submit" >Crawl</button>
+      <button class="form_submit" mat-raised-button color="accent" type="submit">Crawl</button>
     </div>
   </form>
 </mat-card>

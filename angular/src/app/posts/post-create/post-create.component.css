@@ -1,19 +1,5 @@
-h1, h2, h3 {
-  text-align: center;
-  padding: 20px;
-}
-
-h1 {
-  font-size: 40px;
-}
-
 mat-form-field, textarea {
-  width: 100%;
-}
-
-mat-card {
-  margin-left: auto;
-  margin-right: auto;
+  width: 95%;
 }
 
 mat-radio-group {
@@ -25,17 +11,27 @@ mat-radio-button {
 }
 
 .form_row {
-  display: flex;
+  display: block;
   flex-direction: row;
 }
 
 .form_row > mat-form-field, mat-radio-group {
-  padding: 20px;
+  padding: 0.5rem 0.5rem 1.5rem 0;
 }
 
-.width_25 {
-  width: 25%;
+.small_space {
+  width: 30%;
 }
+
+.med_space {
+  width: 40%;
+}
+
 .form_submit {
-  text-align: right;
+  margin-left: 5%;
+}
+
+#mat-radio-3 {
+  padding-top: 0;
+  padding-bottom: 1rem;
 }
