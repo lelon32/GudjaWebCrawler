@@ -11,6 +11,8 @@ import { Subscription } from 'rxjs';
 import { CrawlerData } from './crawlerdata.model';
 import { CrawlerService } from './crawlerdata.service';
 
+var keywordFoundURL = "";
+
 @Component({
   selector: 'app-crawler',
   encapsulation: ViewEncapsulation.None,
@@ -19,7 +21,6 @@ import { CrawlerService } from './crawlerdata.service';
 })
 
 export class CrawlerComponent implements OnInit, OnDestroy {
-
   realData: CrawlerData = null;
   private crawlerDataSub: Subscription;
 
@@ -31,10 +32,18 @@ export class CrawlerComponent implements OnInit, OnDestroy {
     console.log('\'realData\' should be empty to start: ', this.realData);
     buildCrawler(this.realData);
 
+
+    // // TEST DATASET
+    // var dataSize = 20, edgesToNodes = 1.3;
+    // var dataset_test = generateData(dataSize, edgesToNodes);
+    // renderD3data(dataset_test, keywordFoundURL);
+
     this.crawlerDataSub = this.crawlerService.getCrawlerUpdateListener()
       .subscribe((data: CrawlerData) => {
         this.realData = data;
-        renderD3data(this.realData);
+        keywordFoundURL = this.crawlerService.getKeywordFoundURL();
+        console.log("keywordFoundURL crawler component: ", keywordFoundURL);
+        renderD3data(this.realData, keywordFoundURL);
         console.log("\'realData\' updated when form submitted: ", data);
       });
   }
@@ -67,17 +76,45 @@ function buildCrawler(realData) {
   var crawlerGroup = d3.select('#crawlerGroup');
 
   // Tooltip element
-  var tooltip = d3.select("#crawlerContainer").append("div")
+  var tooltip = container.append("div")
     .attr("class", "tooltip")
     .attr("id", "tooltipID");
 
-  // // Test Dataset
-  // var dataSize = 20, edgesToNodes = 1.3;
-  // var dataset_test = generateData(dataSize, edgesToNodes);
-  // var dataset = dataset_test;
+  // Highlight element for website where keyword was found
+  var rGradient = svg.append("radialGradient")
+    .attr("id","rGradient");
+
+  rGradient.append("stop")
+    .attr("offset", "0%")
+    .attr("stop-color", "white");
+
+  rGradient.append("stop")
+    .attr("offset", "60%")
+    .attr("stop-color", "#67CEFA");
+
+  rGradient.append("stop")
+    .attr("offset", "100%")
+    .attr("stop-color", "#efefef");
+
+  var highlight = svg.append("circle")
+    .attr("class", "hidden")
+    .attr("id", "highlight")
+    .attr("fill","url(#rGradient)")
+    .attr("r", "23")
+    .attr("cx", "300")
+    .attr("cy", "300")
+    .node().animate(
+      [{r: 18, opacity: 0.8}, {r:23, opacity: 1}, {r: 18, opacity: 0.8}],
+      {
+        duration: 5000,
+        delay: 0,
+        iterations: Infinity,
+        easing: 'linear'
+      }
+    );
 }
 
-function renderD3data(dataset) {
+function renderD3data(dataset, keywordFoundURL) {
   // Get elements from DOM
   var svg = d3.select("svg"),
     width = svg.attr("width"),
@@ -120,11 +157,13 @@ function renderD3data(dataset) {
       .on("click", (d) => window.open(d.url));
   nodeElems.exit().remove();
 
-  // Revise height if crawlerGroup exceeds height
-  var reviseHeight = d3.select("#crawlerGroup").node().getBoundingClientRect().height;
-  if (reviseHeight > (height * 0.9)) {
-    d3.select("svg")
-      .attr('height', height * 1.1);
+  // Show the highlight if keywordFoundURL
+  if (keywordFoundURL.length > 0) {
+    d3.select("#highlight")
+      .attr('class', 'visible');
+  } else {
+    d3.select("#highlight")
+      .attr('class', 'hidden');
   }
 }
 
@@ -143,11 +182,26 @@ function onTick() {
       .on('mousemove', mousemoveHandler)
       .on('mouseover', mouseoverHandler)
       .on('mouseout', mouseoutHandler);
+
+  // Assign cx and cy of last node element to highlight
+  var lastNode = d3.select(".node:last-child");
+  var highlightX = lastNode.attr("cx"),
+    highlightY = lastNode.attr("cy");
+
+  var highlight = d3.select("#highlight")
+    .attr('cx', highlightX)
+    .attr('cy', highlightY);
 }
 
 function mouseoverHandler(d) {
+  var stuff = '<img width="32px" height="32px" src=' + d.favicon + '>'
+    + '<p>' + d.title + '</p>'
+    + '<p>' + d.url + '</p>';
+  if (d.url === keywordFoundURL) {
+    stuff = '<p>Keyword Found Here!<p><br>' + stuff;
+  }
   var tooltip = d3.select("#tooltipID")
-    .html('<p>' + d.title + '</p><p>' + d.url + '</p>')
+    .html(stuff)
     .style('display', 'block')
     .transition().duration(50).style('opacity', 1);
 }

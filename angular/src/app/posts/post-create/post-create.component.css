@@ -16,7 +16,7 @@ mat-radio-button {
 }
 
 .form_row > mat-form-field, mat-radio-group {
-  padding: 0.5rem 0.5rem 1.5rem 0;
+  padding: 0.5rem 1.5rem 0.5rem 0;
 }
 
 .small_space {
