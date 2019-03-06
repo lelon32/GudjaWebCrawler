@@ -34,3 +34,11 @@ svg {
   margin-top: 3rem;
   margin-bottom: 5rem;
 }
+
+.hidden {
+  display: none;
+}
+
+.visible {
+  display: inherit;
+}

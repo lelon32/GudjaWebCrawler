@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { CookieService } from 'ngx-cookie-service';
 
 import { environment } from '../../environments/environment';
 import { Post } from './post.model';
@@ -9,10 +10,13 @@ import { CrawlerService } from '../crawler/crawlerdata.service';
 
 @Injectable({providedIn: 'root'})
 export class PostsService {
+  private status;
   private posts: Post[] = [];
   private postsUpdated = new Subject<Post[]>();
 
-  constructor(public crawlerService: CrawlerService, private http: HttpClient) {  }
+  constructor(public crawlerService: CrawlerService,
+    private http: HttpClient,
+    private cookieService: CookieService) {  }
 
   getPosts() {
     return [...this.posts];
@@ -37,7 +41,8 @@ export class PostsService {
     var url = environment.baseUrl + '/data';
     this.http.post<string>(url, post, httpOptions)
       .subscribe((response) => {
-        console.log("POST response: ", response);
+        this.status = this.cookieService.get("keywordFoundURL");
+        this.crawlerService.updateKeywordFoundURL(this.status);
         this.crawlerService.updateCrawlerData(response);
       });
   }

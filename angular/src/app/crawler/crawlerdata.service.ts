@@ -7,6 +7,7 @@ import { CrawlerData } from './crawlerdata.model';
 
 @Injectable({providedIn: 'root'})
 export class CrawlerService {
+  private keywordFoundURL;
   private crawlerData: CrawlerData = {nodes: [], edges: []};
   private crawlerDataUpdated = new Subject<CrawlerData>();
 
@@ -14,6 +15,14 @@ export class CrawlerService {
 
   getCrawlerData() {
     return this.crawlerData;
+  }
+
+  getKeywordFoundURL() {
+    return this.keywordFoundURL;
+  }
+
+  updateKeywordFoundURL(status) {
+    this.keywordFoundURL = status;
   }
 
   updateCrawlerData(data_from_post) {
