@@ -339,10 +339,10 @@ MIT
 
 @angular/material/button
 
-@angular/material/table
-
 ngx-cookie-service
 MIT
+
+@angular/material/table
 
 d3
 BSD-3-Clause

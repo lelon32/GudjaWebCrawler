@@ -172,6 +172,7 @@ app.post("/data", (req, res, next) => {
 				console.log("req.cookies: ", req.cookies);
 				var cookie = processCookie(req.cookies.urlHistory, validatedURL, keyword);
         res.cookie("urlHistory", cookie);
+				res.cookie("keywordFoundURL", keywordFoundURL);
         res.status(201).sendFile(path.join(__dirname, 'data.json'));
 
       }).catch(result => {
@@ -188,6 +189,7 @@ app.post("/data", (req, res, next) => {
 				console.log("req.cookies: ", req.cookies);
 				var cookie = processCookie(req.cookies.urlHistory, validatedURL, keyword);
 	      res.cookie("urlHistory", cookie);
+				res.cookie("keywordFoundURL", keywordFoundURL);
 	      res.status(201).sendFile(path.join(__dirname, 'data.json'));
 
       }).catch(result => {
