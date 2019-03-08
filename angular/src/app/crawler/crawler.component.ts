@@ -12,6 +12,7 @@ import { CrawlerData } from './crawlerdata.model';
 import { CrawlerService } from './crawlerdata.service';
 
 var keywordFoundURL = "";
+var transX = 0, transY = 0;
 
 @Component({
   selector: 'app-crawler',
@@ -33,8 +34,8 @@ export class CrawlerComponent implements OnInit, OnDestroy {
     buildCrawler(this.realData);
 
 
-    // // TEST DATASET
-    // var dataSize = 20, edgesToNodes = 1.3;
+    // TEST DATASET
+    // var dataSize = 250, edgesToNodes = 1.3;
     // var dataset_test = generateData(dataSize, edgesToNodes);
     // renderD3data(dataset_test, keywordFoundURL);
 
@@ -56,22 +57,19 @@ export class CrawlerComponent implements OnInit, OnDestroy {
 
 /****************** D3 ********************/
 function buildCrawler(realData) {
-  // Container and svg params
-  var margin = {top: 0, right: 0, bottom: 0, left: 0},
-    containerWidth = 1100,
-    containerHeight = 500,
-    width = containerWidth - margin.left - margin.right,
-    height = containerHeight - margin.top - margin.bottom;
 
-  var container = d3.select("#crawlerContainer")
-    .attr("width", containerWidth)
-    .attr("height", containerHeight);
+  // Container and svg params
+  var margin = {top: 20, right: 20, bottom: 20, left: 20},
+    container = d3.select("#crawlerContainer");
+
+  var width = window.innerWidth,
+    height = window.innerHeight;
 
   var svg = d3.select("svg")
     .attr("width", width)
-    .attr("height", height)
-    .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    .attr("height", height);
+
+  var g = svg.append("g");
 
   // Tooltip element
   var tooltip = container.append("div")
@@ -94,13 +92,11 @@ function buildCrawler(realData) {
     .attr("offset", "100%")
     .attr("stop-color", "#efefef");
 
-  var highlight = svg.append("circle")
+  var highlight = g.append("circle")
     .attr("class", "hidden")
     .attr("id", "highlight")
     .attr("fill","url(#rGradient)")
     .attr("r", "23")
-    .attr("cx", "300")
-    .attr("cy", "300")
     .node().animate(
       [{r: 18, opacity: 0.8}, {r:23, opacity: 1}, {r: 18, opacity: 0.8}],
       {
@@ -115,10 +111,9 @@ function buildCrawler(realData) {
 function renderD3data(dataset, keywordFoundURL) {
   // Get elements from DOM
   var svg = d3.select("svg"),
-    width = svg.attr("width"),
-    height = svg.attr("height"),
-    linkElems = svg.selectAll(".link"),
-    nodeElems = svg.selectAll(".node");
+    g = d3.select("g"),
+    linkElems = g.selectAll(".link"),
+    nodeElems = g.selectAll(".node");
 
   // Simulation params
   var linkDist = 40, chargeStrength = -170;
@@ -126,9 +121,12 @@ function renderD3data(dataset, keywordFoundURL) {
   var linkForce = d3.forceLink().id((d) => d.index).distance(linkDist);
 
   // Simulation
+  console.log("crawler width: ", parseInt(d3.select("#crawlerContainer").style("width")));
+  var width = parseInt(svg.attr("width")) / 2;
+  var height = parseInt(svg.attr("height")) / 2;
   var simulation = d3.forceSimulation()
-      .force("x", d3.forceX(width / 2))
-      .force("y", d3.forceY(height / 2))
+      .force("x", d3.forceX().strength(.2))
+      .force("y", d3.forceY().strength(.2))
       .force("link", linkForce)
       .force("charge", chargeForce)
       .on("tick", onTick);
@@ -139,13 +137,12 @@ function renderD3data(dataset, keywordFoundURL) {
   // Update links elements, append new ones, remove unbound linkElems
   linkElems = linkElems.data(dataset.edges);
   linkElems.enter().append("line")
-      .attr("class", "link")
-      .style("z-index", 0);
+      .attr("class", "link");
   linkElems.exit().remove();
 
   // Remove and append all nodeElems to render above new links
   nodeElems.remove();
-  nodeElems = svg.selectAll(".node");
+  nodeElems = g.selectAll(".node");
   nodeElems = nodeElems.data(dataset.nodes);
   nodeElems.enter().append("circle")
       .style("fill", (d) => randColor())
@@ -167,6 +164,7 @@ function renderD3data(dataset, keywordFoundURL) {
 
 function onTick() {
   var svg = d3.select("svg"),
+    g = d3.select("g"),
     linkElems = svg.selectAll(".link"),
     nodeElems = svg.selectAll(".node");
 
@@ -189,6 +187,31 @@ function onTick() {
   var highlight = d3.select("#highlight")
     .attr('cx', highlightX)
     .attr('cy', highlightY);
+
+  adjustSize();
+}
+
+function adjustSize() {
+  var svg = d3.select("svg"),
+    g = d3.select("g"),
+    svgBBox = svg.node().getBBox(),
+    gBBox = g.node().getBBox();
+
+  // console.log("gBBox: ", gBBox);
+  // console.log("g getBoundingClientRect(): ", g.node().getBoundingClientRect());
+  // console.log("svg BBox: ", svgBBox);
+  // console.log("svg etBoundingClientRect(): ", svg.node().getBoundingClientRect());
+
+  /* Adjust svg width and height to match gBBox (or BCR works too)
+    Translate g the amount of svgBBox which represents how much the local
+    elements (g) are outside the boundary of the svg. */
+  var margin = 60;
+  svg.attr("width", gBBox.width + margin);
+  svg.attr("height", gBBox.height + margin);
+  transX += -svgBBox.x + margin / 2;
+  transY += -svgBBox.y + margin / 2;
+
+  g.attr("transform", "translate(" + transX + "," + transY + ")");
 }
 
 function mouseoverHandler(d) {
@@ -200,6 +223,7 @@ function mouseoverHandler(d) {
   }
   var tooltip = d3.select("#tooltipID")
     .html(stuff)
+    .style("padding", "15px")
     .style('display', 'block')
     .transition().duration(50).style('opacity', 1);
 }
@@ -207,6 +231,7 @@ function mouseoverHandler(d) {
 function mouseoutHandler(d) {
   var tooltip = d3.select("#tooltipID")
     .transition().duration(50).style('opacity', 0)
+    .style("padding", "0px")
     .style('display', 'none');
 }
 

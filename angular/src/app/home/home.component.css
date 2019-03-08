@@ -1,6 +1,15 @@
+#card_container {
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 app-post-create, app-activity {
   display: inline-block;
-  width: 48%;
+  width: 48.5%;
   vertical-align: top;
-  margin: 0 1% 0 1%;
+}
+
+app-post-create {
+  margin-right: 3%;
 }
