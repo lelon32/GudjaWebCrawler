@@ -149,7 +149,6 @@ function renderD3data(dataset, keywordFoundURL) {
       .attr("class", "node")
       .attr("r", 7)
       .on("click", (d) => window.open(d.url));
-
   nodeElems.exit().remove();
 
   // Show the highlight if keywordFoundURL
