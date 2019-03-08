@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
 
 import { environment } from '../../environments/environment';
 import { CrawlerData } from './crawlerdata.model';
@@ -10,8 +9,6 @@ export class CrawlerService {
   private keywordFoundURL;
   private crawlerData: CrawlerData = {nodes: [], edges: []};
   private crawlerDataUpdated = new Subject<CrawlerData>();
-
-  constructor(private http: HttpClient) { }
 
   getCrawlerData() {
     return this.crawlerData;
