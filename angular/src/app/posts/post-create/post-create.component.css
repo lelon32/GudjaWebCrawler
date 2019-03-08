@@ -4,6 +4,7 @@ mat-form-field, textarea {
 
 mat-radio-group {
   display: inline-grid;
+  width: 90%;
 }
 
 mat-radio-button {
@@ -28,7 +29,7 @@ mat-radio-button {
 }
 
 .form_submit {
-  margin-left: 5%;
+  margin-left: 0.5rem;
 }
 
 #mat-radio-3 {
