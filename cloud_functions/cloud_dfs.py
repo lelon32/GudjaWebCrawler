@@ -1,16 +1,9 @@
-#####################################################################
-# Class: Crawler
-# Author: Brent Freeman, Long Le
-# Class: CS 467 Capstone
-# Group: Gudja
-# Project: Graphical Web Crawler
-# Description: HTML parser using Beautiful Soup 4.
-#####################################################################
 
-import sys
+import json
+import random
+from crawler import crawler
+
 import requests
-from datetime  import datetime
-#sys.path.insert(0, 'lib') #use this on GCP
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 import lxml
@@ -84,13 +77,13 @@ class crawler():
         self.title = self.soup.title
 
     # Maybe need to use this later
-    # https://www.geeksforgeeks.org/python-remove-duplicates-list/   
-    def remove(self, duplicate): 
-        final_list = [] 
-        for num in duplicate: 
-            if num not in final_list: 
-                final_list.append(num) 
-        return final_list  
+    # https://www.geeksforgeeks.org/python-remove-duplicates-list/
+    def remove(self, duplicate):
+        final_list = []
+        for num in duplicate:
+            if num not in final_list:
+                final_list.append(num)
+        return final_list
 
     #####################################################################
     # Description: Finds all links on the current URL page. Uses lxml parser.
@@ -111,7 +104,7 @@ class crawler():
         # web_url = convert_to_base_url(currLink)
         for link in self.soup.find_all('a'):
             tmpString = str(link.get('href'))
-            # Include external links (links only starting with "http") and only adds unique links 
+            # Include external links (links only starting with "http") and only adds unique links
             if tmpString.startswith("http") and tmpString not in self.web_links:
                 self.web_links.append(tmpString)
             else:
@@ -124,7 +117,7 @@ class crawler():
         # https://stackoverflow.com/questions/53876649/beautifulself.soup-nonetype-object-has-no-attribute-gettext
         tmpString = self.soup.title
         tmpString = self.soup.title.get_text() if tmpString else "No Title"
-        self.title = str(tmpString) 
+        self.title = str(tmpString)
         self.favicon = self.convert_to_base_url(currLink) + "/favicon.ico"
 
     # for debugging
@@ -134,7 +127,7 @@ class crawler():
             print(i)
 
     #####################################################################
-    # Description: Used to strip a URL to its domain name 
+    # Description: Used to strip a URL to its domain name
     # https://www.quora.com/How-do-I-extract-only-the-domain-name-from-an-URL
     #####################################################################
     def strip_out_domain(self, URL):
@@ -143,7 +136,7 @@ class crawler():
         return domain
 
     #####################################################################
-    # Description: Used to strip a URL to its base URL 
+    # Description: Used to strip a URL to its base URL
     # https://www.quora.com/How-do-I-extract-only-the-domain-name-from-an-URL
     #####################################################################
     def convert_to_base_url(self, URL):
@@ -160,7 +153,7 @@ class crawler():
             count += 1
 
             #print(link.get('href'))
-        print(self.dictionary)
+        #print(self.dictionary)
 
     def get_all_links_and_add_them_to_a_list_from_file(self,):
         r = requests.get(self.url)
@@ -183,7 +176,7 @@ class crawler():
 
     def create_unique_list(self):
         self.unique_links = set(self.web_links)
-        print(len(self.unique_links))
+        #print(len(self.unique_links))
 
     # I created this so we can hava static document to test on
     def write_website_to_file(self):
@@ -208,4 +201,195 @@ class crawler():
         for link in soup.find_all('a'):
             self.web_links.append(link.get('href'))
             count += 1
-        print("Total links is: ", count)
+       # print("Total links is: ", count)
+
+class dfs():
+
+    def __init__(self):
+        self.next_link = ''
+        self.nodes = []
+        self.edges = []
+        self.all_links = []
+        self.depth = ''
+        self.next_url = ''
+
+
+#This is the primary function that runs the depth first search
+    def run_crawl(self, url):
+
+    # instantiate the crawler class
+        dfs_crawl = crawler(url)
+
+    # provide the first url
+#dont need to do this as it was passed when instantiated
+        dfs_crawl.url = url
+
+    # get the domain
+        dfs_crawl.get_domain()
+
+    # get the favicon
+        dfs_crawl.get_favicon_2()
+
+    #visit site and create soup
+        dfs_crawl.create_soup(dfs_crawl.url)
+
+    #get the title
+        dfs_crawl.get_title2()
+
+    # get unique list of links
+        dfs_crawl.create_unique_link_list2()
+
+    # get the next link
+        if len(dfs_crawl.unique_links) != 0:
+            self.next_link = random.choice(dfs_crawl.unique_links)
+
+            source_edge = len(self.nodes)
+
+            node_dict = {"url": dfs_crawl.url, "domainName": dfs_crawl.strip_out_domain(dfs_crawl.url), "title": dfs_crawl.title.text, "favicon": dfs_crawl.favicon}
+            self.nodes.append(node_dict)
+
+            target_edge = len(self.nodes)
+
+            edge_dict = {"source": source_edge, "target": target_edge}
+            self.edges.append(edge_dict)
+
+            export_json = {"nodes": self.nodes, "edges": self.edges }
+
+    #create json
+            json_node = json.dumps(node_dict)
+
+
+    def search_crawl(self, url, keyword):
+
+        # instantiate the crawler class
+        dfs_crawl = crawler(url)
+
+        dfs_crawl.keyword = keyword
+
+        # provide the first url
+        # dont need to do this as it was passed when instantiated
+        dfs_crawl.url = url
+
+        # get the domain
+        dfs_crawl.get_domain()
+
+        # get the favicon
+        dfs_crawl.get_favicon_2()
+
+        # visit site and create soup
+        dfs_crawl.create_soup(dfs_crawl.url)
+
+        # get the title
+        dfs_crawl.get_title2()
+
+        if dfs_crawl.search_soup() == True:
+
+            #print("found ", dfs_crawl.keyword)
+            return True
+
+        else:
+
+        # get unique list of links
+            dfs_crawl.create_unique_link_list2()
+
+            self.all_links = dfs_crawl.unique_links
+
+        # get the next link
+            if len(dfs_crawl.unique_links) != 0:
+                self.next_link = random.choice(dfs_crawl.unique_links)
+
+                source_edge = len(self.nodes)
+
+                node_dict = {"url": dfs_crawl.url, "domainName": dfs_crawl.strip_out_domain(dfs_crawl.url),
+                             "title": dfs_crawl.title.text, "favicon": dfs_crawl.favicon}
+                self.nodes.append(node_dict)
+
+                target_edge = len(self.nodes)
+
+                edge_dict = {"source": source_edge, "target": target_edge}
+                self.edges.append(edge_dict)
+
+                export_json = {"nodes": self.nodes, "edges": self.edges}
+
+                # create json
+                json_node = json.dumps(node_dict)
+
+#####################################################################
+# Class: main
+# Author: Brent Freeman
+# Class: CS 467 Capstone
+# Group: Gudja
+# Project: Graphical Web Crawler
+# Description: this section executes the dfs search and can either take
+# 2 arguments (website and depth) or will run a from a random selection to a depth of 5
+#####################################################################
+# begin Main
+# this is what would normally be the main function, this should be moved to a separeate file that can later call either bfs or dfs
+
+
+
+def cloud_dfs(input):
+
+    run_dfs = dfs()
+
+    #use.get_json for local testing and .loads for deployemnt
+    j_input = input.get_json()
+    #j_input = json.loads(input)
+
+    if j_input["keyword"] is not None:
+        keyword = j_input["keyword"]
+        depth = j_input["depth"]
+        new_url = j_input["url"]
+
+        # add the url to the next link
+        run_dfs.next_link = new_url
+
+        # dfs can use a simple for loop to get all the links
+        for i in range(0, depth):
+
+            if run_dfs.search_crawl(run_dfs.next_link, keyword):
+               # print("found it")
+                break
+            else:
+                # print("not found yet")
+                #print(run_dfs.next_link)
+                # print("all links: ", run_dfs.all_links)
+
+                continue
+
+        # build the final object for converting to stringified json
+        export = {"nodes": run_dfs.nodes, "edges": run_dfs.edges[0:-1]}
+
+        # once we have everything, write it to a file to be viewed by the front end
+        export_json = json.dumps(export)
+
+        return export_json
+
+    else:
+        depth = j_input["depth"]
+        new_url = j_input["url"]
+
+        # add the url to the next link
+        run_dfs.next_link = new_url
+
+        # dfs can use a simple for loop to get all the links
+        for i in range(0, depth):
+            run_dfs.run_crawl(run_dfs.next_link)
+
+        # build the final object for converting to stringified json
+        export = {"nodes": run_dfs.nodes, "edges": run_dfs.edges[0:-1]}
+
+        # once we have everything, write it to a file to be viewed by the front end
+        export_json = json.dumps(export)
+
+        return export_json
+
+out = {"url": "https://www.ktvu.com", "depth": 5, "keyword": None}
+print(out)
+
+expo = json.dumps(out)
+
+print(expo)
+final = cloud_dfs(expo)
+print(final)
+print(type(final))
