@@ -78,12 +78,14 @@ async function callBFS(url, depth, keyword) {
 
 
 
-function make_call() {
-    var options = {
-        method: "GET",
-        uri: "https://us-central1-crawltest.cloudfunctions.net/DFS",
+function call_dfs(url, depth, keyword) {
 
-        json: true
+    var JSONData = {"url":url,"depth": depth, "keyword": keyword}
+
+    var options = {
+        method: "POST",
+        uri: "https://us-central1-crawltest.cloudfunctions.net/test ",
+    json: JSONData
     };
 
    return rp(options).then( (result) =>{
@@ -95,7 +97,7 @@ function make_call() {
 }
 
 
-
+/*
 // Call DFS Python script
 async function callDFS(url, depth, keyword) {
 	let promise = new Promise((resolve, reject) => {
@@ -111,7 +113,7 @@ request("https://us-central1-crawltest.cloudfunctions.net/DFS", function (error,
 	let message = await promise;
 	return body;
 }
-
+*/
 // Process cookie
 function processCookie(cookie, validatedURL, keyword) {
 	var url = validatedURL.trim();
@@ -185,23 +187,12 @@ app.post("/data", (req, res, next) => {
 
     // Call DFS
     else if (algorithm === "dfs") {
-        console.log("in algo check")
-      make_call().then(result => {
-var t1 ={"edges": [{"source": 0, "target": 1}, {"source": 1, "target": 2}, {"source": 2, "target": 3}, {"source": 3, "target": 4}], "nodes": [{"favicon": "www.stackexchange.com/favicon.ico", "title": "\r\n    Hot Questions - Stack Exchange\r\n", "url": "https://www.stackexchange.com", "domainName": "stackexchange"}, {"favicon": "academia.stackexchange.com/favicon.ico", "title": "Academia Stack Exchange", "url": "https://academia.stackexchange.com", "domainName": "stackexchange"}, {"favicon": "writing.stackexchange.com/favicon.ico", "title": "naming - What should the omniscient narrator call a character? - Writing Stack Exchange", "url": "https://writing.stackexchange.com/questions/43056/what-should-the-omniscient-narrator-call-a-character", "domainName": "stackexchange"}, {"favicon": "ethereum.stackexchange.com/favicon.ico", "title": "Ethereum Stack Exchange", "url": "https://ethereum.stackexchange.com", "domainName": "stackexchange"}, {"favicon": "writing.stackexchange.com/favicon.ico", "title": "creative writing - Sometimes a banana is just a banana - Writing Stack Exchange", "url": "https://writing.stackexchange.com/questions/42938/sometimes-a-banana-is-just-a-banana", "domainName": "stackexchange"}]}
-var t2 = {"nodes": [{"domainName": "www.thechive.com", "url": "http://www.thechive.com", "title": "theCHIVE - Funny Pictures, Photos, Memes & Videos \u2013 theCHIVE.com", "favicon": "http://www.thechive.com/favicon.ico"}, {"domainName": "play.google.com", "url": "https://play.google.com/store/apps/details?id=com.thechive&hl=e", "title": "theCHIVE - Apps on Google Play", "favicon": "https://play.google.com/store/apps/details?id=com.thechive&hl=e/favicon.ico"}, {"domainName": "www.google.com", "url": "https://www.google.com/webhp?tab=8w", "title": "Google", "favicon": "https://www.google.com/webhp?tab=8w/favicon.ico"}], "edges": [{"source": 0, "target": 1}, {"source": 1, "target": 2}]}
-          //console.log (t1)
-          //console.log(Object.keys(result))
-          //r2 = JSON.stringify(result)
+      call_dfs(validatedURL, depth, keyword).then(result => {
 
-
-          //console.log("DFS success: ", result);
 				console.log("req.cookies: ", req.cookies);
 				var cookie = processCookie(req.cookies.urlHistory, validatedURL, keyword);
 	      res.cookie("urlHistory", cookie);
-				res.cookie("keywordFoundURL", keywordFoundURL);
-
-
-
+		        res.cookie("keywordFoundURL", keywordFoundURL);
 	      res.status(201).send(result);
 
       }).catch(result => {

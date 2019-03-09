@@ -332,9 +332,9 @@ def cloud_dfs(input):
 
     run_dfs = dfs()
 
-    #use.get_json for local testing and .loads for deployemnt
-    j_input = input.get_json()
-    #j_input = json.loads(input)
+    #use. .loads local testing and get_json for for deployemnt
+    #j_input = input.get_json()
+    j_input = json.loads(input)
 
     if j_input["keyword"] is not None:
         keyword = j_input["keyword"]
