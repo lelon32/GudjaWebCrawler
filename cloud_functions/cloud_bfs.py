@@ -1,12 +1,11 @@
-
 import json
-import random
-from crawler import crawler
-
+import sys
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 import lxml
+import numpy as np
+
 
 class crawler():
 
@@ -203,193 +202,177 @@ class crawler():
             count += 1
        # print("Total links is: ", count)
 
-class dfs():
 
-    def __init__(self):
-        self.next_link = ''
-        self.nodes = []
-        self.edges = []
-        self.all_links = []
-        self.depth = ''
-        self.next_url = ''
+class BFS:
+    def read_in(self):
+        lines = sys.stdin.readlines()
+        return json.loads(lines[0])
 
+    def __init__(self, input_list):
+        self.keyword = ""
 
-#This is the primary function that runs the depth first search
-    def run_crawl(self, url):
+        # check the number of the arguments
+        if len(input_list) <= 0:
+            lines = self.read_in()
+            np_lines = np.array(lines)
 
-    # instantiate the crawler class
-        dfs_crawl = crawler(url)
+            self.rootURL = np_lines[0]
+            self.depthNumber = int(np_lines[1])
+            self.keyword = np_lines[2]
 
-    # provide the first url
-#dont need to do this as it was passed when instantiated
-        dfs_crawl.url = url
+        else: # run program with parameters
+            self.rootURL = input_list[0]
+            self.depthNumber = input_list[1]
+            if len(input_list) > 2:
+                self.keyword = input_list[2]
 
-    # get the domain
-        dfs_crawl.get_domain()
+        self.bot = crawler(self.rootURL) # parse root URL
+        self.bot.create_soup(self.rootURL)
+        self.bot.add_keyword(self.keyword);
+        #print("Keyword: " + self.bot.keyword)
 
-    # get the favicon
-        dfs_crawl.get_favicon_2()
+        self.url = []
+        self.domainName = []
+        self.title = []
+        self.favicon = []
+        self.source = []
+        self.target = []
+        self.allSourceTargetLinks = []
+        self.JSON_Nodes = {}
+        self.JSON_Edges = {}
+        self.depthBookmarks = 0
+        self.json_nodes_edges = None
 
-    #visit site and create soup
-        dfs_crawl.create_soup(dfs_crawl.url)
+        self.start() # initiate the crawl
 
-    #get the title
-        dfs_crawl.get_title2()
+    def find_source_index(self, num):
+        for item in self.allSourceTargetLinks:
+            if item[1] == num:
+                return item[0]
 
-    # get unique list of links
-        dfs_crawl.create_unique_link_list2()
+    def start(self):
+        #print("**BFS CRAWLING INITIATED**\n\nUser Entered URL: " + self.rootURL + "\nUser Entered Depth Number: " + str(self.depthNumber))
 
-    # get the next link
-        if len(dfs_crawl.unique_links) != 0:
-            self.next_link = random.choice(dfs_crawl.unique_links)
+        depthCount = 0
+        linkIndex = 0
 
-            source_edge = len(self.nodes)
+        # Implemented as a do while loop
+        while True:
+            # debugging
+            #tmpStr = "\nDepth Number:  " + str(depthCount+1)
+            #print( tmpStr )
+            #if len(self.url) > 0:
+            #    print(self.url[-1])
 
-            node_dict = {"url": dfs_crawl.url, "domainName": dfs_crawl.strip_out_domain(dfs_crawl.url), "title": dfs_crawl.title.text, "favicon": dfs_crawl.favicon}
-            self.nodes.append(node_dict)
+            # Start BFS algorithm
+            # The initial start will utilize the root node url
 
-            target_edge = len(self.nodes)
+            if linkIndex == 0:
+                # Step 1a: grab all links from root url
+                self.bot.get_all_links()
 
-            edge_dict = {"source": source_edge, "target": target_edge}
-            self.edges.append(edge_dict)
+                # Step 2a: initiate visit the root url
+                self.url.append(self.bot.web_links[linkIndex])
 
-            export_json = {"nodes": self.nodes, "edges": self.edges }
-
-    #create json
-            json_node = json.dumps(node_dict)
-
-
-    def search_crawl(self, url, keyword):
-
-        # instantiate the crawler class
-        dfs_crawl = crawler(url)
-
-        dfs_crawl.keyword = keyword
-
-        # provide the first url
-        # dont need to do this as it was passed when instantiated
-        dfs_crawl.url = url
-
-        # get the domain
-        dfs_crawl.get_domain()
-
-        # get the favicon
-        dfs_crawl.get_favicon_2()
-
-        # visit site and create soup
-        dfs_crawl.create_soup(dfs_crawl.url)
-
-        # get the title
-        dfs_crawl.get_title2()
-
-        if dfs_crawl.search_soup() == True:
-
-            #print("found ", dfs_crawl.keyword)
-            return True
-
-        else:
-
-        # get unique list of links
-            dfs_crawl.create_unique_link_list2()
-
-            self.all_links = dfs_crawl.unique_links
-
-        # get the next link
-            if len(dfs_crawl.unique_links) != 0:
-                self.next_link = random.choice(dfs_crawl.unique_links)
-
-                source_edge = len(self.nodes)
-
-                node_dict = {"url": dfs_crawl.url, "domainName": dfs_crawl.strip_out_domain(dfs_crawl.url),
-                             "title": dfs_crawl.title.text, "favicon": dfs_crawl.favicon}
-                self.nodes.append(node_dict)
-
-                target_edge = len(self.nodes)
-
-                edge_dict = {"source": source_edge, "target": target_edge}
-                self.edges.append(edge_dict)
-
-                export_json = {"nodes": self.nodes, "edges": self.edges}
-
-                # create json
-                json_node = json.dumps(node_dict)
-
-#####################################################################
-# Class: main
-# Author: Brent Freeman
-# Class: CS 467 Capstone
-# Group: Gudja
-# Project: Graphical Web Crawler
-# Description: this section executes the dfs search and can either take
-# 2 arguments (website and depth) or will run a from a random selection to a depth of 5
-#####################################################################
-# begin Main
-# this is what would normally be the main function, this should be moved to a separeate file that can later call either bfs or dfs
-
-
-
-def cloud_dfs(input):
-
-    run_dfs = dfs()
-
-    #use. .loads local testing and get_json for for deployemnt
-    #j_input = input.get_json()
-    j_input = json.loads(input)
-
-    if j_input["keyword"] is not None:
-        keyword = j_input["keyword"]
-        depth = j_input["depth"]
-        new_url = j_input["url"]
-
-        # add the url to the next link
-        run_dfs.next_link = new_url
-
-        # dfs can use a simple for loop to get all the links
-        for i in range(0, depth):
-
-            if run_dfs.search_crawl(run_dfs.next_link, keyword):
-               # print("found it")
-                break
+                # add a bookmark to know when to increase the depth count
+                self.depthBookmarks = len(self.bot.web_links)-1
             else:
-                # print("not found yet")
-                #print(run_dfs.next_link)
-                # print("all links: ", run_dfs.all_links)
+                # Step 1b: move to next indexed url
+                self.url.append(self.bot.web_links[linkIndex])
 
-                continue
+                # Step 2b: grab links from the current url
+                self.bot.get_all_links(self.url[-1])
 
-        # build the final object for converting to stringified json
-        export = {"nodes": run_dfs.nodes, "edges": run_dfs.edges[0:-1]}
+            # Step 3: scrape information
+            self.title.append(self.bot.title)
+            self.domainName.append(self.bot.strip_out_domain(self.url[-1]))
+            self.favicon.append(self.bot.favicon)
 
-        # once we have everything, write it to a file to be viewed by the front end
-        export_json = json.dumps(export)
+            if linkIndex < len(self.bot.web_links):
+                # add to linkDictionary
+                beg = linkIndex+1
+                end = len(self.bot.web_links)
+                for i in range(beg, end):
+                    self.allSourceTargetLinks.append(tuple((linkIndex, i)))
 
-        return export_json
+                # Step 4: add visited edges - does not include the root
+                if( linkIndex > 0 ):
+                    self.source.append(self.find_source_index(linkIndex))
+                    self.target.append(linkIndex)
 
+            if self.keyword != "":
+                if self.bot.search_soup() == True:
+                    # This print statement to stdout is sent to index.js when a keyword is found
+                    print(self.rootURL + "," + self.url[-1]) # returns to index.js as data, then concat to dataString
+                    break
+
+            linkIndex += 1
+
+            # see if new BFS level has been reached
+            if linkIndex > self.depthBookmarks:
+                # set new bookmark
+                self.depthBookmarks = len(self.bot.web_links)-1
+                # Step 5: increase depth count if applicable
+                depthCount += 1
+
+            # debugging
+            #self.bot.print_queue()
+            #print("\nCurrent Link: " + self.url[-1])
+            #print("\nTitles: ")
+            #print(self.title)
+            #print("\nDomain Names: ")
+            #print(self.domainName)
+            #print("\nFavicons: ")
+            #print(self.favicon)
+
+            # break if user entered depth number is reached or the link index has reached the end of the array
+            if depthCount >= self.depthNumber or linkIndex >= len(self.bot.web_links):
+                # This print statement to stdout is sent to index.js when there is no keyword entered or it is not found
+                print(self.rootURL)
+                break
+
+        # https://stackoverflow.com/questions/42865013/python-create-array-of-json-objects-from-for-loops
+        nodes = [ {"url": u, "domainName": d, "title": t, "favicon": f}
+                        for u, d, t, f
+                        in zip(self.url, self.domainName, self.title, self.favicon) ]
+
+        edges = [ {"source": s, "target": t} for s, t in zip(self.source, self.target) ]
+
+        # combine the two lists into a dictionary
+        nodes_edges = {}
+        nodes_edges["nodes"] = nodes
+        nodes_edges["edges"] = edges
+
+        # convert to JSON string
+        JSON_NodesEdges = json.dumps(nodes_edges)
+
+        #with open('data.json', 'w') as outfile:
+            #json.dump(nodes_edges, outfile, sort_keys=True, indent=4)
+
+        self.json_nodes_edges = JSON_NodesEdges # debugging
+
+# Initiate crawler for use with front-end site or console arguments
+def cloud_bfs(input):
+    #j_input = input.get_json() #use on cloud function
+    j_input = json.loads(input) #use on local development
+    new_url = j_input["url"]
+    depth = j_input["depth"]
+    keyword = j_input["keyword"]
+
+
+    if j_input["keyword"] is None:
+        params = [new_url, depth]
+        bfs = BFS(params)
     else:
-        depth = j_input["depth"]
-        new_url = j_input["url"]
+        params = [new_url, depth, keyword]
 
-        # add the url to the next link
-        run_dfs.next_link = new_url
+        bfs = BFS(params)
 
-        # dfs can use a simple for loop to get all the links
-        for i in range(0, depth):
-            run_dfs.run_crawl(run_dfs.next_link)
+    return bfs.json_nodes_edges
 
-        # build the final object for converting to stringified json
-        export = {"nodes": run_dfs.nodes, "edges": run_dfs.edges[0:-1]}
-
-        # once we have everything, write it to a file to be viewed by the front end
-        export_json = json.dumps(export)
-
-        return export_json
-
-out = {"url": "https://www.ktvu.com", "depth": 2, "keyword": None}
-print(out)
-
-expo = json.dumps(out)
-
-print(expo)
-final = cloud_dfs(expo)
-print(final)
-print(type(final))
+# Test program, do not use on cloud function
+if __name__ == '__main__':
+    out = {"url": "https://www.koin.com", "depth": 1, "keyword": None}
+    expo = json.dumps(out)
+    final = cloud_bfs(expo)
+    print(final)

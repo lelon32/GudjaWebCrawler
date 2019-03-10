@@ -76,7 +76,23 @@ async function callBFS(url, depth, keyword) {
 	return message;
 }
 
+function call_bfs(url, depth, keyword) {
 
+    var JSONData = {"url":url,"depth": depth, "keyword": keyword}
+
+    var options = {
+        method: "POST",
+        uri: "https://us-central1-crawltest.cloudfunctions.net/BFS",
+    json: JSONData
+    };
+
+   return rp(options).then( (result) =>{
+        console.log(result);
+        return result;
+
+    })
+
+}
 
 function call_dfs(url, depth, keyword) {
 
@@ -170,14 +186,14 @@ app.post("/data", (req, res, next) => {
     // Call BFS
     if (algorithm === "bfs") {
       //console.log("final validated URL: " + validatedURL); // debugging
-      callBFS(validatedURL, depth, keyword).then(result => {
+      call_bfs(validatedURL, depth, keyword).then(result => {
 
         console.log("BFS success: ", result);
 				console.log("req.cookies: ", req.cookies);
 				var cookie = processCookie(req.cookies.urlHistory, validatedURL, keyword);
         res.cookie("urlHistory", cookie);
 				res.cookie("keywordFoundURL", keywordFoundURL);
-        res.status(201).sendFile(path.join(__dirname, 'data.json'));
+        res.status(201).send(result);
 
       }).catch(result => {
         console.log("BFS success: ", result);
