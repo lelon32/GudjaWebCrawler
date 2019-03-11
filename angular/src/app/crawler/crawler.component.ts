@@ -72,30 +72,9 @@ export class CrawlerComponent implements OnInit, OnDestroy {
 function buildCrawler(realData) {
 
   // Container and svg params
-<<<<<<< HEAD
-  var margin = {top: 20, right: 20, bottom: 20, left: 20},
-    container = d3.select("#crawlerContainer");
-
-<<<<<<< HEAD
-  var container = d3.select("#crawlerContainer");
-    // .attr("width", containerWidth)
-    // .attr("height", containerHeight);
-
-  var svg = d3.select("svg")
-    .attr("width", width)
-    .attr("height", height)
-    .append("g")
-      .attr('id', 'crawlerGroup');
-
-  var crawlerGroup = d3.select('#crawlerGroup');
-=======
-  var width = window.innerWidth,
-    height = window.innerHeight;
-=======
   var container = d3.select("#crawlerContainer"),
     width = window.innerWidth,
     height = window.innerWidth / 2;
->>>>>>> b9018e92c90a5274af167af408536fed476da042
 
   var svg = d3.select("#svgData")
     .attr("width", width)
@@ -103,7 +82,6 @@ function buildCrawler(realData) {
 
   // Holds simuation nodes, edges, and highlight
   var g = svg.append("g");
->>>>>>> b52d799c233593cdd67922c5f3d2c68f2de74c73
 
   // Tooltip element
   var tooltip = container.append("div")
@@ -144,23 +122,11 @@ function buildCrawler(realData) {
 
 function renderD3data(dataset, keywordFoundURL) {
   // Get elements from DOM
-<<<<<<< HEAD
-  var svg = d3.select("svg"),
-<<<<<<< HEAD
-    width = svg.attr("width"),
-    height = svg.attr("height"),
-    crawlerGroup = d3.select("#crawlerGroup"),
-    linkElems = crawlerGroup.selectAll(".link"),
-    nodeElems = crawlerGroup.selectAll(".node");
-=======
-=======
   var svg = d3.select("#svgData"),
->>>>>>> b9018e92c90a5274af167af408536fed476da042
     g = d3.select("g"),
     spinner = d3.select("mat-progress-spinner"),
     linkElems = g.selectAll(".link"),
     nodeElems = g.selectAll(".node");
->>>>>>> b52d799c233593cdd67922c5f3d2c68f2de74c73
 
   // Hide spinner and show #svgData
   spinner.attr("class", "hidden");
@@ -193,11 +159,7 @@ function renderD3data(dataset, keywordFoundURL) {
 
   // Remove and append all nodeElems to render above new links
   nodeElems.remove();
-<<<<<<< HEAD
-  nodeElems = crawlerGroup.selectAll(".node");
-=======
   nodeElems = g.selectAll(".node");
->>>>>>> b52d799c233593cdd67922c5f3d2c68f2de74c73
   nodeElems = nodeElems.data(dataset.nodes);
   nodeElems.enter().append("circle")
       .style("fill", (d) => randColor())
@@ -217,20 +179,10 @@ function renderD3data(dataset, keywordFoundURL) {
 }
 
 function onTick() {
-<<<<<<< HEAD
-<<<<<<< HEAD
-  var crawlerGroup = d3.select("#crawlerGroup"),
-    linkElems = crawlerGroup.selectAll(".link"),
-    nodeElems = crawlerGroup.selectAll(".node");
-=======
-  var svg = d3.select("svg"),
-=======
   var svg = d3.select("#svgData"),
->>>>>>> b9018e92c90a5274af167af408536fed476da042
     g = d3.select("g"),
     linkElems = svg.selectAll(".link"),
     nodeElems = svg.selectAll(".node");
->>>>>>> b52d799c233593cdd67922c5f3d2c68f2de74c73
 
   linkElems.attr("x1", (d) => d.source.x)
       .attr("y1", (d) => d.source.y)
