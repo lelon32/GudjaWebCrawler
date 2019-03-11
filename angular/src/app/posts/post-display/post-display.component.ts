@@ -7,12 +7,13 @@ import { PostsService } from '../posts.service';
 @Component({
   selector: 'app-post-display',
   templateUrl: './post-display.component.html',
-  styleUrls: ['./post-display.component.css']
+  styleUrls: ['./post-display.component.css', '../../app.component.css']
 })
 
 export class PostDisplayComponent implements OnInit, OnDestroy {
   posts: Post[] = [];
   private postsSub: Subscription;
+  public show = true;
 
   constructor(public postsService: PostsService) {}
 
@@ -26,5 +27,9 @@ export class PostDisplayComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.postsSub.unsubscribe();
+  }
+
+  hideTable() {
+    this.show = !this.show;
   }
 }

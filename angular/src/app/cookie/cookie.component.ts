@@ -7,7 +7,7 @@ import { CookieDataService } from './cookie.service';
 @Component({
   selector: 'app-cookie',
   templateUrl: './cookie.component.html',
-  styleUrls: ['./cookie.component.css']
+  styleUrls: ['./cookie.component.css', '../app.component.css']
 })
 
 export class CookieComponent {

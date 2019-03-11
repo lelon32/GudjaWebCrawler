@@ -1,0 +1,16 @@
+#svgContainer2 {
+  position: absolute;
+  left: 0px;
+}
+
+svg {
+  background-color: transparent;
+  width: 35%;
+  margin-top: -3.5rem;
+  margin-left: -1rem;
+  transform: rotate(40deg);
+}
+
+path {
+  fill: #2b2b2b;
+}

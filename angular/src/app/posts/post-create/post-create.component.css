@@ -21,11 +21,11 @@ mat-radio-button {
 }
 
 .small_space {
-  width: 30%;
+  width: 25%;
 }
 
 .med_space {
-  width: 40%;
+  width: 45%;
 }
 
 .form_submit {
@@ -35,4 +35,8 @@ mat-radio-button {
 #mat-radio-3 {
   padding-top: 0;
   padding-bottom: 1rem;
+}
+
+.red {
+  color: red;
 }

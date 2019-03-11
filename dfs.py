@@ -25,14 +25,12 @@ class dfs():
 #This is the primary function that runs the depth first search
     def run_crawl(self, url):
 
-
     # instantiate the crawler class
         dfs_crawl = crawler(url)
 
     # provide the first url
 #dont need to do this as it was passed when instantiated
         dfs_crawl.url = url
-
 
     # get the domain
         dfs_crawl.get_domain()
@@ -43,14 +41,11 @@ class dfs():
     #visit site and create soup
         dfs_crawl.create_soup(dfs_crawl.url)
 
-
     #get the title
         dfs_crawl.get_title2()
 
-
     # get unique list of links
         dfs_crawl.create_unique_link_list2()
-
 
     # get the next link
         if len(dfs_crawl.unique_links) != 0:
@@ -97,9 +92,7 @@ class dfs():
 
         if dfs_crawl.search_soup() == True:
 
-
             print("found ", dfs_crawl.keyword)
-
             return True
 
         else:
@@ -107,12 +100,7 @@ class dfs():
         # get unique list of links
             dfs_crawl.create_unique_link_list2()
 
-        #
-        #
-        #
             self.all_links = dfs_crawl.unique_links
-        #
-        #
 
         # get the next link
             if len(dfs_crawl.unique_links) != 0:
@@ -184,7 +172,7 @@ elif len(sys.argv) == 2 and sys.argv[1] == "test" :
 
 elif len(sys.argv) == 2 and sys.argv[1] == "keyword":
     print("running search")
-    keyword = "nsgd"
+    keyword = "space"
     depth = 10
     new_url = random.choice(test_links)
     # add the url to the next link
@@ -197,9 +185,9 @@ elif len(sys.argv) == 2 and sys.argv[1] == "keyword":
             print("found it")
             break
         else:
-            print("not found yet")
+            #print("not found yet")
             print(run_dfs.next_link)
-            print("all links: ", run_dfs.all_links)
+            #print("all links: ", run_dfs.all_links)
 
             continue
 
@@ -217,6 +205,7 @@ else:
     depthNumber = int(np_lines[1])
     depth = depthNumber
     new_url = rootURL
+
 
 
 
