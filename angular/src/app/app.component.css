@@ -25,3 +25,9 @@ main {
   border: 3px solid #fed550;
   /* border: 3px solid #178bfb; */
 }
+
+.hide_button {
+  margin-left: 0.5rem;
+  background-color: #efefef;
+  color: black;
+}

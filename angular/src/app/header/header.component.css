@@ -15,3 +15,39 @@ h4 {
   font-size: 13px;
   line-height: 1.5rem;
 }
+
+#svgContainer1a {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  overflow: hidden;
+}
+
+#svgContainer1b {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  overflow: hidden;
+}
+
+#svgWebR {
+  background-color: transparent;
+  width: 70%;
+  margin-top: -5rem;
+  margin-right: -5rem;
+}
+
+#svgWebL {
+  background-color: transparent;
+  width: 70%;
+  margin-top: 0rem;
+  margin-left: -5rem;
+}
+
+#pathWebR {
+  fill: white;
+}
+
+#pathWebL {
+  fill: #2b2b2b;
+}

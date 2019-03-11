@@ -344,6 +344,8 @@ MIT
 
 @angular/material/table
 
+@angular/material/progress-spinner
+
 d3
 BSD-3-Clause
 Copyright 2010-2017 Mike Bostock
