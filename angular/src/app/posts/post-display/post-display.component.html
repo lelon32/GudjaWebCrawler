@@ -1,5 +1,10 @@
-<h3>Current Session</h3>
-<mat-accordion multi="false" *ngIf="posts.length > 0">
+<div>
+  <h3>Current Session</h3>
+  <button
+    (click)="hideTable()"
+    mat-raised-button>Hide/View</button>
+</div>
+<mat-accordion multi="false" *ngIf="posts.length > 0 && show">
   <p *ngFor="let post of posts">
       {{ post.url }}
       <br />

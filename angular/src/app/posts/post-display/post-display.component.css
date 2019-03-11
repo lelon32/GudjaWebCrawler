@@ -1,8 +1,18 @@
 mat-accordion {
   display: block;
-  border-top: 5px solid #673ab7;
+}
+
+div, h3, button {
+  display: inline-block;
+}
+
+button {
+  margin-left: 2rem;
+  background-color: #673ab7;
+  color: white;
+  margin-left: 2rem;
 }
 
 h3 {
-  padding-top: 1.5rem;
+  padding-top: 1.25rem;
 }

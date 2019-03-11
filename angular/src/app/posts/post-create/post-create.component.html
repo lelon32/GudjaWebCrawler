@@ -21,12 +21,15 @@
         name="algorithm"
         ngModel
         required
-        placeholder="bfs"
         #algorithm="ngModel">Select an algorithm
         <mat-radio-button
-          value="bfs">Breadth First Search (1 degree of separation at a time)</mat-radio-button>
+          value="bfs"
+          on-change="bfsStatusTrue()"
+          on-change="checkDepth(depth)">Breadth First Search (1 degree of separation at a time)</mat-radio-button>
         <mat-radio-button
-          value="dfs">Depth First Search (1 branch at a time)</mat-radio-button>
+          value="dfs"
+          on-change="bfsStatusFalse()"
+          on-change="checkDepth(depth)">Depth First Search (1 branch at a time)</mat-radio-button>
       </mat-radio-group>
     </div>
     <div class="form_row">
@@ -39,8 +42,10 @@
           ngModel
           required
           placeholder="e.g. 2"
-          #depth="ngModel"/>
-        <mat-error *ngIf="depth.invalid">Please enter a search depth.</mat-error>
+          #depth="ngModel"
+          on-change="checkDepth(depth)"/>
+          <mat-hint *ngIf="bfsStatus && algorithm.touched" [class.red]="!depthOk && depth.touched">Enter a depth from 1 - 4</mat-hint>
+          <mat-hint *ngIf="!bfsStatus && algorithm.touched" [class.red]="!depthOk && depth.touched">Enter a depth from 1 - 100</mat-hint>
       </mat-form-field>
       <mat-form-field class="med_space">
         <mat-label>Stop at keyword (optional)</mat-label>
@@ -52,7 +57,12 @@
           placeholder="e.g. cat"
           #keyword="ngModel"/>
       </mat-form-field>
-      <button class="form_submit" mat-raised-button color="accent" type="submit">Crawl</button>
+      <button
+        class="form_submit"
+        mat-raised-button
+        color="accent"
+        type="submit"
+        [disabled]="postForm.invalid || !depthOk">Crawl</button>
     </div>
   </form>
 </mat-card>
