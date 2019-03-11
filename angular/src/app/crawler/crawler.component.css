@@ -1,3 +1,8 @@
+mat-progress-spinner {
+  background-color: transparent;
+  margin: 5rem auto 5rem auto;
+}
+
 #crawlerContainer {
   display: inline-block;
   width: 100%;
@@ -35,9 +40,9 @@ svg {
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 .visible {
-  display: inherit;
+  display: block !important;
 }

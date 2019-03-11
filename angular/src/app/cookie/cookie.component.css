@@ -22,12 +22,6 @@ h3 {
   padding-top: 1.5rem;
 }
 
-.hide_button {
-  margin-left: 0.5rem;
-  background-color: #efefef;
-  color: black;
-}
-
 .delete_button {
   margin-left: 0.5rem;
   background-color: red;

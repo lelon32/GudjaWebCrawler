@@ -14,7 +14,8 @@ import {
   MatExpansionModule,
   MatRadioModule,
   MatListModule,
-  MatTableModule
+  MatTableModule,
+  MatProgressSpinnerModule
 } from '@angular/material';
 
 import { AppComponent } from './app.component';
@@ -52,7 +53,8 @@ import { ActivityComponent } from './activity/activity.component';
     MatExpansionModule,
     MatRadioModule,
     MatListModule,
-    MatTableModule
+    MatTableModule,
+    MatProgressSpinnerModule
   ],
   providers: [CookieService],
   bootstrap: [AppComponent]

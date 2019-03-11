@@ -10,6 +10,7 @@ import { Subscription } from 'rxjs';
 
 import { CrawlerData } from './crawlerdata.model';
 import { CrawlerService } from './crawlerdata.service';
+import { PostsService } from '../posts/posts.service';
 
 var keywordFoundURL = "";
 var transX = 0, transY = 0;
@@ -24,21 +25,32 @@ var transX = 0, transY = 0;
 export class CrawlerComponent implements OnInit, OnDestroy {
   realData: CrawlerData = null;
   private crawlerDataSub: Subscription;
+  private postsUpdateSub: Subscription;
 
 
-  constructor(public crawlerService: CrawlerService) {  }
+  constructor(public crawlerService: CrawlerService,
+    public postsService: PostsService) {  }
 
   ngOnInit() {
     this.realData = this.crawlerService.getCrawlerData();
     console.log('\'realData\' should be empty to start: ', this.realData);
     buildCrawler(this.realData);
 
+    // Start spinner once post submitted
+    this.postsUpdateSub = this.postsService.getPostUpdateListener()
+      .subscribe(() => {
+        var svg = d3.select("#svgData");
+        svg.attr("class", "hidden");
+        var spinner = d3.select("mat-progress-spinner");
+        spinner.attr("class", "visible mat-progress-spinner mat-primary mat-progress-spinner-indeterminate-animation");
+      });
 
-    // TEST DATASET
+    // // TEST DATASET
     // var dataSize = 250, edgesToNodes = 1.3;
     // var dataset_test = generateData(dataSize, edgesToNodes);
     // renderD3data(dataset_test, keywordFoundURL);
 
+    // Request data from server
     this.crawlerDataSub = this.crawlerService.getCrawlerUpdateListener()
       .subscribe((data: CrawlerData) => {
         this.realData = data;
@@ -52,6 +64,7 @@ export class CrawlerComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     console.log('OnDestroy');
     this.crawlerDataSub.unsubscribe();
+    this.postsUpdateSub.unsubscribe();
   }
 }
 
@@ -59,16 +72,15 @@ export class CrawlerComponent implements OnInit, OnDestroy {
 function buildCrawler(realData) {
 
   // Container and svg params
-  var margin = {top: 20, right: 20, bottom: 20, left: 20},
-    container = d3.select("#crawlerContainer");
+  var container = d3.select("#crawlerContainer"),
+    width = window.innerWidth,
+    height = window.innerWidth / 2;
 
-  var width = window.innerWidth,
-    height = window.innerHeight;
-
-  var svg = d3.select("svg")
+  var svg = d3.select("#svgData")
     .attr("width", width)
     .attr("height", height);
 
+  // Holds simuation nodes, edges, and highlight
   var g = svg.append("g");
 
   // Tooltip element
@@ -98,7 +110,7 @@ function buildCrawler(realData) {
     .attr("fill","url(#rGradient)")
     .attr("r", "23")
     .node().animate(
-      [{r: 18, opacity: 0.8}, {r:23, opacity: 1}, {r: 18, opacity: 0.8}],
+      [{r: 23, opacity: 0.7}, {r: 23, opacity: 1}, {r: 23, opacity: 0.7}],
       {
         duration: 5000,
         delay: 0,
@@ -110,10 +122,15 @@ function buildCrawler(realData) {
 
 function renderD3data(dataset, keywordFoundURL) {
   // Get elements from DOM
-  var svg = d3.select("svg"),
+  var svg = d3.select("#svgData"),
     g = d3.select("g"),
+    spinner = d3.select("mat-progress-spinner"),
     linkElems = g.selectAll(".link"),
     nodeElems = g.selectAll(".node");
+
+  // Hide spinner and show #svgData
+  spinner.attr("class", "hidden");
+  svg.attr("class", "visible");
 
   // Simulation params
   var linkDist = 40, chargeStrength = -170;
@@ -162,7 +179,7 @@ function renderD3data(dataset, keywordFoundURL) {
 }
 
 function onTick() {
-  var svg = d3.select("svg"),
+  var svg = d3.select("#svgData"),
     g = d3.select("g"),
     linkElems = svg.selectAll(".link"),
     nodeElems = svg.selectAll(".node");
@@ -191,7 +208,7 @@ function onTick() {
 }
 
 function adjustSize() {
-  var svg = d3.select("svg"),
+  var svg = d3.select("#svgData"),
     g = d3.select("g"),
     svgBBox = svg.node().getBBox(),
     gBBox = g.node().getBBox();
@@ -204,7 +221,7 @@ function adjustSize() {
   /* Adjust svg width and height to match gBBox (or BCR works too)
     Translate g the amount of svgBBox which represents how much the local
     elements (g) are outside the boundary of the svg. */
-  var margin = 60;
+  var margin = 100;
   svg.attr("width", gBBox.width + margin);
   svg.attr("height", gBBox.height + margin);
   transX += -svgBBox.x + margin / 2;
