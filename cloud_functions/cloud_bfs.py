@@ -98,26 +98,30 @@ class crawler():
         else:
             currLink = URL
 
-        r = requests.get(currLink)
-        self.soup = BeautifulSoup(r.text, 'lxml')
-        # web_url = convert_to_base_url(currLink)
-        for link in self.soup.find_all('a'):
-            tmpString = str(link.get('href'))
-            # Include external links (links only starting with "http") and only adds unique links
-            if tmpString.startswith("http") and tmpString not in self.web_links:
-                self.web_links.append(tmpString)
-            else:
-                # option to include internal links as absolute links
-                # self.web_links.append(urljoin(web_url,link.get('href'))) # used to convert relative links to absolute
-                pass
+        try:
+            r = requests.get(currLink)
+            self.soup = BeautifulSoup(r.text, 'lxml')
+            # web_url = convert_to_base_url(currLink)
+            for link in self.soup.find_all('a'):
+                tmpString = str(link.get('href'))
+                # Include external links (links only starting with "http") and only adds unique links
+                if tmpString.startswith("http") and tmpString not in self.web_links:
+                    self.web_links.append(tmpString)
+                else:
+                    # option to include internal links as absolute links
+                    # self.web_links.append(urljoin(web_url,link.get('href'))) # used to convert relative links to absolute
+                    pass
 
-        # scrape some other info
-        # check to see if title exists
-        # https://stackoverflow.com/questions/53876649/beautifulself.soup-nonetype-object-has-no-attribute-gettext
-        tmpString = self.soup.title
-        tmpString = self.soup.title.get_text() if tmpString else "No Title"
-        self.title = str(tmpString)
-        self.favicon = self.convert_to_base_url(currLink) + "/favicon.ico"
+            # scrape some other info
+            # check to see if title exists
+            # https://stackoverflow.com/questions/53876649/beautifulself.soup-nonetype-object-has-no-attribute-gettext
+            tmpString = self.soup.title
+            tmpString = self.soup.title.get_text() if tmpString else "No Title"
+            self.title = str(tmpString)
+            self.favicon = self.convert_to_base_url(currLink) + "/favicon.ico"
+
+        except:
+            pass
 
     # for debugging
     def print_queue(self):
@@ -359,20 +363,25 @@ def cloud_bfs(input):
     depth = j_input["depth"]
     keyword = j_input["keyword"]
 
+    try:
+        if j_input["keyword"] is None:
+            params = [new_url, depth]
+            bfs = BFS(params)
+        else:
+            params = [new_url, depth, keyword]
 
-    if j_input["keyword"] is None:
-        params = [new_url, depth]
-        bfs = BFS(params)
-    else:
-        params = [new_url, depth, keyword]
+            bfs = BFS(params)
 
-        bfs = BFS(params)
+        return bfs.json_nodes_edges
+    except:
+        err_msg = {"edges": [], "nodes": []}
+        err_return = json.dumps(err_msg)
+        return err_return
 
-    return bfs.json_nodes_edges
 
 # Test program, do not use on cloud function
 if __name__ == '__main__':
-    out = {"url": "https://www.koin.com", "depth": 1, "keyword": None}
+    out = {"url": "https://www.npr.org", "depth": 1, "keyword": None}
     expo = json.dumps(out)
     final = cloud_bfs(expo)
     print(final)
