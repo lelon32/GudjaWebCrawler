@@ -1,7 +1,7 @@
 import json
 import sys
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, SoupStrainer
 from urllib.parse import urlparse
 import lxml
 import numpy as np
@@ -100,17 +100,18 @@ class crawler():
 
         try:
             r = requests.get(currLink)
-            self.soup = BeautifulSoup(r.text, 'lxml')
-            # web_url = convert_to_base_url(currLink)
-            for link in self.soup.find_all('a')[:20]: #note - this limits the links to the first 20 found to speed up BFS
+            #self.soup = BeautifulSoup(r.text, 'lxml')
+            self.soup = BeautifulSoup(r.text, 'lxml', parse_only=SoupStrainer({'a' : True, 'title' : True}))
+            web_url = convert_to_base_url(currLink)
+            for link in self.soup.find_all('a')[:5]: #note - this limits the links to the first 20 found to speed up BFS
                 tmpString = str(link.get('href'))
                 # Include external links (links only starting with "http") and only adds unique links
                 if tmpString.startswith("http") and tmpString not in self.web_links:
                     self.web_links.append(tmpString)
                 else:
                     # option to include internal links as absolute links
-                    # self.web_links.append(urljoin(web_url,link.get('href'))) # used to convert relative links to absolute
-                    pass
+                    self.web_links.append(urljoin(web_url,link.get('href'))) # used to convert relative links to absolute
+                    #pass
 
             # scrape some other info
             # check to see if title exists
@@ -381,7 +382,7 @@ def cloud_bfs(input):
 
 # Test program, do not use on cloud function
 if __name__ == '__main__':
-    out = {"url": "https://www.npr.org", "depth": 1, "keyword": None}
+    out = {"url": "https://en.wikipedia.org/wiki/Small", "depth": 1, "keyword": None}
     expo = json.dumps(out)
     final = cloud_bfs(expo)
     print(final)
