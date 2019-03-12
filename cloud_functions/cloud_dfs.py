@@ -1,12 +1,8 @@
-
 import json
 import random
-from crawler import crawler
-
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
-import lxml
 
 class crawler():
 
@@ -40,50 +36,44 @@ class crawler():
                 return True
         return False
 
+    def check_url_allow_internal(self, url):
+        parse = urlparse(url)
+        if parse.scheme == 'http' or parse.scheme == 'https':
+            return True
+        return False
+
     def create_soup(self, url):
         r = requests.get(url)
         self.soup = BeautifulSoup(r.text, 'html.parser')
 
+    # Creates the unique links by first adding all links (determined by href in beautifu soup),
+    # checking if they have data (some hrefs are empty), calling check_url and then using set to
+    # remove duplicates and making that into a list of "good" links
+    #
     def create_unique_link_list2(self):
         temp_list = []
         for link in self.soup.find_all('a'):
             if link is not None:
-                if self.check_url(link.get('href')):
+                if self.check_url_allow_internal(link.get('href')):
                     temp_list.append(link.get('href'))
 
         tset = set(temp_list)
         self.unique_links = list(tset)
 
-    def create_unique_link_list(self):
-        temp_list = []
-        for link in self.soup.find_all('a'):
-            if link is not None:
-                temp_list.append(link.get('href'))
-        self.unique_links = set(temp_list)
 
     def get_domain(self):
         temp = urlparse(self.url)
         self.domain = temp.netloc
 
-    def get_favicon(self):
-        self.favicon = self.favicon = self.url + "/favicon.ico"
 
-    def get_favicon_2(self):
+    def get_favicon(self):
         temp = urlparse(self.url)
         base = temp.netloc
         self.favicon = base + "/favicon.ico"
 
-    def get_title2(self):
+    def get_title(self):
         self.title = self.soup.title
 
-    # Maybe need to use this later
-    # https://www.geeksforgeeks.org/python-remove-duplicates-list/
-    def remove(self, duplicate):
-        final_list = []
-        for num in duplicate:
-            if num not in final_list:
-                final_list.append(num)
-        return final_list
 
     #####################################################################
     # Description: Finds all links on the current URL page. Uses lxml parser.
@@ -178,31 +168,6 @@ class crawler():
         self.unique_links = set(self.web_links)
         #print(len(self.unique_links))
 
-    # I created this so we can hava static document to test on
-    def write_website_to_file(self):
-        r = requests.get(self.url)
-        f = open("giz.txt", "w+")
-        for line in r.text:
-            f.write(line)
-        f.close()
-
-    def write_data_structure_to_file(self, data, name):
-        f = open(name, "w+")
-        for entry in data:
-            if entry is not None:
-                f.write("%s\n" % entry)
-        f.close()
-
-    #method to open file and use its data for testing BS4
-    def open_file_test(self):
-        test_file = open("giz.txt", 'r')
-        soup = BeautifulSoup(test_file, "html.parser")
-        count = 0
-        for link in soup.find_all('a'):
-            self.web_links.append(link.get('href'))
-            count += 1
-       # print("Total links is: ", count)
-
 class dfs():
 
     def __init__(self):
@@ -228,13 +193,13 @@ class dfs():
         dfs_crawl.get_domain()
 
     # get the favicon
-        dfs_crawl.get_favicon_2()
+        dfs_crawl.get_favicon()
 
     #visit site and create soup
         dfs_crawl.create_soup(dfs_crawl.url)
 
     #get the title
-        dfs_crawl.get_title2()
+        dfs_crawl.get_title()
 
     # get unique list of links
         dfs_crawl.create_unique_link_list2()
@@ -274,13 +239,13 @@ class dfs():
         dfs_crawl.get_domain()
 
         # get the favicon
-        dfs_crawl.get_favicon_2()
+        dfs_crawl.get_favicon()
 
         # visit site and create soup
         dfs_crawl.create_soup(dfs_crawl.url)
 
         # get the title
-        dfs_crawl.get_title2()
+        dfs_crawl.get_title()
 
         if dfs_crawl.search_soup() == True:
 
@@ -313,18 +278,6 @@ class dfs():
 
                 # create json
                 json_node = json.dumps(node_dict)
-
-#####################################################################
-# Class: main
-# Author: Brent Freeman
-# Class: CS 467 Capstone
-# Group: Gudja
-# Project: Graphical Web Crawler
-# Description: this section executes the dfs search and can either take
-# 2 arguments (website and depth) or will run a from a random selection to a depth of 5
-#####################################################################
-# begin Main
-# this is what would normally be the main function, this should be moved to a separeate file that can later call either bfs or dfs
 
 
 
@@ -384,12 +337,7 @@ def cloud_dfs(input):
 
         return export_json
 
-out = {"url": "https://www.ktvu.com", "depth": 2, "keyword": None}
-print(out)
-
+out = {"url": "https://www.stackoverflow.com", "depth": 12, "keyword": None}
 expo = json.dumps(out)
-
-print(expo)
 final = cloud_dfs(expo)
 print(final)
-print(type(final))

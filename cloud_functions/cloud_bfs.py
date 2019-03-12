@@ -102,7 +102,7 @@ class crawler():
             r = requests.get(currLink)
             self.soup = BeautifulSoup(r.text, 'lxml')
             # web_url = convert_to_base_url(currLink)
-            for link in self.soup.find_all('a'):
+            for link in self.soup.find_all('a')[:20]: #note - this limits the links to the first 20 found to speed up BFS
                 tmpString = str(link.get('href'))
                 # Include external links (links only starting with "http") and only adds unique links
                 if tmpString.startswith("http") and tmpString not in self.web_links:
