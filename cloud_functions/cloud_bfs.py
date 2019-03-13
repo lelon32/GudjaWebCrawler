@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup, SoupStrainer
 from urllib.parse import urlparse, urljoin
 import lxml
 import numpy as np
-
+import urllib.robotparser as robot
 
 class crawler():
 
@@ -20,6 +20,8 @@ class crawler():
         self.domain = ""
         self.title = ""
         self.keyword = ""
+        self.rp = robot.RobotFileParser()
+        self.curr_robots_url = ""
 
     def add_keyword(self, keyword):
         self.keyword = keyword
@@ -89,48 +91,76 @@ class crawler():
     # https://stackoverflow.com/questions/44001007/scrape-the-absolute-url-instead-of-a-relative-path-in-python
     #####################################################################
     def get_all_links(self, URL=None):
-
         # check if URL parameter is passed; use root url otherwise
         currLink = ""
         if URL is None:
             currLink = self.url
             self.web_links.append(currLink)
+
+            # Preparing to respect robots.txt
+            self.curr_robots_url = self.convert_to_base_url(currLink) + "/robots.txt" # used for comparison for robots.txt check
+            print(self.curr_robots_url) # debugging
+            self.rp.set_url(self.curr_robots_url)
+            self.rp.read()
         else:
             currLink = URL
 
         try:
-            r = requests.get(currLink)
-            counter = 1
-            limit = 10
-            self.soup = BeautifulSoup(r.text, 'lxml', parse_only=SoupStrainer({'a' : True, 'title' : True}))
-            #web_url = self.convert_to_base_url(currLink)
-            for link in self.soup.find_all('a'): 
-                tmpString = str(link.get('href'))
-                #  Only adds unique links
-                if tmpString not in self.web_links:
-                    # Include external links (links only starting with "http")
-                    if tmpString.startswith("http"):
-                        counter += 1
-                        self.web_links.append(tmpString)
-                    else:
-                        # option to include internal links as absolute links
-                        # need to respect robots.txt with this option
-                        #self.web_links.append(urljoin(web_url,link.get('href'))) # used to convert relative links to absolute
-                        #counter += 1
-                        pass
+            # Check to see if site is a new external site.
+            # Prepare to respect new robots.txt
+            # https://docs.python.org/3/library/urllib.robotparser.html
+            tmpRobotsURL = self.convert_to_base_url(currLink) + "/robots.txt"
+            
+            if self.curr_robots_url != tmpRobotsURL:
+                self.curr_robots_url = tmpRobotsURL
+                self.rp.set_url(self.curr_robots_url)
+                self.rp.read()
 
-                # this limits the links to speed up BFS
-                if counter > limit:
-                    break
+            if self.rp.can_fetch("*", currLink) == False:
+                #print("Respect robots.txt - current: " + currLink)
+                pass
+            else:
+                r = requests.get(currLink)
+                counter = 1
+                limit = 2010
+                self.soup = BeautifulSoup(r.text, 'lxml', parse_only=SoupStrainer({'a' : True, 'title' : True}))
+                web_url = self.convert_to_base_url(currLink)
+                
+                for link in self.soup.find_all('a'): 
+                    tmpString = str(link.get('href'))
+                    #  Only adds unique links
+                    if tmpString not in self.web_links:
+                        # Include external links (links only starting with "http")
+                        if tmpString.startswith("http"):
+                            if self.rp.can_fetch("*", tmpString) == False:
+                                #print("Respect robots.txt - external link: " + tmpString)
+                                pass
+                            else:
+                                self.web_links.append(tmpString)
+                                counter += 1
+                        else:
+                            # option to include internal links as absolute links
+                            # need to respect robots.txt with this option
+                            tmpURL = urljoin(web_url,link.get('href'))
+                            if self.rp.can_fetch("*", tmpURL) == False:
+                                #print("Respect robots.txt - internal link: " + tmpURL)
+                                pass
+                            else:
+                                self.web_links.append(tmpURL) # used to convert relative links to absolute
+                                counter += 1
+                            
+                    # this limits the links to speed up BFS
+                    if counter > limit:
+                        #print("limit reached - breaking")
+                        break
 
-            # scrape some other info
-            # check to see if title exists
-            # https://stackoverflow.com/questions/53876649/beautifulself.soup-nonetype-object-has-no-attribute-gettext
-            tmpString = self.soup.title
-            tmpString = self.soup.title.get_text() if tmpString else "No Title"
-            self.title = str(tmpString)
-            self.favicon = self.convert_to_base_url(currLink) + "/favicon.ico"
-
+                # scrape some other info
+                # check to see if title exists
+                # https://stackoverflow.com/questions/53876649/beautifulself.soup-nonetype-object-has-no-attribute-gettext
+                tmpString = self.soup.title
+                tmpString = self.soup.title.get_text() if tmpString else "No Title"
+                self.title = str(tmpString)
+                self.favicon = self.convert_to_base_url(currLink) + "/favicon.ico"
         except:
             pass
 
@@ -247,6 +277,7 @@ class BFS:
         #print("Keyword: " + self.bot.keyword)
 
         self.url = []
+        self.keyword_url = ""
         self.domainName = []
         self.title = []
         self.favicon = []
@@ -318,7 +349,8 @@ class BFS:
             if self.keyword != "":
                 if self.bot.search_soup() == True:
                     # This print statement to stdout is sent to index.js when a keyword is found
-                    print(self.rootURL + "," + self.url[-1]) # returns to index.js as data, then concat to dataString
+                    #print(self.rootURL + "," + self.url[-1]) # returns to index.js as data, then concat to dataString
+                    self.keyword_url = self.url[-1]
                     break
 
             linkIndex += 1
@@ -364,7 +396,7 @@ class BFS:
         #with open('data.json', 'w') as outfile:
             #json.dump(nodes_edges, outfile, sort_keys=True, indent=4)
 
-        self.json_nodes_edges = JSON_NodesEdges # debugging
+        self.json_nodes_edges = JSON_NodesEdges
 
 # Initiate crawler for use with front-end site or console arguments
 def cloud_bfs(input):
@@ -391,7 +423,7 @@ def cloud_bfs(input):
 
 # Test program, do not use on cloud function
 if __name__ == '__main__':
-    out = {"url": "https://en.wikipedia.org/wiki/Small", "depth": 2, "keyword": None}
+    out = {"url": "https://en.wikipedia.org/wiki/SMALL", "depth": 1, "keyword": None}
     expo = json.dumps(out)
     final = cloud_bfs(expo)
     print(final)
