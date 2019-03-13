@@ -39,7 +39,7 @@ export class PostCreateComponent {
       else { this.depthOk = true;}
     }
 
-    console.log("depthOk: ", this.depthOk);
+    // console.log("depthOk: ", this.depthOk);
   }
 
   constructor(public postsService: PostsService) {}
