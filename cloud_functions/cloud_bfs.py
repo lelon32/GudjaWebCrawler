@@ -122,9 +122,8 @@ class crawler():
             else:
                 r = requests.get(currLink)
                 counter = 1
-                limit = 2010
+                limit = 20
                 self.soup = BeautifulSoup(r.text, 'lxml', parse_only=SoupStrainer({'a' : True, 'title' : True}))
-                web_url = self.convert_to_base_url(currLink)
                 
                 for link in self.soup.find_all('a'): 
                     tmpString = str(link.get('href'))
@@ -141,13 +140,15 @@ class crawler():
                         else:
                             # option to include internal links as absolute links
                             # need to respect robots.txt with this option
-                            tmpURL = urljoin(web_url,link.get('href'))
-                            if self.rp.can_fetch("*", tmpURL) == False:
+                            #web_url = self.convert_to_base_url(currLink)
+                            #tmpURL = urljoin(web_url,link.get('href'))
+                            #if self.rp.can_fetch("*", tmpURL) == False:
                                 #print("Respect robots.txt - internal link: " + tmpURL)
-                                pass
-                            else:
-                                self.web_links.append(tmpURL) # used to convert relative links to absolute
-                                counter += 1
+                            #    pass
+                            #else:
+                            #    self.web_links.append(tmpURL) # used to convert relative links to absolute
+                            #    counter += 1
+                            pass
                             
                     # this limits the links to speed up BFS
                     if counter > limit:
@@ -390,6 +391,12 @@ class BFS:
         nodes_edges["nodes"] = nodes
         nodes_edges["edges"] = edges
 
+        # check if a keyword was found
+        if self.keyword_url != "":
+            nodes_edges["search"] = self.keyword_url
+        else:
+            nodes_edges["search"] = None
+
         # convert to JSON string
         JSON_NodesEdges = json.dumps(nodes_edges)
 
@@ -423,7 +430,7 @@ def cloud_bfs(input):
 
 # Test program, do not use on cloud function
 if __name__ == '__main__':
-    out = {"url": "https://en.wikipedia.org/wiki/SMALL", "depth": 1, "keyword": None}
+    out = {"url": "https://en.wikipedia.org/wiki/SMALL", "depth": 2, "keyword": None}
     expo = json.dumps(out)
     final = cloud_bfs(expo)
     print(final)
