@@ -46,7 +46,7 @@ export class CrawlerComponent implements OnInit, OnDestroy {
       });
 
     // // TEST DATASET
-    // var dataSize = 250, edgesToNodes = 1.3;
+    // var dataSize = 20, edgesToNodes = 1.3;
     // var dataset_test = generateData(dataSize, edgesToNodes);
     // renderD3data(dataset_test, keywordFoundURL);
 
@@ -62,7 +62,6 @@ export class CrawlerComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    console.log('OnDestroy');
     this.crawlerDataSub.unsubscribe();
     this.postsUpdateSub.unsubscribe();
   }
@@ -97,7 +96,7 @@ function buildCrawler(realData) {
     .attr("stop-color", "white");
 
   rGradient.append("stop")
-    .attr("offset", "60%")
+    .attr("offset", "70%")
     .attr("stop-color", "#67CEFA");
 
   rGradient.append("stop")
@@ -108,19 +107,38 @@ function buildCrawler(realData) {
     .attr("class", "hidden")
     .attr("id", "highlight")
     .attr("fill","url(#rGradient)")
-    .attr("r", "23")
-    .node().animate(
-      [{r: 23, opacity: 0.7}, {r: 23, opacity: 1}, {r: 23, opacity: 0.7}],
-      {
-        duration: 5000,
-        delay: 0,
-        iterations: Infinity,
-        easing: 'linear'
-      }
-    );
+    .attr("r", "23");
+
+  // Add arrowhead def
+  var defs = svg.append('defs');
+
+  var marker = defs.append('marker')
+    .attr('id', 'arrow')
+    .attr('viewBox', '0 0 10 10')
+    .attr('orient', 'auto')
+    .attr('refX', 16)
+    .attr('refY', 3)
+    .attr('markerWidth', 8)
+    .attr('markerHeight', 8)
+    .attr('xoverflow', 'visible');
+
+  var arrow = marker.append('svg:path')
+    .attr('d', 'M 0,0  L 10,3  L 0,6')
+    .attr('fill', 'black');
 }
 
 function renderD3data(dataset, keywordFoundURL) {
+  // Set relative node size array using total links per node
+  var nodeSize = new Array(dataset.nodes.length);
+  nodeSize.fill(0, 0, dataset.nodes.length);
+
+  var i;
+  for (i = 0; i < dataset.edges.length; i++) {
+    nodeSize[dataset.edges[i].source]++;
+    nodeSize[dataset.edges[i].target]++;
+  }
+  // console.log("nodeSize(): ", nodeSize);
+
   // Get elements from DOM
   var svg = d3.select("#svgData"),
     g = d3.select("g"),
@@ -133,17 +151,17 @@ function renderD3data(dataset, keywordFoundURL) {
   svg.attr("class", "visible");
 
   // Simulation params
-  var linkDist = 40, chargeStrength = -170;
-  var chargeForce = d3.forceManyBody().strength(chargeStrength);
+  var linkDist = 50, chargeStrength = -170;
+  var chargeForce = d3.forceManyBody().strength((d) => chargeStrength * ( 1 + nodeSize[d.index] / 3));
   var linkForce = d3.forceLink().id((d) => d.index).distance(linkDist);
 
   // Simulation
-  console.log("crawler width: ", parseInt(d3.select("#crawlerContainer").style("width")));
+  // console.log("crawler width: ", parseInt(d3.select("#crawlerContainer").style("width")));
   var width = parseInt(svg.attr("width")) / 2;
   var height = parseInt(svg.attr("height")) / 2;
   var simulation = d3.forceSimulation()
-      .force("x", d3.forceX().strength(.2))
-      .force("y", d3.forceY().strength(.2))
+      .force("x", d3.forceX().strength(0.12))
+      .force("y", d3.forceY().strength(0.12))
       .force("link", linkForce)
       .force("charge", chargeForce)
       .on("tick", onTick);
@@ -154,7 +172,8 @@ function renderD3data(dataset, keywordFoundURL) {
   // Update links elements, append new ones, remove unbound linkElems
   linkElems = linkElems.data(dataset.edges);
   linkElems.enter().append("line")
-      .attr("class", "link");
+      .attr("class", "link")
+      .attr('marker-end','url(#arrow)');
   linkElems.exit().remove();
 
   // Remove and append all nodeElems to render above new links
@@ -162,9 +181,9 @@ function renderD3data(dataset, keywordFoundURL) {
   nodeElems = g.selectAll(".node");
   nodeElems = nodeElems.data(dataset.nodes);
   nodeElems.enter().append("circle")
-      .style("fill", (d) => randColor())
+      .style("fill", (d) => hashColor(d.domainName))
       .attr("class", "node")
-      .attr("r", 7)
+      .attr("r", (d) => 6.5 + nodeSize[d.index] / 3)
       .on("click", (d) => window.open(d.url));
   nodeElems.exit().remove();
 
@@ -184,26 +203,41 @@ function onTick() {
     linkElems = svg.selectAll(".link"),
     nodeElems = svg.selectAll(".node");
 
+  // Update link positions
   linkElems.attr("x1", (d) => d.source.x)
       .attr("y1", (d) => d.source.y)
       .attr("x2", (d) => d.target.x)
       .attr("y2", (d) => d.target.y);
 
+  // Update node positions
   nodeElems.attr("cx", (d) => d.x)
       .attr("cy", (d) => d.y)
       .on('mousemove', mousemoveHandler)
       .on('mouseover', mouseoverHandler)
       .on('mouseout', mouseoutHandler);
 
-  // Assign cx and cy of last node element to highlight
+  // Assign r, cx and cy of last node element to highlight
   var lastNode = d3.select(".node:last-child");
+  var radius = parseInt(lastNode.attr("r")) + 16;
   var highlightX = lastNode.attr("cx"),
     highlightY = lastNode.attr("cy");
 
+  // Update highlight position and radius
   var highlight = d3.select("#highlight")
     .attr('cx', highlightX)
-    .attr('cy', highlightY);
+    .attr('cy', highlightY)
+    .attr('r', radius)
+    .node().animate(
+      [{r: radius, opacity: 0.65}, {r: radius + 2, opacity: 1}, {r: radius, opacity: 0.65}],
+      {
+        duration: 4500,
+        delay: 0,
+        iterations: Infinity,
+        easing: 'linear'
+      }
+    );
 
+  // Adjust the g element translation and svg size to fit g element
   adjustSize();
 }
 
@@ -235,7 +269,7 @@ function mouseoverHandler(d) {
     + '<p>' + d.title + '</p>'
     + '<p>' + d.url + '</p>';
   if (d.url === keywordFoundURL) {
-    stuff = '<p>Keyword Found Here!<p><br>' + stuff;
+    stuff = '<strong>Keyword Found Here!</strong><br>' + stuff;
   }
   var tooltip = d3.select("#tooltipID")
     .html(stuff)
@@ -270,7 +304,8 @@ function generateData(dataSize, edgesToNodes) {
   for (i = 0; i < numNodes; i++) {
     var color = randColor();
     var node = {
-      color: color
+      color: color,
+      domainName: 'cnn'
     };
     dataset.nodes.push(node);
   }
@@ -295,3 +330,27 @@ function randColor() {
   }
   return color;
 }
+
+function hashColor(domainName) {
+  var sum = 0;
+  for (var i=0; i < domainName.length; i++) {
+    var char = domainName.charAt(i);
+    var num = char.charCodeAt(0) - 97;
+    sum += num;
+  }
+  var red = rgbToHex(255 - (sum % 3) * 85);
+  var green = rgbToHex(255 - (sum % 5) * 51);
+  var blue = rgbToHex(255 - (sum % 7) * 36);
+
+  var color = "#" + red + green + blue;
+
+  return (color);
+}
+
+function rgbToHex(num) {
+  var hex = num.toString(16);
+  if (hex.length < 2) {
+       hex = "0" + hex;
+  }
+  return hex;
+};
