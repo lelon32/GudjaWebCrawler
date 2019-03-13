@@ -82,7 +82,7 @@ function call_bfs(url, depth, keyword) {
 
     var options = {
         method: "POST",
-        uri: "https://us-central1-crawltest.cloudfunctions.net/BFS",
+        uri: "https://us-central1-angelic-coder-229401.cloudfunctions.net/BFS",
     json: JSONData
     };
 
@@ -100,7 +100,7 @@ function call_dfs(url, depth, keyword) {
 
     var options = {
         method: "POST",
-        uri: "https://us-central1-crawltest.cloudfunctions.net/test ",
+        uri: "https://us-central1-crawltest.cloudfunctions.net/test",
     json: JSONData
     };
 
