@@ -2,7 +2,7 @@ import json
 import sys
 import requests
 from bs4 import BeautifulSoup, SoupStrainer
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urljoin
 import lxml
 import numpy as np
 
@@ -100,18 +100,28 @@ class crawler():
 
         try:
             r = requests.get(currLink)
-            #self.soup = BeautifulSoup(r.text, 'lxml')
+            counter = 1
+            limit = 10
             self.soup = BeautifulSoup(r.text, 'lxml', parse_only=SoupStrainer({'a' : True, 'title' : True}))
-            web_url = convert_to_base_url(currLink)
-            for link in self.soup.find_all('a')[:5]: #note - this limits the links to the first 20 found to speed up BFS
+            #web_url = self.convert_to_base_url(currLink)
+            for link in self.soup.find_all('a'): 
                 tmpString = str(link.get('href'))
-                # Include external links (links only starting with "http") and only adds unique links
-                if tmpString.startswith("http") and tmpString not in self.web_links:
-                    self.web_links.append(tmpString)
-                else:
-                    # option to include internal links as absolute links
-                    self.web_links.append(urljoin(web_url,link.get('href'))) # used to convert relative links to absolute
-                    #pass
+                #  Only adds unique links
+                if tmpString not in self.web_links:
+                    # Include external links (links only starting with "http")
+                    if tmpString.startswith("http"):
+                        counter += 1
+                        self.web_links.append(tmpString)
+                    else:
+                        # option to include internal links as absolute links
+                        # need to respect robots.txt with this option
+                        #self.web_links.append(urljoin(web_url,link.get('href'))) # used to convert relative links to absolute
+                        #counter += 1
+                        pass
+
+                # this limits the links to speed up BFS
+                if counter > limit:
+                    break
 
             # scrape some other info
             # check to see if title exists
@@ -379,10 +389,9 @@ def cloud_bfs(input):
         err_return = json.dumps(err_msg)
         return err_return
 
-
 # Test program, do not use on cloud function
 if __name__ == '__main__':
-    out = {"url": "https://en.wikipedia.org/wiki/Small", "depth": 1, "keyword": None}
+    out = {"url": "https://en.wikipedia.org/wiki/Small", "depth": 2, "keyword": None}
     expo = json.dumps(out)
     final = cloud_bfs(expo)
     print(final)
