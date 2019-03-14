@@ -177,6 +177,7 @@ class dfs():
         self.all_links = []
         self.depth = ''
         self.next_url = ''
+        self.found_url = None
 
 
 #This is the primary function that runs the depth first search
@@ -205,7 +206,7 @@ class dfs():
         dfs_crawl.create_unique_link_list2()
 
     # get the next link
-        if len(dfs_crawl.unique_links) != 0:
+        if len(dfs_crawl.unique_links) != 0: #avoid reaching outside of the list
             self.next_link = random.choice(dfs_crawl.unique_links)
 
             source_edge = len(self.nodes)
@@ -224,6 +225,9 @@ class dfs():
             json_node = json.dumps(node_dict)
 
 
+    # Executes a single crawl while employing a search
+    # method that if found
+    #
     def search_crawl(self, url, keyword):
 
         # instantiate the crawler class
@@ -249,7 +253,19 @@ class dfs():
 
         if dfs_crawl.search_soup() == True:
 
-            #print("found ", dfs_crawl.keyword)
+            print("found ", dfs_crawl.keyword)
+            self.found_url = dfs_crawl.url
+
+            source_edge = len(self.nodes)
+
+            node_dict = {"url": dfs_crawl.url, "domainName": dfs_crawl.strip_out_domain(dfs_crawl.url),
+                         "title": dfs_crawl.title.text, "favicon": dfs_crawl.favicon}
+            self.nodes.append(node_dict)
+
+            target_edge = len(self.nodes)
+
+            edge_dict = {"source": source_edge, "target": target_edge}
+            self.edges.append(edge_dict)
             return True
 
         else:
@@ -280,64 +296,63 @@ class dfs():
                 json_node = json.dumps(node_dict)
 
 
-
 def cloud_dfs(input):
+    try:
+        run_dfs = dfs()
 
-    run_dfs = dfs()
+    # use. .loads local testing and get_json for for deployemnt
+        #j_input = input.get_json()
+        j_input = json.loads(input)
 
-    #use. .loads local testing and get_json for for deployemnt
-    #j_input = input.get_json()
-    j_input = json.loads(input)
+        if j_input["keyword"] is not None:
+            keyword = j_input["keyword"]
+            depth = j_input["depth"]
+            new_url = j_input["url"]
+            # add the url to the next link
+            run_dfs.next_link = new_url
 
-    if j_input["keyword"] is not None:
-        keyword = j_input["keyword"]
-        depth = j_input["depth"]
-        new_url = j_input["url"]
-
-        # add the url to the next link
-        run_dfs.next_link = new_url
-
-        # dfs can use a simple for loop to get all the links
-        for i in range(0, depth):
-
-            if run_dfs.search_crawl(run_dfs.next_link, keyword):
-               # print("found it")
-                break
-            else:
+            # dfs can use a simple for loop to get all the links
+            for i in range(0, depth):
+                if run_dfs.search_crawl(run_dfs.next_link, keyword):
+                    # print("found it")
+                    break
+                else:
                 # print("not found yet")
                 #print(run_dfs.next_link)
-                # print("all links: ", run_dfs.all_links)
+                	# print("all links: ", run_dfs.all_links)
+                    continue
+            # build the final object for converting to stringified json
+            export = {"nodes": run_dfs.nodes, "edges": run_dfs.edges[0:-1], "search": run_dfs.found_url}
 
-                continue
+            # once we have everything, write it to a file to be viewed by the front end
+            export_json = json.dumps(export)
 
-        # build the final object for converting to stringified json
-        export = {"nodes": run_dfs.nodes, "edges": run_dfs.edges[0:-1]}
+            return export_json
 
-        # once we have everything, write it to a file to be viewed by the front end
-        export_json = json.dumps(export)
+        else:
+            depth = j_input["depth"]
+            new_url = j_input["url"]
 
-        return export_json
+            # add the url to the next link
+            run_dfs.next_link = new_url
 
-    else:
-        depth = j_input["depth"]
-        new_url = j_input["url"]
+            # dfs can use a simple for loop to get all the links
+            for i in range(0, depth):
+                run_dfs.run_crawl(run_dfs.next_link)
 
-        # add the url to the next link
-        run_dfs.next_link = new_url
+            # build the final object for converting to stringified json
+            export = {"nodes": run_dfs.nodes, "edges": run_dfs.edges[0:-1], "search": None}
 
-        # dfs can use a simple for loop to get all the links
-        for i in range(0, depth):
-            run_dfs.run_crawl(run_dfs.next_link)
+            # once we have everything, write it to a file to be viewed by the front end
+            export_json = json.dumps(export)
 
-        # build the final object for converting to stringified json
-        export = {"nodes": run_dfs.nodes, "edges": run_dfs.edges[0:-1]}
+            return export_json
+    except:
+        err_msg = {"edges": [], "nodes": []}
+        err_return = json.dumps(err_msg)
+        return err_return
 
-        # once we have everything, write it to a file to be viewed by the front end
-        export_json = json.dumps(export)
-
-        return export_json
-
-out = {"url": "https://www.stackoverflow.com", "depth": 12, "keyword": None}
+out = {"url": "https://en.wikipedia.org/wiki/Macaroni_penguin", "depth": 23, "keyword": "twitter"}
 expo = json.dumps(out)
 final = cloud_dfs(expo)
 print(final)

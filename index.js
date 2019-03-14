@@ -4,7 +4,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const request = require('request');
-
+const rp = require('request-promise');
 const app = express();
 
 /*********************************************************************
@@ -28,87 +28,49 @@ var keywordFoundURL = "";
   https://www.sohamkamani.com/blog/2015/08/21/python-nodejs-comm/
 *********************************************************************/
 // Call BFS Python script
-async function callBFS(url, depth, keyword) {
-	let promise = new Promise((resolve, reject) => {
+function call_bfs(url, depth, keyword) {
+    var searchword = keyword;
 
-		var crawlSuccess = false;
-
-    var word = "";
-    if(keyword == null){
-      word = "";
-    } else {
-      word = keyword;
-    }
-
-    var spawn = require('child_process').spawn,
-      py    = spawn('python3', ['bfs.py']),
-      data = [url, depth, word],
-      dataString = '';
-
-    py.stdout.on('data', function(data){
-      dataString += data.toString();
-    });
-
-    // Prints the confirmation message from stdout.
-    py.stdout.on('end', function(){
-        // Check the string returned by stdout from bfs.py. If there exists a comma, then
-        // the secondary URL is the one which the keyword is found.
-        if(dataString.includes(",")) {
-          keywordFoundURL = dataString.substring(dataString.lastIndexOf(",") + 1, dataString.length-1);
-          dataString = dataString.substring(0, dataString.lastIndexOf(","));
+    if(keyword !== null) {
+        if(keyword.length == 0){
+            searchword = null
         }
+    }
+    var JSONData = {"url":url,"depth": depth, "keyword": keyword}
 
-        console.log('rootURL= ', dataString);
-        urlHistory.push(dataString);
-        console.log("keywordFoundURL= " + keywordFoundURL);
-				resolve(true);
-    ;});
+    var options = {
+        method: "POST",
+        uri: "https://us-central1-angelic-coder-229401.cloudfunctions.net/BFS",
+    json: JSONData
+    };
 
-    //here is where the data is written to std in to actually call the python function
-    console.log('data: ', data);
+   return rp(options).then( (result) =>{
+        console.log(result);
+        return result;
 
-    py.stdin.write(JSON.stringify(data));
-    py.stdin.end();
-
-  });
-
-	let message = await promise;
-	return message;
+    })
 }
 
-// Call DFS Python script
-async function callDFS(url, depth, keyword) {
-	let promise = new Promise((resolve, reject) => {
+function call_dfs(url, depth, keyword) {
+    var searchword = keyword;
 
-		var crawlSuccess = false;
-
-    var spawn = require('child_process').spawn,
-        py    = spawn('python3', ['dfs.py']),
-        data = [url, depth],
-        dataString = '';
-
-    py.stdout.on('data', function(data){
-        dataString += data.toString();
-    });
-
-    // Prints the confirmation message from stdout.
-    py.stdout.on('end', function(){
-        console.log('result=',dataString);
-        urlHistory.push(dataString);
-				resolve(true);
-    ;});
-
-    //here is where the data is written to std in to actually call the python function
-    console.log('data: ', data);
-
-    py.stdin.write(JSON.stringify(data));
-    py.stdin.end();
-
-  });
-
-	let message = await promise;
-	return message;
+    if(keyword !== null) {
+        if(keyword.length == 0){
+            searchword = null
+        }
+    }
+    var JSONData = {"url":url,"depth": depth, "keyword": searchword}
+    var options = {
+        method: "POST",
+        uri: "https://us-central1-crawltest.cloudfunctions.net/DFS ",
+    json: JSONData
+    };
+   return rp(options).then( (result) =>{
+        console.log("here is the result: ", result);
+        return result;
+    })
 }
+
 
 // Process cookie
 function processCookie(cookie, validatedURL, keyword) {
@@ -123,7 +85,7 @@ function processCookie(cookie, validatedURL, keyword) {
 	cookie.push(keyword);
 	cookie = JSON.stringify(cookie);
 
-	console.log("cookie: ", cookie);
+	//console.log("cookie: ", cookie);
 	return cookie;
 }
 
@@ -141,6 +103,13 @@ app.post("/data", (req, res, next) => {
 		depth = req.body.depth,
 		algorithm = req.body.algorithm,
 		keyword = req.body.keyword;
+
+        console.log("keyword data:")
+        if(keyword === null) {console.log("its null")}
+        if(keyword === null) {console.log("its nulll")}
+        if(!keyword){console.log(keyword.length)}
+        if(keyword){console.log(keyword.length)}
+
 	console.log("req.body: ", req.body);
 
   // Clear out the urlHistory array
@@ -166,14 +135,19 @@ app.post("/data", (req, res, next) => {
     // Call BFS
     if (algorithm === "bfs") {
       //console.log("final validated URL: " + validatedURL); // debugging
-      callBFS(validatedURL, depth, keyword).then(result => {
+      call_bfs(validatedURL, depth, keyword).then(result => {
 
-        console.log("BFS success: ", result);
-				console.log("req.cookies: ", req.cookies);
-				var cookie = processCookie(req.cookies.urlHistory, validatedURL, keyword);
+
+          console.log("req.cookies: ", req.cookies);
+		  var cookie = processCookie(req.cookies.urlHistory, validatedURL, keyword);
+
+          if(result.search != null) {
+              keywordFoundURL = result.search
+				}
+
         res.cookie("urlHistory", cookie);
-				res.cookie("keywordFoundURL", keywordFoundURL);
-        res.status(201).sendFile(path.join(__dirname, 'data.json'));
+		res.cookie("keywordFoundURL", keywordFoundURL);
+        res.status(201).send(result);
 
       }).catch(result => {
         console.log("BFS success: ", result);
@@ -183,17 +157,22 @@ app.post("/data", (req, res, next) => {
 
     // Call DFS
     else if (algorithm === "dfs") {
-      callDFS(validatedURL, depth, keyword).then(result => {
+      call_dfs(validatedURL, depth, keyword).then(result => {
 
-	      console.log("DFS success: ", result);
-				console.log("req.cookies: ", req.cookies);
-				var cookie = processCookie(req.cookies.urlHistory, validatedURL, keyword);
-	      res.cookie("urlHistory", cookie);
-				res.cookie("keywordFoundURL", keywordFoundURL);
-	      res.status(201).sendFile(path.join(__dirname, 'data.json'));
+		console.log("req.cookies: ", req.cookies);
+		var cookie = processCookie(req.cookies.urlHistory, validatedURL, keyword);
+        //console.log("here is the search url: ", Object.keys(result))
+
+        if(result.search != null) {
+		    keywordFoundURL = result.search
+				}
+
+	    res.cookie("urlHistory", cookie);
+		res.cookie("keywordFoundURL", keywordFoundURL);
+	    res.status(201).send(result);
 
       }).catch(result => {
-        console.log("DFS success: ", result);
+        //console.log("DFS success: ", result);
         res.status(500).send(null);
       });
     }
