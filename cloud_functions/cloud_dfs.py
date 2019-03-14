@@ -301,8 +301,8 @@ def cloud_dfs(input):
         run_dfs = dfs()
 
     # use. .loads local testing and get_json for for deployemnt
-        #j_input = input.get_json()
-        j_input = json.loads(input)
+        j_input = input.get_json()
+        #j_input = json.loads(input)
 
         if j_input["keyword"] is not None:
             keyword = j_input["keyword"]
@@ -317,10 +317,11 @@ def cloud_dfs(input):
                     # print("found it")
                     break
                 else:
-                # print("not found yet")
-                #print(run_dfs.next_link)
+                    # print("not found yet")
+                	#print(run_dfs.next_link)
                 	# print("all links: ", run_dfs.all_links)
                     continue
+
             # build the final object for converting to stringified json
             export = {"nodes": run_dfs.nodes, "edges": run_dfs.edges[0:-1], "search": run_dfs.found_url}
 
