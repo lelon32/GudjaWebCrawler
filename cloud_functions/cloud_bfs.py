@@ -99,7 +99,7 @@ class crawler():
 
             # Preparing to respect robots.txt
             self.curr_robots_url = self.convert_to_base_url(currLink) + "/robots.txt" # used for comparison for robots.txt check
-            print(self.curr_robots_url) # debugging
+            print("Robots: " + self.curr_robots_url) # debugging
             self.rp.set_url(self.curr_robots_url)
             self.rp.read()
         else:
@@ -125,19 +125,22 @@ class crawler():
                 limit = 20
                 self.soup = BeautifulSoup(r.text, 'lxml', parse_only=SoupStrainer({'a' : True, 'title' : True}))
                 
-                for link in self.soup.find_all('a'): 
+                #for link in self.soup.find_all('a', recursive=False):
+                # https://stackoverflow.com/questions/35465182/how-to-find-all-divs-whos-class-starts-with-a-string-in-beautifulsoup 
+                for link in self.soup.find_all("a", href=lambda value: value and value.startswith("http"), recursive=False):
+                    #print("link: " + str(link))    # debugging             
                     tmpString = str(link.get('href'))
                     #  Only adds unique links
                     if tmpString not in self.web_links:
                         # Include external links (links only starting with "http")
-                        if tmpString.startswith("http"):
-                            if self.rp.can_fetch("*", tmpString) == False:
-                                #print("Respect robots.txt - external link: " + tmpString)
-                                pass
-                            else:
-                                self.web_links.append(tmpString)
-                                counter += 1
+                        #if tmpString.startswith("http"):
+                        if self.rp.can_fetch("*", tmpString) == False:
+                            #print("Respect robots.txt - external link: " + tmpString)
+                            pass
                         else:
+                            self.web_links.append(tmpString)
+                            counter += 1
+                        #else:
                             # option to include internal links as absolute links
                             # need to respect robots.txt with this option
                             #web_url = self.convert_to_base_url(currLink)
@@ -148,7 +151,7 @@ class crawler():
                             #else:
                             #    self.web_links.append(tmpURL) # used to convert relative links to absolute
                             #    counter += 1
-                            pass
+                            #pass
                             
                     # this limits the links to speed up BFS
                     if counter > limit:
@@ -298,7 +301,7 @@ class BFS:
                 return item[0]
 
     def start(self):
-        #print("**BFS CRAWLING INITIATED**\n\nUser Entered URL: " + self.rootURL + "\nUser Entered Depth Number: " + str(self.depthNumber))
+        print("**BFS CRAWLING INITIATED**\nURL: " + self.rootURL + "\nDepth: " + str(self.depthNumber) + "\nKeyword: " + self.keyword)
 
         depthCount = 0
         linkIndex = 0
@@ -430,7 +433,7 @@ def cloud_bfs(input):
 
 # Test program, do not use on cloud function
 if __name__ == '__main__':
-    out = {"url": "https://en.wikipedia.org/wiki/SMALL", "depth": 2, "keyword": None}
+    out = {"url": "https://en.wikipedia.org/wiki/SMALL", "depth": 4, "keyword": None}
     expo = json.dumps(out)
     final = cloud_bfs(expo)
     print(final)

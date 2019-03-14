@@ -21,6 +21,7 @@ This program was developed using Angular and the D3 Javascript library on the fr
 - [Python 3.5](https://www.python.org/)
   - Beautiful Soup 4
   - lxml
+  - numpy
 
 ## Usage
 
