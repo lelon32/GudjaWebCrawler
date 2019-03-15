@@ -48,7 +48,7 @@ async function call_bfs(url, depth, keyword) {
     };
 
 		rp(options).then( (results) => {
-      console.log(results);
+      console.log("BFS cloud results: ", results);
 			resolve(results);
     }).catch(results => {
 			console.log("BFS cloud error: ", results);
@@ -78,9 +78,9 @@ async function call_dfs(url, depth, keyword) {
         uri: "https://us-central1-crawltest.cloudfunctions.net/DFS ",
     		json: JSONData
     };
-		
+
 		rp(options).then(results => {
-      console.log(results);
+			console.log("DFS cloud results: ", results);
 			resolve(results);
     }).catch(results => {
 			console.log("DFS cloud error: ", results);
@@ -121,15 +121,16 @@ app.get("/data", (req, res, next) => {
 
 // POST request for data calls python script, response back data.json
 app.post("/data", (req, res, next) => {
+	req.setTimeout(0);
+
 	var url = req.body.url,
 		depth = req.body.depth,
 		algorithm = req.body.algorithm,
 		keyword = req.body.keyword;
 
-        console.log("keyword data:")
-        if(keyword === null) {console.log("its null")}
-        // if(!keyword){console.log(keyword.length)}
-        if(keyword){console.log(keyword.length)}
+  console.log("keyword data:")
+  if(keyword === null) {console.log("its null")}
+  if(keyword){console.log(keyword.length)}
 
 	console.log("req.body: ", req.body);
 
@@ -167,7 +168,7 @@ app.post("/data", (req, res, next) => {
 				} else {
 					keywordFoundURL = ""
 				}
-        
+
         res.cookie("urlHistory", cookie);
 				res.cookie("keywordFoundURL", keywordFoundURL);
         res.status(201).send(result);
@@ -185,7 +186,7 @@ app.post("/data", (req, res, next) => {
 		console.log("req.cookies: ", req.cookies);
 		var cookie = processCookie(req.cookies.urlHistory, validatedURL, keyword);
         //console.log("here is the search url: ", Object.keys(result))
-	
+
         if(result.search != null) {
 		    keywordFoundURL = result.search
 				}

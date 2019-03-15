@@ -14,3 +14,10 @@ svg {
 path {
   fill: #2b2b2b;
 }
+
+img {
+  width: 45px;
+  height: 45px;
+  border-radius: 4px;
+  margin: 0 4px 0 4px;
+}

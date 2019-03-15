@@ -51,16 +51,33 @@ export class PostsService {
       .pipe(
          timeout(600000),
          catchError(e => {
-           console.log("Timeout error: ", e);
            this.error = "timeout";
            this.errorUpdated.next(this.error);
            return null;
          })
        )
-      .subscribe((response) => {
-        this.status = this.cookieService.get("keywordFoundURL");
-        this.crawlerService.updateKeywordFoundURL(this.status);
-        this.crawlerService.updateCrawlerData(response);
-      });
+      .subscribe((response: CrawlerData) => {
+          if (response === null) {
+            this.error = "server response null";
+            this.errorUpdated.next(this.error);
+          }
+
+          else if (response.nodes === null || response.nodes.length === 0) {
+            this.error = "server response data is empty";
+            this.errorUpdated.next(this.error);
+          }
+
+          else {
+            this.status = this.cookieService.get("keywordFoundURL");
+            this.crawlerService.updateKeywordFoundURL(this.status);
+            this.crawlerService.updateCrawlerData(response);
+          }
+        },
+
+        err => {
+          this.error = err;
+          this.errorUpdated.next(this.error);
+        }
+      );
   }
 }

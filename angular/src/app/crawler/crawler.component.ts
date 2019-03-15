@@ -174,7 +174,7 @@ function renderD3data(dataset, keywordFoundURL) {
 
   // Simulation params
   var linkDist = 50, chargeStrength = -170;
-  var chargeForce = d3.forceManyBody().strength((d) => chargeStrength * ( 1 + nodeSize[d.index] / 3));
+  var chargeForce = d3.forceManyBody().strength((d) => chargeStrength * ( 1 + nodeSize[d.index] / 4));
   var linkForce = d3.forceLink().id((d) => d.index).distance(linkDist);
 
   // Simulation
