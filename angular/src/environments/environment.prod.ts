@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  baseUrl: 'https://crawltest.appspot.com'
+  baseUrl: 'https://gudja-webcrawler.appspot.com'
 };
