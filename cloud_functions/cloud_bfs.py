@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup, SoupStrainer
 from urllib.parse import urlparse, urljoin
 import lxml
 import numpy as np
-
+import urllib.robotparser as robot
 
 class crawler():
 
@@ -20,6 +20,8 @@ class crawler():
         self.domain = ""
         self.title = ""
         self.keyword = ""
+        self.rp = robot.RobotFileParser()
+        self.curr_robots_url = ""
 
     def add_keyword(self, keyword):
         self.keyword = keyword
@@ -42,6 +44,10 @@ class crawler():
     def create_soup(self, url):
         r = requests.get(url)
         self.soup = BeautifulSoup(r.text, 'html.parser')
+
+    def create_soup_with_lxml(self, url):
+        r = requests.get(url)
+        self.soup = BeautifulSoup(r.text, 'lxml')
 
     def create_unique_link_list2(self):
         temp_list = []
@@ -89,48 +95,80 @@ class crawler():
     # https://stackoverflow.com/questions/44001007/scrape-the-absolute-url-instead-of-a-relative-path-in-python
     #####################################################################
     def get_all_links(self, URL=None):
-
         # check if URL parameter is passed; use root url otherwise
         currLink = ""
         if URL is None:
             currLink = self.url
             self.web_links.append(currLink)
+
+            # Preparing to respect robots.txt
+            self.curr_robots_url = self.convert_to_base_url(currLink) + "/robots.txt" # used for comparison for robots.txt check
+            print("Robots: " + self.curr_robots_url) # debugging
+            self.rp.set_url(self.curr_robots_url)
+            self.rp.read()
         else:
             currLink = URL
 
         try:
-            r = requests.get(currLink)
-            counter = 1
-            limit = 10
-            self.soup = BeautifulSoup(r.text, 'lxml', parse_only=SoupStrainer({'a' : True, 'title' : True}))
-            #web_url = self.convert_to_base_url(currLink)
-            for link in self.soup.find_all('a'): 
-                tmpString = str(link.get('href'))
-                #  Only adds unique links
-                if tmpString not in self.web_links:
-                    # Include external links (links only starting with "http")
-                    if tmpString.startswith("http"):
-                        counter += 1
-                        self.web_links.append(tmpString)
-                    else:
-                        # option to include internal links as absolute links
-                        # need to respect robots.txt with this option
-                        #self.web_links.append(urljoin(web_url,link.get('href'))) # used to convert relative links to absolute
-                        #counter += 1
-                        pass
+            # Check to see if site is a new external site.
+            # Prepare to respect new robots.txt
+            # https://docs.python.org/3/library/urllib.robotparser.html
+            tmpRobotsURL = self.convert_to_base_url(currLink) + "/robots.txt"
+            
+            if self.curr_robots_url != tmpRobotsURL:
+                self.curr_robots_url = tmpRobotsURL
+                self.rp.set_url(self.curr_robots_url)
+                self.rp.read()
 
-                # this limits the links to speed up BFS
-                if counter > limit:
-                    break
+            if self.rp.can_fetch("*", currLink) == False:
+                #print("Respect robots.txt - current: " + currLink)
+                pass
+            else:
+                r = requests.get(currLink)
+                counter = 1
+                limit = 20
+                self.soup = BeautifulSoup(r.text, 'lxml', parse_only=SoupStrainer({'a' : True, 'title' : True}))
+                
+                #for link in self.soup.find_all('a', recursive=False):
+                # https://stackoverflow.com/questions/35465182/how-to-find-all-divs-whos-class-starts-with-a-string-in-beautifulsoup 
+                for link in self.soup.find_all("a", href=lambda value: value and value.startswith("http"), recursive=False):
+                    #print("link: " + str(link))    # debugging             
+                    tmpString = str(link.get('href'))
+                    #  Only adds unique links
+                    if tmpString not in self.web_links:
+                        # Include external links (links only starting with "http")
+                        #if tmpString.startswith("http"):
+                        if self.rp.can_fetch("*", tmpString) == False:
+                            #print("Respect robots.txt - external link: " + tmpString)
+                            pass
+                        else:
+                            self.web_links.append(tmpString)
+                            counter += 1
+                        #else:
+                            # option to include internal links as absolute links
+                            # need to respect robots.txt with this option
+                            #web_url = self.convert_to_base_url(currLink)
+                            #tmpURL = urljoin(web_url,link.get('href'))
+                            #if self.rp.can_fetch("*", tmpURL) == False:
+                                #print("Respect robots.txt - internal link: " + tmpURL)
+                            #    pass
+                            #else:
+                            #    self.web_links.append(tmpURL) # used to convert relative links to absolute
+                            #    counter += 1
+                            #pass
+                            
+                    # this limits the links to speed up BFS
+                    if counter > limit:
+                        #print("limit reached - breaking")
+                        break
 
-            # scrape some other info
-            # check to see if title exists
-            # https://stackoverflow.com/questions/53876649/beautifulself.soup-nonetype-object-has-no-attribute-gettext
-            tmpString = self.soup.title
-            tmpString = self.soup.title.get_text() if tmpString else "No Title"
-            self.title = str(tmpString)
-            self.favicon = self.convert_to_base_url(currLink) + "/favicon.ico"
-
+                # scrape some other info
+                # check to see if title exists
+                # https://stackoverflow.com/questions/53876649/beautifulself.soup-nonetype-object-has-no-attribute-gettext
+                tmpString = self.soup.title
+                tmpString = self.soup.title.get_text() if tmpString else "No Title"
+                self.title = str(tmpString)
+                self.favicon = self.convert_to_base_url(currLink) + "/favicon.ico"
         except:
             pass
 
@@ -247,6 +285,7 @@ class BFS:
         #print("Keyword: " + self.bot.keyword)
 
         self.url = []
+        self.keyword_url = ""
         self.domainName = []
         self.title = []
         self.favicon = []
@@ -266,13 +305,14 @@ class BFS:
                 return item[0]
 
     def start(self):
-        #print("**BFS CRAWLING INITIATED**\n\nUser Entered URL: " + self.rootURL + "\nUser Entered Depth Number: " + str(self.depthNumber))
+        print("**BFS CRAWLING INITIATED**\nURL: " + self.rootURL + "\nDepth: " + str(self.depthNumber) + "\nKeyword: " + self.keyword)
 
+        endLoop = False
         depthCount = 0
         linkIndex = 0
 
         # Implemented as a do while loop
-        while True:
+        while endLoop is False:
             # debugging
             #tmpStr = "\nDepth Number:  " + str(depthCount+1)
             #print( tmpStr )
@@ -291,6 +331,15 @@ class BFS:
 
                 # add a bookmark to know when to increase the depth count
                 self.depthBookmarks = len(self.bot.web_links)-1
+
+                if self.keyword != "":
+                    self.bot.create_soup_with_lxml(self.rootURL)
+                    if self.bot.search_soup() == True:
+                        # This print statement to stdout is sent to index.js when a keyword is found
+                        #print(self.rootURL + "," + self.url[-1]) # returns to index.js as data, then concat to dataString
+                        self.keyword_url = self.rootURL
+                        #print(self.rootURL + "," + self.url[-1])
+                        endLoop = True
             else:
                 # Step 1b: move to next indexed url
                 self.url.append(self.bot.web_links[linkIndex])
@@ -315,11 +364,13 @@ class BFS:
                     self.source.append(self.find_source_index(linkIndex))
                     self.target.append(linkIndex)
 
-            if self.keyword != "":
+            if self.keyword != "" and endLoop is False:
                 if self.bot.search_soup() == True:
                     # This print statement to stdout is sent to index.js when a keyword is found
-                    print(self.rootURL + "," + self.url[-1]) # returns to index.js as data, then concat to dataString
-                    break
+                    #print(self.rootURL + "," + self.url[-1]) # returns to index.js as data, then concat to dataString
+                    self.keyword_url = self.url[-1]
+                    #print(self.rootURL + "," + self.url[-1])
+                    endLoop = True
 
             linkIndex += 1
 
@@ -344,7 +395,7 @@ class BFS:
             if depthCount >= self.depthNumber or linkIndex >= len(self.bot.web_links):
                 # This print statement to stdout is sent to index.js when there is no keyword entered or it is not found
                 print(self.rootURL)
-                break
+                endLoop = True
 
         # https://stackoverflow.com/questions/42865013/python-create-array-of-json-objects-from-for-loops
         nodes = [ {"url": u, "domainName": d, "title": t, "favicon": f}
@@ -358,13 +409,21 @@ class BFS:
         nodes_edges["nodes"] = nodes
         nodes_edges["edges"] = edges
 
+        # check if a keyword was found
+        if self.keyword_url != "":
+            nodes_edges["search"] = self.keyword_url
+        else:
+            nodes_edges["search"] = None
+
         # convert to JSON string
         JSON_NodesEdges = json.dumps(nodes_edges)
 
         #with open('data.json', 'w') as outfile:
             #json.dump(nodes_edges, outfile, sort_keys=True, indent=4)
 
-        self.json_nodes_edges = JSON_NodesEdges # debugging
+        #print("NodesEdges: " + JSON_NodesEdges)
+
+        self.json_nodes_edges = JSON_NodesEdges
 
 # Initiate crawler for use with front-end site or console arguments
 def cloud_bfs(input):
@@ -391,7 +450,7 @@ def cloud_bfs(input):
 
 # Test program, do not use on cloud function
 if __name__ == '__main__':
-    out = {"url": "https://en.wikipedia.org/wiki/Small", "depth": 2, "keyword": None}
+    out = {"url": "https://en.wikipedia.org/wiki/SMALL", "depth": 2, "keyword": None}
     expo = json.dumps(out)
     final = cloud_bfs(expo)
     print(final)

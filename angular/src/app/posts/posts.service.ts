@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CookieService } from 'ngx-cookie-service';
+import { timeout, catchError } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 import { Post } from './post.model';
@@ -13,6 +14,13 @@ export class PostsService {
   private status;
   private posts: Post[] = [];
   private postsUpdated = new Subject<Post[]>();
+
+  private error: string = null;
+  private errorUpdated = new Subject<string>();
+
+  getErrorUpdateListener() {
+    return this.errorUpdated.asObservable();
+  }
 
   constructor(public crawlerService: CrawlerService,
     private http: HttpClient,
@@ -40,10 +48,36 @@ export class PostsService {
 
     var url = environment.baseUrl + '/data';
     this.http.post<string>(url, post, httpOptions)
-      .subscribe((response) => {
-        this.status = this.cookieService.get("keywordFoundURL");
-        this.crawlerService.updateKeywordFoundURL(this.status);
-        this.crawlerService.updateCrawlerData(response);
-      });
+      .pipe(
+         timeout(600000),
+         catchError(e => {
+           this.error = "timeout";
+           this.errorUpdated.next(this.error);
+           return null;
+         })
+       )
+      .subscribe((response: CrawlerData) => {
+          if (response === null) {
+            this.error = "server response null";
+            this.errorUpdated.next(this.error);
+          }
+
+          else if (response.nodes === null || response.nodes.length === 0) {
+            this.error = "server response data is empty";
+            this.errorUpdated.next(this.error);
+          }
+
+          else {
+            this.status = this.cookieService.get("keywordFoundURL");
+            this.crawlerService.updateKeywordFoundURL(this.status);
+            this.crawlerService.updateCrawlerData(response);
+          }
+        },
+
+        err => {
+          this.error = err;
+          this.errorUpdated.next(this.error);
+        }
+      );
   }
 }
