@@ -9,7 +9,7 @@ mat-progress-spinner {
   justify-content: center;
   margin: 2rem auto 0 auto;
   background-color: #efefef;
-  overflow: scroll;
+  overflow-x: auto;
 }
 
 svg {
@@ -45,4 +45,18 @@ svg {
 
 .visible {
   display: block !important;
+}
+
+#errorMsg {
+  text-align: center;
+  padding: 3rem 0 3rem 0;
+}
+
+#errorMsg > p {
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 1rem;
+  background-color: #aa0000;
+  color: white;
 }

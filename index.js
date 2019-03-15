@@ -28,47 +28,69 @@ var keywordFoundURL = "";
   https://www.sohamkamani.com/blog/2015/08/21/python-nodejs-comm/
 *********************************************************************/
 // Call BFS Python script
-function call_bfs(url, depth, keyword) {
+async function call_bfs(url, depth, keyword) {
+	let promise = new Promise((resolve, reject) => {
+
     var searchword = keyword;
 
-    if(keyword !== null) {
-        if(keyword.length == 0){
-            searchword = null
+    if (keyword !== null) {
+        if (keyword.length == 0) {
+            searchword = null;
         }
     }
+
     var JSONData = {"url":url,"depth": depth, "keyword": keyword}
 
     var options = {
         method: "POST",
         uri: "https://us-central1-angelic-coder-229401.cloudfunctions.net/BFS",
-    json: JSONData
+    	json: JSONData
     };
 
-   return rp(options).then( (result) =>{
-        console.log(result);
-        return result;
+		rp(options).then( (results) => {
+      console.log(results);
+			resolve(results);
+    }).catch(results => {
+			console.log("BFS cloud error: ", results);
+			reject(results);
+		});
 
-    })
+	});
+
+		let results = await promise;
+		return results;
 }
 
-function call_dfs(url, depth, keyword) {
+async function call_dfs(url, depth, keyword) {
+	let promise = new Promise((resolve, reject) => {
+
     var searchword = keyword;
 
-    if(keyword !== null) {
-        if(keyword.length == 0){
-            searchword = null
+    if (keyword !== null) {
+        if (keyword.length == 0) {
+            searchword = null;
         }
     }
+
     var JSONData = {"url":url,"depth": depth, "keyword": searchword}
     var options = {
         method: "POST",
         uri: "https://us-central1-crawltest.cloudfunctions.net/DFS ",
-    json: JSONData
+    		json: JSONData
     };
-   return rp(options).then( (result) =>{
-        console.log("here is the result: ", result);
-        return result;
-    })
+		
+		rp(options).then(results => {
+      console.log(results);
+			resolve(results);
+    }).catch(results => {
+			console.log("DFS cloud error: ", results);
+			reject(results);
+		});
+
+	});
+
+		let results = await promise;
+		return results;
 }
 
 
@@ -106,8 +128,7 @@ app.post("/data", (req, res, next) => {
 
         console.log("keyword data:")
         if(keyword === null) {console.log("its null")}
-        if(keyword === null) {console.log("its nulll")}
-        if(!keyword){console.log(keyword.length)}
+        // if(!keyword){console.log(keyword.length)}
         if(keyword){console.log(keyword.length)}
 
 	console.log("req.body: ", req.body);
@@ -138,15 +159,17 @@ app.post("/data", (req, res, next) => {
       call_bfs(validatedURL, depth, keyword).then(result => {
 
 
-          console.log("req.cookies: ", req.cookies);
-		  var cookie = processCookie(req.cookies.urlHistory, validatedURL, keyword);
+        console.log("req.cookies: ", req.cookies);
+	  		var cookie = processCookie(req.cookies.urlHistory, validatedURL, keyword);
 
-          if(result.search != null) {
-              keywordFoundURL = result.search
+        if (result.search != null) {
+          keywordFoundURL = result.search
+				} else {
+					keywordFoundURL = ""
 				}
 
         res.cookie("urlHistory", cookie);
-		res.cookie("keywordFoundURL", keywordFoundURL);
+				res.cookie("keywordFoundURL", keywordFoundURL);
         res.status(201).send(result);
 
       }).catch(result => {
