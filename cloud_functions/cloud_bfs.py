@@ -106,8 +106,6 @@ class crawler():
             print("Robots: " + self.curr_robots_url) # debugging
             self.rp.set_url(self.curr_robots_url)
             self.rp.read()
-            r = requests.get(currLink)
-            self.soup = BeautifulSoup(r.text, 'lxml', parse_only=SoupStrainer({'a' : True, 'title' : True}))
         else:
             currLink = URL
 
@@ -366,7 +364,7 @@ class BFS:
                     self.source.append(self.find_source_index(linkIndex))
                     self.target.append(linkIndex)
 
-            if self.keyword != "":
+            if self.keyword != "" and endLoop is False:
                 if self.bot.search_soup() == True:
                     # This print statement to stdout is sent to index.js when a keyword is found
                     #print(self.rootURL + "," + self.url[-1]) # returns to index.js as data, then concat to dataString
@@ -423,7 +421,7 @@ class BFS:
         #with open('data.json', 'w') as outfile:
             #json.dump(nodes_edges, outfile, sort_keys=True, indent=4)
 
-        print("NodesEdges: " + JSON_NodesEdges)
+        #print("NodesEdges: " + JSON_NodesEdges)
 
         self.json_nodes_edges = JSON_NodesEdges
 
@@ -452,7 +450,7 @@ def cloud_bfs(input):
 
 # Test program, do not use on cloud function
 if __name__ == '__main__':
-    out = {"url": "https://en.wikipedia.org/wiki/Chip", "depth": 4, "keyword": "food"}
+    out = {"url": "https://en.wikipedia.org/wiki/SMALL", "depth": 2, "keyword": None}
     expo = json.dumps(out)
     final = cloud_bfs(expo)
     print(final)
