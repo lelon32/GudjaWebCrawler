@@ -121,12 +121,9 @@ app.get("/data", (req, res, next) => {
 
 // POST request for data calls python script, response back data.json
 app.post("/data", (req, res, next) => {
-<<<<<<< HEAD
 	req.socket.setKeepAlive();
-=======
 	req.setTimeout(0);
 
->>>>>>> 5c6258466bfdf1ea1cd5a0d60239d6c91cf82d66
 	var url = req.body.url,
 		depth = req.body.depth,
 		algorithm = req.body.algorithm,
