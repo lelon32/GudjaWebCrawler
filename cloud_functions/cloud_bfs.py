@@ -45,6 +45,10 @@ class crawler():
         r = requests.get(url)
         self.soup = BeautifulSoup(r.text, 'html.parser')
 
+    def create_soup_with_lxml(self, url):
+        r = requests.get(url)
+        self.soup = BeautifulSoup(r.text, 'lxml')
+
     def create_unique_link_list2(self):
         temp_list = []
         for link in self.soup.find_all('a'):
@@ -102,6 +106,8 @@ class crawler():
             print("Robots: " + self.curr_robots_url) # debugging
             self.rp.set_url(self.curr_robots_url)
             self.rp.read()
+            r = requests.get(currLink)
+            self.soup = BeautifulSoup(r.text, 'lxml', parse_only=SoupStrainer({'a' : True, 'title' : True}))
         else:
             currLink = URL
 
@@ -303,11 +309,12 @@ class BFS:
     def start(self):
         print("**BFS CRAWLING INITIATED**\nURL: " + self.rootURL + "\nDepth: " + str(self.depthNumber) + "\nKeyword: " + self.keyword)
 
+        endLoop = False
         depthCount = 0
         linkIndex = 0
 
         # Implemented as a do while loop
-        while True:
+        while endLoop is False:
             # debugging
             #tmpStr = "\nDepth Number:  " + str(depthCount+1)
             #print( tmpStr )
@@ -326,6 +333,15 @@ class BFS:
 
                 # add a bookmark to know when to increase the depth count
                 self.depthBookmarks = len(self.bot.web_links)-1
+
+                if self.keyword != "":
+                    self.bot.create_soup_with_lxml(self.rootURL)
+                    if self.bot.search_soup() == True:
+                        # This print statement to stdout is sent to index.js when a keyword is found
+                        #print(self.rootURL + "," + self.url[-1]) # returns to index.js as data, then concat to dataString
+                        self.keyword_url = self.rootURL
+                        #print(self.rootURL + "," + self.url[-1])
+                        endLoop = True
             else:
                 # Step 1b: move to next indexed url
                 self.url.append(self.bot.web_links[linkIndex])
@@ -355,7 +371,8 @@ class BFS:
                     # This print statement to stdout is sent to index.js when a keyword is found
                     #print(self.rootURL + "," + self.url[-1]) # returns to index.js as data, then concat to dataString
                     self.keyword_url = self.url[-1]
-                    break
+                    #print(self.rootURL + "," + self.url[-1])
+                    endLoop = True
 
             linkIndex += 1
 
@@ -380,7 +397,7 @@ class BFS:
             if depthCount >= self.depthNumber or linkIndex >= len(self.bot.web_links):
                 # This print statement to stdout is sent to index.js when there is no keyword entered or it is not found
                 print(self.rootURL)
-                break
+                endLoop = True
 
         # https://stackoverflow.com/questions/42865013/python-create-array-of-json-objects-from-for-loops
         nodes = [ {"url": u, "domainName": d, "title": t, "favicon": f}
@@ -405,6 +422,8 @@ class BFS:
 
         #with open('data.json', 'w') as outfile:
             #json.dump(nodes_edges, outfile, sort_keys=True, indent=4)
+
+        print("NodesEdges: " + JSON_NodesEdges)
 
         self.json_nodes_edges = JSON_NodesEdges
 
@@ -433,7 +452,7 @@ def cloud_bfs(input):
 
 # Test program, do not use on cloud function
 if __name__ == '__main__':
-    out = {"url": "https://en.wikipedia.org/wiki/SMALL", "depth": 4, "keyword": None}
+    out = {"url": "https://en.wikipedia.org/wiki/Chip", "depth": 4, "keyword": "food"}
     expo = json.dumps(out)
     final = cloud_bfs(expo)
     print(final)
