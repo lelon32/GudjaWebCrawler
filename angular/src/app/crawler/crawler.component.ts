@@ -24,7 +24,9 @@ var transX = 0, transY = 0;
 
 export class CrawlerComponent implements OnInit, OnDestroy {
   realData: CrawlerData = null;
+  public error = null;
   private crawlerDataSub: Subscription;
+  private postsErrorSub: Subscription;
   private postsUpdateSub: Subscription;
 
 
@@ -36,12 +38,15 @@ export class CrawlerComponent implements OnInit, OnDestroy {
     console.log('\'realData\' should be empty to start: ', this.realData);
     buildCrawler(this.realData);
 
+    var errorContainer = d3.select("#errorMsg");
+    var svg = d3.select("#svgData");
+    var spinner = d3.select("mat-progress-spinner");
+
     // Start spinner once post submitted
     this.postsUpdateSub = this.postsService.getPostUpdateListener()
       .subscribe(() => {
-        var svg = d3.select("#svgData");
         svg.attr("class", "hidden");
-        var spinner = d3.select("mat-progress-spinner");
+        errorContainer.attr("class", "hidden");
         spinner.attr("class", "visible mat-progress-spinner mat-primary mat-progress-spinner-indeterminate-animation");
       });
 
@@ -50,7 +55,19 @@ export class CrawlerComponent implements OnInit, OnDestroy {
     // var dataset_test = generateData(dataSize, edgesToNodes);
     // renderD3data(dataset_test, keywordFoundURL);
 
-    // Request data from server
+    // Subscribe to error updates
+    this.postsErrorSub = this.postsService.getErrorUpdateListener()
+      .subscribe((error) => {
+        svg.attr("class", "hidden");
+        spinner.attr("class", "hidden");
+
+        // Dispaly error message in container
+        var stuff = "<p>Error: " + error + "</p>";
+        errorContainer.html(stuff)
+          .attr("class", "visible");
+      });
+
+    // Subscribe to crawler updates
     this.crawlerDataSub = this.crawlerService.getCrawlerUpdateListener()
       .subscribe((data: CrawlerData) => {
         this.realData = data;
@@ -81,6 +98,11 @@ function buildCrawler(realData) {
 
   // Holds simuation nodes, edges, and highlight
   var g = svg.append("g");
+
+  // Append error container
+  container.append("div")
+    .attr("id", "errorMsg")
+    .attr("class", "hidden");
 
   // Tooltip element
   var tooltip = container.append("div")
@@ -123,7 +145,7 @@ function buildCrawler(realData) {
     .attr('xoverflow', 'visible');
 
   var arrow = marker.append('svg:path')
-    .attr('d', 'M 0,0  L 10,3  L 0,6')
+    .attr('d', 'M 0,0  L 10,3  L 0,6  L 2,3')
     .attr('fill', 'black');
 }
 
@@ -152,7 +174,7 @@ function renderD3data(dataset, keywordFoundURL) {
 
   // Simulation params
   var linkDist = 50, chargeStrength = -170;
-  var chargeForce = d3.forceManyBody().strength((d) => chargeStrength * ( 1 + nodeSize[d.index] / 3));
+  var chargeForce = d3.forceManyBody().strength((d) => chargeStrength * ( 1 + nodeSize[d.index] / 4));
   var linkForce = d3.forceLink().id((d) => d.index).distance(linkDist);
 
   // Simulation

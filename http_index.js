@@ -100,12 +100,12 @@ function call_dfs(url, depth, keyword) {
 
     var options = {
         method: "POST",
-        uri: "https://us-central1-crawltest.cloudfunctions.net/test",
+        uri: "https://us-central1-crawltest.cloudfunctions.net/DFS ",
     json: JSONData
     };
 
    return rp(options).then( (result) =>{
-        console.log(result);
+        console.log("here is the result: ", result);
         return result;
 
     })
@@ -113,23 +113,6 @@ function call_dfs(url, depth, keyword) {
 }
 
 
-/*
-// Call DFS Python script
-async function callDFS(url, depth, keyword) {
-	let promise = new Promise((resolve, reject) => {
-
-console.log("in call dfs")
-request("https://us-central1-crawltest.cloudfunctions.net/DFS", function (error, response, body) {
-  console.log('error:', error); // Print the error if one occurred
-  console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
-  console.log('body:', body); // Print the HTML for the Google homepage.
-})
-  });
-
-	let message = await promise;
-	return body;
-}
-*/
 // Process cookie
 function processCookie(cookie, validatedURL, keyword) {
 	var url = validatedURL.trim();
@@ -143,7 +126,7 @@ function processCookie(cookie, validatedURL, keyword) {
 	cookie.push(keyword);
 	cookie = JSON.stringify(cookie);
 
-	console.log("cookie: ", cookie);
+	//console.log("cookie: ", cookie);
 	return cookie;
 }
 
@@ -188,11 +171,16 @@ app.post("/data", (req, res, next) => {
       //console.log("final validated URL: " + validatedURL); // debugging
       call_bfs(validatedURL, depth, keyword).then(result => {
 
-        console.log("BFS success: ", result);
-				console.log("req.cookies: ", req.cookies);
-				var cookie = processCookie(req.cookies.urlHistory, validatedURL, keyword);
+
+          console.log("req.cookies: ", req.cookies);
+		  var cookie = processCookie(req.cookies.urlHistory, validatedURL, keyword);
+
+          if(result.search != null) {
+              keywordFoundURL = result.search
+				}
+        
         res.cookie("urlHistory", cookie);
-				res.cookie("keywordFoundURL", keywordFoundURL);
+		res.cookie("keywordFoundURL", keywordFoundURL);
         res.status(201).send(result);
 
       }).catch(result => {
@@ -205,14 +193,20 @@ app.post("/data", (req, res, next) => {
     else if (algorithm === "dfs") {
       call_dfs(validatedURL, depth, keyword).then(result => {
 
-				console.log("req.cookies: ", req.cookies);
-				var cookie = processCookie(req.cookies.urlHistory, validatedURL, keyword);
-	      res.cookie("urlHistory", cookie);
-		        res.cookie("keywordFoundURL", keywordFoundURL);
-	      res.status(201).send(result);
+		console.log("req.cookies: ", req.cookies);
+		var cookie = processCookie(req.cookies.urlHistory, validatedURL, keyword);
+        console.log("here is the search url: ", Object.keys(result))
+	
+        if(result.search != null) {
+		    keywordFoundURL = result.search
+				}
+
+	    res.cookie("urlHistory", cookie);
+		res.cookie("keywordFoundURL", keywordFoundURL);
+	    res.status(201).send(result);
 
       }).catch(result => {
-        console.log("DFS success: ", result);
+        //console.log("DFS success: ", result);
         res.status(500).send(null);
       });
     }

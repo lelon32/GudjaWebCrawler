@@ -5,7 +5,19 @@ mat-toolbar {
   padding-bottom: 4rem;
 }
 
+img, h1 {
+  display: inline-block;
+}
+
+img {
+  width: 45px;
+  height: 45px;
+  border-radius: 4px;
+  margin-right: 4px;
+}
+
 h1 {
+  vertical-align: super;
   font-family: SignPainter;
   font-size: 50px;
 }
