@@ -167,7 +167,7 @@ app.post("/data", (req, res, next) => {
 				} else {
 					keywordFoundURL = ""
 				}
-
+        
         res.cookie("urlHistory", cookie);
 				res.cookie("keywordFoundURL", keywordFoundURL);
         res.status(201).send(result);
@@ -185,7 +185,7 @@ app.post("/data", (req, res, next) => {
 		console.log("req.cookies: ", req.cookies);
 		var cookie = processCookie(req.cookies.urlHistory, validatedURL, keyword);
         //console.log("here is the search url: ", Object.keys(result))
-
+	
         if(result.search != null) {
 		    keywordFoundURL = result.search
 				}
