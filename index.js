@@ -135,35 +135,35 @@ app.post("/data", (req, res, next) => {
 
 	console.log("req.body: ", req.body);
 
-	// Call BFS
-	if (algorithm === "bfs") {
-		res.status(201).sendFile(path.join(__dirname, 'data.json'));
-		callBFS(url, depth, keyword).then(result => {
-			console.log("BFS success: ", result);
-      res.cookie("urlHistory", urlHistory);
-			res.status(201).sendFile(path.join(__dirname, 'data.json'));
-		}).catch(result => {
-			console.log("BFS success: ", result);
-			res.status(500).send(null);
-		})
-	}
+	// // Call BFS
+	// if (algorithm === "bfs") {
+	// 	res.status(201).sendFile(path.join(__dirname, 'data.json'));
+	// 	callBFS(url, depth, keyword).then(result => {
+	// 		console.log("BFS success: ", result);
+  //     res.cookie("urlHistory", urlHistory);
+	// 		res.status(201).sendFile(path.join(__dirname, 'data.json'));
+	// 	}).catch(result => {
+	// 		console.log("BFS success: ", result);
+	// 		res.status(500).send(null);
+	// 	})
+	// }
+	//
+	// // Call DFS
+	// else if (algorithm === "dfs") {
+	// 	callDFS(url, depth, keyword).then(result => {
+	// 		console.log("DFS success: ", result);
+	// 		res.status(201).sendFile(path.join(__dirname, 'data.json'));
+	// 	}).catch(result => {
+	// 		console.log("DFS success: ", result);
+	// 		res.status(500).send(null);
+	// 	})
+	// }
+	//
+	// else {
+	// 	console.log("error");
+	// 	res.status(400).end('Error in POST /data');
+	// }
 
-	// Call DFS
-	else if (algorithm === "dfs") {
-		callDFS(url, depth, keyword).then(result => {
-			console.log("DFS success: ", result);
-			res.status(201).sendFile(path.join(__dirname, 'data.json'));
-		}).catch(result => {
-			console.log("DFS success: ", result);
-			res.status(500).send(null);
-		})
-	}
-
-	else {
-		console.log("error");
-		res.status(400).end('Error in POST /data');
-	}
-=======
   // Clear out the urlHistory array
   urlHistory.splice(0,urlHistory.length);
 
@@ -236,7 +236,6 @@ app.post("/data", (req, res, next) => {
       res.status(400).end('Error in POST /data');
     }
   });
->>>>>>> 05a282e87858d9d36aafd530b56443f1b8f6391a
 })
 
 //Iterate users data from cookie
