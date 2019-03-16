@@ -50,11 +50,6 @@ export class CrawlerComponent implements OnInit, OnDestroy {
         spinner.attr("class", "visible mat-progress-spinner mat-primary mat-progress-spinner-indeterminate-animation");
       });
 
-    // // TEST DATASET
-    // var dataSize = 20, edgesToNodes = 1.3;
-    // var dataset_test = generateData(dataSize, edgesToNodes);
-    // renderD3data(dataset_test, keywordFoundURL);
-
     // Subscribe to error updates
     this.postsErrorSub = this.postsService.getErrorUpdateListener()
       .subscribe((error) => {
@@ -66,6 +61,11 @@ export class CrawlerComponent implements OnInit, OnDestroy {
         errorContainer.html(stuff)
           .attr("class", "visible");
       });
+
+    // // TEST DATASET
+    // var dataSize = 20, edgesToNodes = 1.3;
+    // var dataset_test = generateData(dataSize, edgesToNodes);
+    // renderD3data(dataset_test, keywordFoundURL);
 
     // Subscribe to crawler updates
     this.crawlerDataSub = this.crawlerService.getCrawlerUpdateListener()
@@ -287,17 +287,33 @@ function adjustSize() {
 }
 
 function mouseoverHandler(d) {
-  var stuff = '<img width="32px" height="32px" src=' + d.favicon + '>'
-    + '<p>' + d.title + '</p>'
+
+  // var stuff = '<img id="extFavicon" onload="this.width=\'32px\'; this.height=\'32px\';" onerror="this.style.display=\'none\';" src=' + d.favicon + '>'
+  //   + '<p>' + d.title + '</p>'
+  //   + '<p>' + d.url + '</p>';
+  var stuff = '<p>' + d.title + '</p>'
     + '<p>' + d.url + '</p>';
+
   if (d.url === keywordFoundURL) {
     stuff = '<strong>Keyword Found Here!</strong><br>' + stuff;
   }
+
   var tooltip = d3.select("#tooltipID")
     .html(stuff)
     .style("padding", "15px")
+    .style("border-radius", "4px")
     .style('display', 'block')
     .transition().duration(50).style('opacity', 1);
+
+    // if (d3.select("#extFavicon").style("display") !== "none") {
+    //   d3.select("#extFavicon")
+    //     .attr("width", "32px")
+    //     .attr("height", "32px");
+    // } else {
+    //   d3.select("#extFavicon")
+    //     .attr("width", "0px")
+    //     .attr("height", "0px");
+    // }
 }
 
 function mouseoutHandler(d) {
@@ -305,6 +321,10 @@ function mouseoutHandler(d) {
     .transition().duration(50).style('opacity', 0)
     .style("padding", "0px")
     .style('display', 'none');
+
+  // d3.select("#extFavicon")
+  //   .attr("width", "0px")
+  //   .attr("height", "0px");
 }
 
 function mousemoveHandler(d) {
