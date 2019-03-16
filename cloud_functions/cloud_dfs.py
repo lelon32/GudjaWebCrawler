@@ -20,39 +20,31 @@ class crawler():
         self.domain = ""
         self.title = ""
         self.keyword = ""
-#Setter 
-    def add_keyword(self, keyword):
-        self.keyword = keyword
 
+# searches the soup for the keyword
+# returns true if found
     def search_soup(self):
         check = self.soup.get_text().find(self.keyword)
         if check != -1:
-            #print(self.url, " ", check)
             return True
         return False
-#checks if url has a full scheme
-    def check_url(self, url):
-        parse = urlparse(url)
-        page_host = urlparse(self.url).netloc
-        if parse.scheme == 'http' or parse.scheme == 'https':
-            if parse.netloc != page_host:
-                return True
-        return False
 
+#checks if url has a full scheme
     def check_url_allow_internal(self, url):
         parse = urlparse(url)
         if parse.scheme == 'http' or parse.scheme == 'https':
             return True
         return False
 
+# Creates the soup to be used in other methods
     def create_soup(self, url):
         r = requests.get(url)
         self.soup = BeautifulSoup(r.text, 'html.parser')
 
-    # Creates the unique links by first adding all links (determined by href in beautifu soup),
-    # checking if they have data (some hrefs are empty), calling check_url and then using set to
-    # remove duplicates and making that into a list of "good" links
-    #
+# Creates the unique links by first adding all links (determined by href in beautifu soup),
+# checking if they have data (some hrefs are empty), calling check_url and then using set to
+# remove duplicates and making that into a list of "good" links
+#
     def create_unique_link_list2(self):
         temp_list = []
         for link in self.soup.find_all('a'):
@@ -63,113 +55,36 @@ class crawler():
         tset = set(temp_list)
         self.unique_links = list(tset)
 
-
+# gets the domain of a url
     def get_domain(self):
         temp = urlparse(self.url)
         self.domain = temp.netloc
 
-
+# appends a favicon to the base url
+# does not check if favicon exists
     def get_favicon(self):
         temp = urlparse(self.url)
         base = temp.netloc
         self.favicon = base + "/favicon.ico"
 
+# gets the web page title
     def get_title(self):
         self.title = self.soup.title
 
 
-    #####################################################################
-    # Description: Finds all links on the current URL page. Uses lxml parser.
-    # https://stackoverflow.com/questions/44001007/scrape-the-absolute-url-instead-of-a-relative-path-in-python
-    #####################################################################
-    def get_all_links(self, URL=None):
 
-        # check if URL parameter is passed; use root url otherwise
-        currLink = ""
-        if URL is None:
-            currLink = self.url
-            self.web_links.append(currLink)
-        else:
-            currLink = URL
+# Description: Used to strip a URL to its domain name
+# https://www.quora.com/How-do-I-extract-only-the-domain-name-from-an-URL
 
-        r = requests.get(currLink)
-        self.soup = BeautifulSoup(r.text, 'lxml')
-        # web_url = convert_to_base_url(currLink)
-        for link in self.soup.find_all('a'):
-            tmpString = str(link.get('href'))
-            # Include external links (links only starting with "http") and only adds unique links
-            if tmpString.startswith("http") and tmpString not in self.web_links:
-                self.web_links.append(tmpString)
-            else:
-                # option to include internal links as absolute links
-                # self.web_links.append(urljoin(web_url,link.get('href'))) # used to convert relative links to absolute
-                pass
-
-        # scrape some other info
-        # check to see if title exists
-        # https://stackoverflow.com/questions/53876649/beautifulself.soup-nonetype-object-has-no-attribute-gettext
-        tmpString = self.soup.title
-        tmpString = self.soup.title.get_text() if tmpString else "No Title"
-        self.title = str(tmpString)
-        self.favicon = self.convert_to_base_url(currLink) + "/favicon.ico"
-
-    # for debugging
-    def print_queue(self):
-        print("Queue: \n")
-        for i in self.web_links:
-            print(i)
-
-    #####################################################################
-    # Description: Used to strip a URL to its domain name
-    # https://www.quora.com/How-do-I-extract-only-the-domain-name-from-an-URL
-    #####################################################################
     def strip_out_domain(self, URL):
         domain = URL.split("//")[-1].split("/")[0]
         domain = domain.split(".")[-2]
         return domain
 
-    #####################################################################
-    # Description: Used to strip a URL to its base URL
-    # https://www.quora.com/How-do-I-extract-only-the-domain-name-from-an-URL
-    #####################################################################
-    def convert_to_base_url(self, URL):
-        baseURL = urlparse(URL)
-        return baseURL.scheme + "://" + baseURL.netloc
 
-    def get_all_links_and_put_them_in_a_dictionary(self):
-        r = requests.get(self.url)
-        soup = BeautifulSoup(r.text, 'html.parser')
-        count = 1
-        for link in soup.find_all('a'):
-            self.web_links.append(link.get('href'))
-            self.dictionary[count] = link.get('href')
-            count += 1
 
-            #print(link.get('href'))
-        #print(self.dictionary)
-
-    def get_all_links_and_add_them_to_a_list_from_file(self,):
-        r = requests.get(self.url)
-        soup = BeautifulSoup(r.text, 'html.parser')
-        for link in soup.find_all('a'):
-            if link is not None:
-                self.web_links.append(link.get('href'))
-
-    def get_rel_links(self):
-        r = requests.get(self.url)
-        soup = BeautifulSoup(r.text, 'html.parser')
-        count = 0
-        for link in soup.find_all('a'):
-            self.web_links.append(link.get('href'))
-
-    def get_favicon_and_add_to_dictionary(self):
-        # need to add some checks here to return a blank or default favicon if none exists
-        self.favicon = self.url + "/favicon.ico"
-        self.dictionary["favicon"] = self.favicon
-
-    def create_unique_list(self):
-        self.unique_links = set(self.web_links)
-        #print(len(self.unique_links))
+# dfs Class to run a depth first search
+# using the crawler class above.
 
 class dfs():
 
@@ -222,11 +137,6 @@ class dfs():
             edge_dict = {"source": source_edge, "target": target_edge}
             self.edges.append(edge_dict)
 
-            export_json = {"nodes": self.nodes, "edges": self.edges }
-
-    #create json
-            json_node = json.dumps(node_dict)
-
 
     # Executes a single crawl while employing a search
     # method that if found
@@ -239,7 +149,6 @@ class dfs():
         dfs_crawl.keyword = keyword
 
         # provide the first url
-        # dont need to do this as it was passed when instantiated
         dfs_crawl.url = url
 
         # get the domain
@@ -272,7 +181,6 @@ class dfs():
             return True
 
         else:
-
         # get unique list of links
             dfs_crawl.create_unique_link_list2()
 
@@ -293,19 +201,22 @@ class dfs():
                 edge_dict = {"source": source_edge, "target": target_edge}
                 self.edges.append(edge_dict)
 
-                export_json = {"nodes": self.nodes, "edges": self.edges}
 
-                # create json
-                json_node = json.dumps(node_dict)
 
+# This is the primary Function that is called when
+# an http request is sent to the Google Cloud Function
+# URL. It instantiates the dfs class ans uses the crawler
+# class to perform the search and return the JSON result
+# Modify input method for local testing or Cloud deployement
+# Method is wrapped in a try/except to help catch errors
+# and will return empty JSON if an exception is raised
 
 def cloud_dfs(input):
     try:
         run_dfs = dfs()
 
-    # use. .loads local testing and get_json for for deployemnt
-        j_input = input.get_json()
-        #j_input = json.loads(input)
+        #j_input = input.get_json() # Use fo GCF deployement
+        j_input = json.loads(input) # Use for local testing
 
         if j_input["keyword"] is not None:
             keyword = j_input["keyword"]
@@ -317,12 +228,8 @@ def cloud_dfs(input):
             # dfs can use a simple for loop to get all the links
             for i in range(0, depth):
                 if run_dfs.search_crawl(run_dfs.next_link, keyword):
-                    # print("found it")
                     break
                 else:
-                    # print("not found yet")
-                	#print(run_dfs.next_link)
-                	# print("all links: ", run_dfs.all_links)
                     continue
 
             # build the final object for converting to stringified json
@@ -334,6 +241,7 @@ def cloud_dfs(input):
             return export_json
 
         else:
+            #same as above except the search
             depth = j_input["depth"]
             new_url = j_input["url"]
 
@@ -352,11 +260,15 @@ def cloud_dfs(input):
 
             return export_json
     except:
+        #empty object to alert that there was an error
         err_msg = {"edges": [], "nodes": []}
         err_return = json.dumps(err_msg)
         return err_return
 
-out = {"url": "https://en.wikipedia.org/wiki/Macaroni_penguin", "depth": 23, "keyword": "twitter"}
+
+# "Main" below to test cloud function locally
+#
+out = {"url": "https://en.wikipedia.org/wiki/Main_Page", "depth": 23, "keyword": "twitter"}
 expo = json.dumps(out)
 final = cloud_dfs(expo)
 print(final)
