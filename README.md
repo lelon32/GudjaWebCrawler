@@ -35,42 +35,20 @@ This program was developed using Angular and the D3 Javascript library on the fr
 
 ### Crawler Only
 **Testing Python**
-
-The crawler.py contains the main driving code that runs the separate search algorithms. To run either
-search, you will need to install the Beautiful Soup library and the lxml library such as:
+The separeate search functions are composed of individual Python files. The entire file is designed to be used a Google Cloud Function. However they can still be tested locally by first installing these libraries:
 ```shell
 $pip install beautifulsoup
 $pip install python3-lxml
 ```
 
-**Testing Breadth First Search**
+**Testing  Functions**
+Both Breadth First and Depth First Search functions can be easily tested locally. After installing the libraries and downloading the files, one can create a "main" to call the appropriate function and check the results:
 
-The front end website has not been fully integrated with Python spider bot code.
-bfs.py will output the file data.json which represents the nodes and edges in the URL visited graph.
-Use the following command on terminal to run the bfs.py code and generate the data.json file.
-```shell
-$ python3 bfs.py [URL] [Depth of Search] [Optional Keyword]
-```
-For example:
-```shell
-$ python3 bfs.py wikipedia.com 4 spider
-```
-**Testing Depth First Search**
+```python
 
-Like the BFS, the depth first search is not integrated into the website but can still be tested from the
-command line. With all the aforementioned libraries installed, one can type the following commands to
-check its functionality: 
-```shell 
-$ python3 dfs.py [Full URL] [Depth of Search]
-``` 
-For example:
-```shell
-$ python3 dfs.py http://www.gizmodo.com 4
 ```
-Alternatively, one can enter ```$ python3 dfs.py``` and it will randomly select from a list of websites and
-attempt to crawl them to a depth of five.
 
-**Sample data.json Output**
+**Sample json Output**
 ```json
 {
     "nodes": [{
