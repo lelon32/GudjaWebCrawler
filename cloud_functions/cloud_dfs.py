@@ -4,6 +4,9 @@ import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 
+# Crawler Class
+# Uses BeautifulSoup to parse information from web pages
+
 class crawler():
 
     def __init__(self, url):
@@ -17,7 +20,7 @@ class crawler():
         self.domain = ""
         self.title = ""
         self.keyword = ""
-
+#Setter 
     def add_keyword(self, keyword):
         self.keyword = keyword
 
@@ -27,7 +30,7 @@ class crawler():
             #print(self.url, " ", check)
             return True
         return False
-
+#checks if url has a full scheme
     def check_url(self, url):
         parse = urlparse(url)
         page_host = urlparse(self.url).netloc
