@@ -159,9 +159,11 @@ app.post("/data", (req, res, next) => {
       //console.log("final validated URL: " + validatedURL); // debugging
       call_bfs(validatedURL, depth, keyword).then(result => {
 
-
+				var cookie = req.cookies.urlHistory;
         console.log("req.cookies: ", req.cookies);
-	  		var cookie = processCookie(req.cookies.urlHistory, validatedURL, keyword);
+				if (result != null && result.nodes != null && result.nodes.length > 0) {
+					cookie = processCookie(req.cookies.urlHistory, validatedURL, keyword);
+				}
 
         if (result.search != null) {
           keywordFoundURL = result.search
@@ -183,8 +185,11 @@ app.post("/data", (req, res, next) => {
     else if (algorithm === "dfs") {
       call_dfs(validatedURL, depth, keyword).then(result => {
 
-		console.log("req.cookies: ", req.cookies);
-		var cookie = processCookie(req.cookies.urlHistory, validatedURL, keyword);
+				var cookie = req.cookies.urlHistory;
+        console.log("req.cookies: ", req.cookies);
+				if (result != null && result.nodes != null && result.nodes.length > 0) {
+					cookie = processCookie(req.cookies.urlHistory, validatedURL, keyword);
+				}
         //console.log("here is the search url: ", Object.keys(result))
 
         if(result.search != null) {
