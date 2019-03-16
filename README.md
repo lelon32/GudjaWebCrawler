@@ -7,7 +7,7 @@ high level map of all the pages that were visited by the web crawler, in an orga
 
 
 ## Getting Started
-This program was developed using Angular and the D3 Javascript library on the front end, Node.js on the back end and Python for crawling the web. This application has been optimized for use on the Google Cloud Platform. Alternatively, any application that can read from a data.json file can simply use the Python code to crawl the web.
+This program was developed using Angular and the D3 Javascript library on the front end, Node.js on the back end and Python for crawling the web. This application has been optimized for use on the Google Cloud Platform and with the use of Google Cloud Functions. The index.js file is currently set to use existing Google Cloud Functions for the appropriate search. To implement any changes with the search functions would require creating their own Google Account and to Create their own Functions and replace the URL(s) in index.js.
 
 ### Requirements
 - [Angular.js](https://angular.io/)
@@ -45,8 +45,18 @@ $pip install python3-lxml
 Both Breadth First and Depth First Search functions can be easily tested locally. After installing the libraries and downloading the files, one can create a "main" to call the appropriate function and check the results:
 
 ```python
-
+out = {"url": "https://en.wikipedia.org/wiki/Macaroni_penguin", "depth": 23, "keyword": "twitter"}
+expo = json.dumps(out)
+final = cloud_dfs(expo)
+print(final)
 ```
+Depending on Python environment, one may need to switch how the function parses the JSON input:
+```python
+#j_input = input.get_json() #use on cloud function
+j_input = json.loads(input) #use on local development
+```
+    
+Result will be a list of Nodes and Edges as in sample below.
 
 **Sample json Output**
 ```json
