@@ -1,0 +1,39 @@
+' Data for Sankey Visualization
+' For use at: http://sankeymatic.com/build/
+' Type a list of Flows, like this:
+' SOURCE [AMOUNT] TARGET
+
+Kerensa[205] Total Hours
+Long[140] Total Hours
+Brent [140] Total Hours
+
+Total Hours[135] Research
+Total Hours[145] Programming
+Total Hours [140] Debugging
+Total Hours[65]Reports
+
+Research[25]Python
+Research[10] Environment/Setup
+Research[10] Beautiful Soup
+Research[25]Node
+
+Research[25] Google Cloud Platform
+Research[15] Angular
+Research[15] D3
+Research[10]Miscellaneous
+
+Programming[35]Python
+Programming[50]Angular
+Programming[25]D3
+Programming[35]Node
+
+Debugging[35]Node
+Debugging[25]Python
+
+Debugging[45]Angular
+Debugging[35]Google Cloud Platform
+
+Reports[5]Weekly Progress Reports
+Reports[20]Midpoint Check
+Reports[30]Final Report
+Reports[10]Poster
