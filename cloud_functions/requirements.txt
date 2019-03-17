@@ -1,0 +1,5 @@
+# Function dependencies, for example:
+# package>=version
+lxml==4.3.2
+numpy==1.16.1
+beautifulsoup4==4.4.0
