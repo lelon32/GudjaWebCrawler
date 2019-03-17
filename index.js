@@ -24,10 +24,11 @@ var urlHistory = [];
 var keywordFoundURL = "";
 
 /*********************************************************************
-	Model functions
-  https://www.sohamkamani.com/blog/2015/08/21/python-nodejs-comm/
+call_bfs
+Asynchronous function to pass in crawl specifications to the
+Cloud Based BFS function, wait for the response and send the return object
+back to the app.post route.
 *********************************************************************/
-// Call BFS Python script
 async function call_bfs(url, depth, keyword) {
 	let promise = new Promise((resolve, reject) => {
 
@@ -61,6 +62,12 @@ async function call_bfs(url, depth, keyword) {
 		return results;
 }
 
+/*********************************************************************
+call_dfs
+Asynchronous function to pass in crawl specifications to the
+Cloud Based DFS function, wait for the response and send the return object
+back to the app.post route.
+*********************************************************************/
 async function call_dfs(url, depth, keyword) {
 	let promise = new Promise((resolve, reject) => {
 
@@ -93,8 +100,10 @@ async function call_dfs(url, depth, keyword) {
 		return results;
 }
 
-
-// Process cookie
+/*********************************************************************
+	ProcessCookie
+	adds data to be stored by the cookie
+*********************************************************************/
 function processCookie(cookie, validatedURL, keyword) {
 	var url = validatedURL.trim();
 	if (keyword === null || keyword.length === 0) {
@@ -119,6 +128,12 @@ app.get("/data", (req, res, next) => {
 	res.sendFile(path.join(__dirname, 'data.json'));
 })
 
+/*********************************************************************
+Post Route to handle information submitted by the front end, to send
+requests to the appropriate algorithm, parses the return values for the cookies,
+and the history, and then passes the returned nodes and edges to the front end
+for display
+*********************************************************************/
 // POST request for data calls python script, response back data.json
 app.post("/data", (req, res, next) => {
 	req.setTimeout(0);

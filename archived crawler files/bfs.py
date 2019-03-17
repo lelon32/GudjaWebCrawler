@@ -9,7 +9,6 @@
 #####################################################################
 
 import sys
-import requests
 import json
 import numpy as np
 from crawler import crawler

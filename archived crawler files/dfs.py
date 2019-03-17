@@ -2,11 +2,8 @@ import sys
 import json
 
 import random
-import requests
-from datetime  import datetime
+
 sys.path.insert(0, 'lib') #use this on GCP
-from bs4 import BeautifulSoup
-from urllib.parse import urlparse
 from crawler import crawler
 import numpy as np
 
